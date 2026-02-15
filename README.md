@@ -26,8 +26,8 @@ Coming Soon.
 A sleek, responsive website designed to showcase my journey, projects, and technical expertise.
 
 ## 🚀 Quick Links
-*   [🔗 Visit Live Site](https://goldylox752.github.io)
-*   [📂 View All Projects](https://github.com)
+*   Coming Soon.
+*   Coming Soon.
 
 ## 🛠 Features
 *   **Fully Responsive**: Optimized for desktop, tablet, and mobile viewing.
