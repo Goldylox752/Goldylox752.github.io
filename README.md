@@ -1,20 +1,25 @@
-# 🚀 Project Title
-My website
+# 🚀 My Personal Website
+A responsive portfolio website built to showcase my projects and technical skills.
 
 ## 🛠 Features
-*   **Feature 1**: Java/HTML/CSS.
-*   **Feature 2**: New Features.
-*   **Responsive**: Works on mobile and desktop.
+*   **Mobile Friendly**: Fully responsive design that works on all screen sizes.
+*   **Live Hosting**: Deployed automatically via GitHub Pages.
+*   **Clean UI**: Modern aesthetic using custom CSS.
 
-## 📸 Screenshots
-![App Screenshot](URL_TO_IMAGE_HERE)
+## 📸 Screenshot
+![Website Preview](./screenshot.png) 
+*(Note: Upload a photo named screenshot.png to your repo to see it here!)*
+
+## 🔗 Live Demo
+[View my site live here!](https://yourusername.github.io)
 
 ## 💻 Tech Stack
-*   **Frontend**: HTML, CSS, JavaScript
-*   **Deployment**: [GitHub Pages](https://pages.github.com)
+*   **Language**: HTML5, CSS3
+*   **Version Control**: Git & GitHub
+*   **Hosting**: [GitHub Pages](https://pages.github.com)
 
-## ⚙️ Installation
-1. Clone the repo:
+## ⚙️ How to Run Locally
+1. Clone the repository:
    ```bash
    git clone https://github.com
 
