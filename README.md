@@ -50,5 +50,5 @@ To run this project locally:
 
 ## 📬 Contact Me
 *   **GitHub**: [@goldylox752](https://github.com)
-*   **LinkedIn**: [Byron Sanche](https://linkedin.com)
+*   **LinkedIn**: www.linkedin.com/in/byron-sanche-483214275
 
