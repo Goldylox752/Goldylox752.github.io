@@ -8,10 +8,10 @@ A responsive portfolio website built to showcase my projects and technical skill
 
 ## 📸 Screenshot
 ![Website Preview](./screenshot.png) 
-*(Note: Upload a photo named screenshot.png to your repo to see it here!)*
+*
 
 ## 🔗 Live Demo
-[View my site live here!](https://yourusername.github.io)
+[View my site live here!](https://Goldylox752.github.io)
 
 ## 💻 Tech Stack
 *   **Language**: HTML5, CSS3
