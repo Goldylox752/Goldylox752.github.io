@@ -6,9 +6,6 @@ A responsive portfolio website built to showcase my projects and technical skill
 *   **Live Hosting**: Deployed automatically via GitHub Pages.
 *   **Clean UI**: Modern aesthetic using custom CSS.
 
-## 🔗 Live Demo
-Coming Soon.
-
 ## 💻 Tech Stack
 *   **Language**: HTML5, CSS3
 *   **Version Control**: Git & GitHub
@@ -34,4 +31,3 @@ To run this project locally:
 ## 📬 Contact Me
 *   **GitHub**: [@goldylox752](https://github.com)
 *   **LinkedIn**: www.linkedin.com/in/byron-sanche-483214275
-
