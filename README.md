@@ -26,7 +26,7 @@ A responsive portfolio website built to showcase my projects and technical skill
 A sleek, responsive website designed to showcase my journey, projects, and technical expertise.
 
 ## 🚀 Quick Links
-*   [🔗 Visit Live Site](https://yourusername.github.io)
+*   [🔗 Visit Live Site](https://goldylox752.github.io)
 *   [📂 View All Projects](https://github.com)
 
 ## 🛠 Features
@@ -40,7 +40,7 @@ A sleek, responsive website designed to showcase my journey, projects, and techn
 ![JavaScript](https://img.shields.io)
 
 ## 📸 Preview
-![Project Screenshot](./screenshot.png)
+
 > 
 
 ## ⚙️ Setup
