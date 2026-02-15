@@ -1,9 +1,9 @@
 # 🚀 Project Title
-A brief, one-sentence description of what this project does.
+My website
 
 ## 🛠 Features
-*   **Feature 1**: Describe what it does.
-*   **Feature 2**: Highlight a key benefit.
+*   **Feature 1**: Java/HTML/CSS.
+*   **Feature 2**: New Features.
 *   **Responsive**: Works on mobile and desktop.
 
 ## 📸 Screenshots
@@ -17,3 +17,4 @@ A brief, one-sentence description of what this project does.
 1. Clone the repo:
    ```bash
    git clone https://github.com
+
