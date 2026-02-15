@@ -35,9 +35,11 @@ A sleek, responsive website designed to showcase my journey, projects, and techn
 *   **Lightning Fast**: Minimalist code for rapid loading speeds via [GitHub Pages](https://pages.github.com).
 
 ## 💻 Tech Stack
-![HTML5](https://img.shields.io)
-![CSS3](https://img.shields.io)
 ![JavaScript](https://img.shields.io)
+![React](https://img.shields.io)
+![Node.js](https://img.shields.io)
+![TailwindCSS](https://img.shields.io)
+
 
 ## 📸 Preview
 
