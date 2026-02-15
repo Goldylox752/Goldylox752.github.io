@@ -7,7 +7,7 @@ A responsive portfolio website built to showcase my projects and technical skill
 *   **Clean UI**: Modern aesthetic using custom CSS.
 
 ## 📸 Screenshot
-![Website Preview](./screenshot.png) 
+
 *
 
 ## 🔗 Live Demo
