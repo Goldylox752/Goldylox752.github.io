@@ -6,10 +6,6 @@ A responsive portfolio website built to showcase my projects and technical skill
 *   **Live Hosting**: Deployed automatically via GitHub Pages.
 *   **Clean UI**: Modern aesthetic using custom CSS.
 
-## 📸 Screenshot
-
-Coming Soon.
-
 ## 🔗 Live Demo
 Coming Soon.
 
@@ -25,25 +21,10 @@ Coming Soon.
 # 🌐 My Digital Portfolio
 A sleek, responsive website designed to showcase my journey, projects, and technical expertise.
 
-## 🚀 Quick Links
-*   Coming Soon.
-*   Coming Soon.
-
 ## 🛠 Features
 *   **Fully Responsive**: Optimized for desktop, tablet, and mobile viewing.
 *   **SEO Friendly**: Structured with semantic HTML for better search visibility.
 *   **Lightning Fast**: Minimalist code for rapid loading speeds via [GitHub Pages](https://pages.github.com).
-
-## 💻 Tech Stack
-![JavaScript](https://img.shields.io)
-![React](https://img.shields.io)
-![Node.js](https://img.shields.io)
-![TailwindCSS](https://img.shields.io)
-
-
-## 📸 Preview
-
-Coming Soon.
 
 ## ⚙️ Setup
 To run this project locally:
