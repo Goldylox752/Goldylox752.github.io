@@ -11,7 +11,7 @@ A responsive portfolio website built to showcase my projects and technical skill
 Coming Soon.
 
 ## 🔗 Live Demo
-[View my site live here!](https://Goldylox752.github.io)
+Coming Soon.
 
 ## 💻 Tech Stack
 *   **Language**: HTML5, CSS3
