@@ -36,3 +36,6 @@ To run this project locally:
 <a href='https://github.com/samadpls/Programing-Gifs'>
 <img align='Centre' src='https://programing-gifs.vercel.app/' widht=100 height=300 alt='samadpls/Programming-Gifs'></a>
   
+# My Latest Blog Posts
+<!-- BLOG-POST-LIST:START -->
+<!-- BLOG-POST-LIST:END -->
