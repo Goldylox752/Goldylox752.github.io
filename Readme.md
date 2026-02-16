@@ -36,6 +36,6 @@ To run this project locally:
 <a href='https://github.com/samadpls/Programing-Gifs'>
 <img align='Centre' src='https://programing-gifs.vercel.app/' widht=50 height=150 alt='samadpls/Programming-Gifs'></a>
   
-
+![License](https://img.shields.io)
   
 
