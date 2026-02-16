@@ -32,7 +32,6 @@ To run this project locally:
 *   **GitHub**: [@goldylox752](https://github.com)
 *   **LinkedIn**: www.linkedin.com/in/byron-sanche-483214275
 
-
 <a href='https://github.com/samadpls/Programing-Gifs'>
 <img align='Centre' src='https://programing-gifs.vercel.app/' widht=50 height=150 alt='samadpls/Programming-Gifs'></a>
   
