@@ -3,7 +3,6 @@ A responsive portfolio website built to showcase my projects and technical skill
 
 ## 🛠 Features
 *   **Mobile Friendly**: Fully responsive design that works on all screen sizes.
-*   **Live Hosting**: Deployed automatically via GitHub Pages.
 *   **Clean UI**: Modern aesthetic using custom CSS.
 
 ## 💻 Tech Stack
