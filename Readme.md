@@ -39,6 +39,6 @@ To run this project locally:
 - name: Update GitHub Activity
   uses: TheDanniCraft/activity-log@v1
   with:
-    GITHUB_USERNAME: "Goldylox752"
+    GITHUB_USERNAME: "your_username"
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
