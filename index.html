@@ -79,8 +79,10 @@
         <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
 
+    <!-- External config for the GIPHY_KEY -->
     <script src="config.js"></script>
     <script>
+        // Use key from config.js or fallback to empty string
         const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
