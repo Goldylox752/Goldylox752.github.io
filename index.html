@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <title>BrandGIF Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fixed Poppins Font Link -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
@@ -43,17 +42,21 @@
     <!-- Results Grid -->
     <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
 
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="hidden fixed bottom-10 right-10 bg-[#FBBF24] border-[5px] border-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-50 active:scale-95">
+        <svg xmlns="http://www.w3.org" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6""")/>></svg>
+    </button>
+
     <script src="config.js"></script>
     <script>
         const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
-        
-        // FIXED ENDPOINTS: Added the /v1/gifs/ search and trending paths
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
         const searchBox = document.getElementById('search-box');
         const submitBtn = document.getElementById('submit-btn');
         const resultsGrid = document.getElementById('gif-results');
+        const backToTopBtn = document.getElementById('back-to-top');
 
         let currentOffset = 0;
         let isFetching = false;
@@ -92,8 +95,7 @@
 
         function renderGifs(gifs, append) {
             const html = gifs.map(gif => `
-                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer" 
-                     onclick="copyToClipboard('${gif.images.original.url}')">
+                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer" onclick="copyToClipboard('${gif.images.original.url}')">
                     <img src="${gif.images.fixed_height.url}" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
                     <p class="mt-2 font-bold text-xs uppercase truncate">${gif.title || 'Untitled Asset'}</p>
                 </div>
@@ -104,9 +106,20 @@
         }
 
         window.addEventListener('scroll', () => {
+            // Infinite scroll trigger
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
                 fetchGifs(currentQuery, !currentQuery, true);
             }
+            // Back to top visibility
+            if (window.scrollY > 800) {
+                backToTopBtn.classList.remove('hidden');
+            } else {
+                backToTopBtn.classList.add('hidden');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         function copyToClipboard(url) {
@@ -131,7 +144,6 @@
         submitBtn.addEventListener('click', handleSearch);
         window.quickSearch = (cat) => { searchBox.value = cat; fetchGifs(cat); };
 
-        // Start by loading trending
         fetchGifs('', true);
     </script>
 </body>
