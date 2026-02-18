@@ -1,5 +1,5 @@
 # 🚀 My Personal Portfolio
-A high-performance, responsive portfolio engine featuring a Neo-Brutalist UI and real-time asset iscovery.
+A high-performance, responsive portfolio engine featuring a Neo-Brutalist UI and real-time asset discovery.
 
 ---
 
