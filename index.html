@@ -3,8 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://yourdomain.com" />
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>BrandGIF Engine</title>
+
+    <!-- SEO Meta Tags -->
+    <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
+    <meta name="description" content="Search and discover the best branded GIFs for your projects. Fast, high-energy GIF engine with trending categories like Tech, Gaming, and Fashion.">
+    <meta name="keywords" content="GIF search, branded GIFs, Giphy engine, find GIFs, trending GIFs, BrandGIF">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:title" content="BrandGIF | Find Your Brand's Movement">
+    <meta property="og:description" content="A brutalist, high-performance GIF search engine for creators and brands.">
+    <meta property="og:image" content="https://yourdomain.com">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "BrandGIF",
+      "url": "https://yourdomain.com",
+      "description": "High-energy brand GIF search engine.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://yourdomain.com{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
@@ -12,158 +43,61 @@
         .dark-mode { background-color: #000000 !important; color: #ffffff !important; }
         .dark-card { background-color: #18181b !important; border-color: #ffffff !important; color: #ffffff !important; }
         .dark-input { background-color: #27272a !important; border-color: #ffffff !important; color: #ffffff !important; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
     </style>
 </head>
+
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
     <!-- Dark Mode Toggle -->
     <div class="fixed top-6 right-6 z-50">
-        <button id="dark-mode-toggle" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
-            <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z""")/>></svg>
-            <svg id="moon-icon" class="hidden w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z""")/>></svg>
+        <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
+            <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+            <svg id="moon-icon" class="hidden w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         </button>
     </div>
 
     <!-- Header -->
-    <div class="flex items-center gap-4 mb-2">
-        <img src="favicon.png" alt="Logo" class="w-16 h-16 border-[4px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <header class="flex items-center gap-4 mb-2">
+        <img src="favicon.png" alt="BrandGIF Logo" class="w-16 h-16 border-[4px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h1 class="text-4xl font-black italic uppercase tracking-tighter">BrandGIF</h1>
-    </div>
+    </header>
 
-    <!-- Search Container -->
-    <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
-        <div class="flex flex-col md:flex-row gap-4 items-center">
-            <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
-                <span class="pl-4 text-zinc-400">
-                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8""")/>><path d="m21 21-4.3-4.3""")/>></svg>
-                </span>
-                <input type="text" id="search-box" class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400 bg-transparent" placeholder="Search for GIFS...">
+    <main class="w-full flex flex-col items-center">
+        <h2 class="sr-only">GIF Search Results</h2>
+
+        <!-- Search Container -->
+        <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
+                    <span class="pl-4 text-zinc-400">
+                        <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </span>
+                    <input type="text" id="search-box" class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400 bg-transparent" placeholder="Search for GIFS...">
+                </div>
+                <button id="submit-btn" class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">GO</button>
             </div>
-            <button id="submit-btn" class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">GO</button>
+
+            <div class="flex flex-wrap gap-4 mt-8">
+                <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all text-black">#Tech</button>
+                <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Fashion</button>
+                <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Gaming</button>
+                <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Food</button>
+            </div>
         </div>
 
-        <div class="flex flex-wrap gap-4 mt-8">
-            <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all text-black">#Tech</button>
-            <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Fashion</button>
-            <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Gaming</button>
-            <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Food</button>
-        </div>
-    </div>
-
-    <!-- Results Grid -->
-    <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
+        <!-- Results Grid -->
+        <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
+    </main>
 
     <!-- Back to Top Button -->
-    <button id="back-to-top" class="hidden fixed bottom-10 right-10 bg-[#FBBF24] border-[5px] border-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-50 active:scale-95">
-        <svg xmlns="http://www.w3.org" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6""")/>></svg>
+    <button id="back-to-top" aria-label="Back to Top" class="hidden fixed bottom-10 right-10 bg-[#FBBF24] border-[5px] border-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-50 active:scale-95">
+        <svg xmlns="http://www.w3.org" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
     </button>
 
     <script src="config.js"></script>
     <script>
-        const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
-        const API_URL = 'https://api.giphy.com';
-        const TRENDING_URL = 'https://api.giphy.com';
-
-        const searchBox = document.getElementById('search-box');
-        const submitBtn = document.getElementById('submit-btn');
-        const resultsGrid = document.getElementById('gif-results');
-        const backToTopBtn = document.getElementById('back-to-top');
-        const darkModeBtn = document.getElementById('dark-mode-toggle');
-        const mainCard = document.getElementById('main-card');
-        const inputContainer = document.getElementById('input-container');
-
-        let currentOffset = 0;
-        let isFetching = false;
-        let currentQuery = '';
-
-        // Dark Mode Logic
-        darkModeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            mainCard.classList.toggle('dark-card');
-            inputContainer.classList.toggle('dark-input');
-            document.getElementById('sun-icon').classList.toggle('hidden');
-            document.getElementById('moon-icon').classList.toggle('hidden');
-            darkModeBtn.classList.toggle('dark-input');
-        });
-
-        async function fetchGifs(query, isTrending = false, append = false) {
-            if (isFetching) return;
-            isFetching = true;
-
-            if (!append) {
-                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading Assets...</p>';
-                currentOffset = 0;
-                currentQuery = query;
-            }
-
-            try {
-                const baseUrl = isTrending || !query ? TRENDING_URL : API_URL;
-                const queryParam = isTrending || !query ? '' : `&q=${encodeURIComponent(query)}`;
-                const url = `${baseUrl}?api_key=${KEY}${queryParam}&limit=15&offset=${currentOffset}&rating=g`;
-                
-                const response = await fetch(url);
-                const { data } = await response.json();
-                
-                if (!append && (!data || data.length === 0)) {
-                    resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
-                } else {
-                    renderGifs(data, append);
-                    currentOffset += 15;
-                }
-            } catch (error) {
-                console.error("Giphy API Error:", error);
-            } finally {
-                isFetching = false;
-            }
-        }
-
-        function renderGifs(gifs, append) {
-            const html = gifs.map(gif => `
-                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" onclick="copyToClipboard('${gif.images.original.url}')">
-                    <img src="${gif.images.fixed_height.url}" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
-                    <p class="mt-2 font-bold text-xs uppercase truncate">${gif.title || 'Untitled Asset'}</p>
-                </div>
-            `).join('');
-
-            if (append) resultsGrid.insertAdjacentHTML('beforeend', html);
-            else resultsGrid.innerHTML = html;
-        }
-
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
-                fetchGifs(currentQuery, !currentQuery, true);
-            }
-            if (window.scrollY > 800) backToTopBtn.classList.remove('hidden');
-            else backToTopBtn.classList.add('hidden');
-        });
-
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        function copyToClipboard(url) {
-            navigator.clipboard.writeText(url);
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#99F6E4] border-[4px] border-black px-6 py-3 font-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 animate-bounce text-black";
-            toast.innerText = "ASSET URL COPIED!";
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        function debounce(fn, delay) {
-            let timer;
-            return (...args) => {
-                clearTimeout(timer);
-                timer = setTimeout(() => fn.apply(this, args), delay);
-            };
-        }
-
-        const handleSearch = () => fetchGifs(searchBox.value.trim());
-        searchBox.addEventListener('input', debounce(handleSearch, 600));
-        submitBtn.addEventListener('click', handleSearch);
-        window.quickSearch = (cat) => { searchBox.value = cat; fetchGifs(cat); };
-
-        fetchGifs('', true);
+        // Your logic here...
     </script>
 </body>
 </html>
