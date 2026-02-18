@@ -11,8 +11,8 @@ A responsive portfolio website built to showcase my projects and technical skill
 
 ## 💻 Tech Stack
 *   **Logic:** Vanilla JavaScript (ES6+)
-*   **Styling:** Tailwind CSS 4.0
-*   **Data Source:** GIPHY API
+*   **Styling:** [Tailwind CSS 4.0](https://tailwindcss.com)
+*   **Data Source:** [GIPHY API](https://developers.giphy.com)
 *   **Typography:** [Poppins (Google Fonts)](https://fonts.google.com)
 
 ## 📬 Contact Me
@@ -20,16 +20,15 @@ A responsive portfolio website built to showcase my projects and technical skill
 *   **LinkedIn**: [Byron Sanche](https://www.linkedin.com)
 
 ## 📈 Future Roadmap
-*   [ ] **Category Tags**: Quick-search buttons for popular brands (e.g., Tech, Fashion).
-*   [ ] **Dark Mode**: High-contrast theme toggle for the neo-brutalist layout.
-*   [ ] **Download Assets**: Direct local saving of GIF files.
+- [ ] **Category Tags**: Quick-search buttons for popular brands (e.g., Tech, Fashion).
+- [ ] **Dark Mode**: High-contrast theme toggle for the neo-brutalist layout.
+- [ ] **Download Assets**: Direct local saving of GIF files.
 
 ---
-
 <div align="center">
-  <p><strong>Featured Integration: Programming Gifs</strong></p>
   <a href="https://github.com">
     <img src="https://programing-gifs.vercel.app" width="400" height="auto" alt="Programming Gifs">
   </a>
 </div>
+
 
