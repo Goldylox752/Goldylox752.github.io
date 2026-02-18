@@ -8,10 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; }
+        .dark-mode { background-color: #000000 !important; color: #ffffff !important; }
+        .dark-card { background-color: #18181b !important; border-color: #ffffff !important; color: #ffffff !important; }
+        .dark-input { background-color: #27272a !important; border-color: #ffffff !important; color: #ffffff !important; }
     </style>
 </head>
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
+
+    <!-- Dark Mode Toggle -->
+    <div class="fixed top-6 right-6 z-50">
+        <button id="dark-mode-toggle" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
+            <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z""")/>></svg>
+            <svg id="moon-icon" class="hidden w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z""")/>></svg>
+        </button>
+    </div>
 
     <!-- Header -->
     <div class="flex items-center gap-4 mb-2">
@@ -20,22 +31,22 @@
     </div>
 
     <!-- Search Container -->
-    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4">
+    <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
         <div class="flex flex-col md:flex-row gap-4 items-center">
-            <div class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center">
+            <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
                 <span class="pl-4 text-zinc-400">
                     <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8""")/>><path d="m21 21-4.3-4.3""")/>></svg>
                 </span>
-                <input type="text" id="search-box" class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400" placeholder="Search for GIFS...">
+                <input type="text" id="search-box" class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400 bg-transparent" placeholder="Search for GIFS...">
             </div>
             <button id="submit-btn" class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">GO</button>
         </div>
 
         <div class="flex flex-wrap gap-4 mt-8">
-            <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all">#Tech</button>
-            <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Fashion</button>
-            <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Gaming</button>
-            <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Food</button>
+            <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all text-black">#Tech</button>
+            <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Fashion</button>
+            <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Gaming</button>
+            <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Food</button>
         </div>
     </div>
 
@@ -57,10 +68,23 @@
         const submitBtn = document.getElementById('submit-btn');
         const resultsGrid = document.getElementById('gif-results');
         const backToTopBtn = document.getElementById('back-to-top');
+        const darkModeBtn = document.getElementById('dark-mode-toggle');
+        const mainCard = document.getElementById('main-card');
+        const inputContainer = document.getElementById('input-container');
 
         let currentOffset = 0;
         let isFetching = false;
         let currentQuery = '';
+
+        // Dark Mode Logic
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            mainCard.classList.toggle('dark-card');
+            inputContainer.classList.toggle('dark-input');
+            document.getElementById('sun-icon').classList.toggle('hidden');
+            document.getElementById('moon-icon').classList.toggle('hidden');
+            darkModeBtn.classList.toggle('dark-input');
+        });
 
         async function fetchGifs(query, isTrending = false, append = false) {
             if (isFetching) return;
@@ -95,7 +119,7 @@
 
         function renderGifs(gifs, append) {
             const html = gifs.map(gif => `
-                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer" onclick="copyToClipboard('${gif.images.original.url}')">
+                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" onclick="copyToClipboard('${gif.images.original.url}')">
                     <img src="${gif.images.fixed_height.url}" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
                     <p class="mt-2 font-bold text-xs uppercase truncate">${gif.title || 'Untitled Asset'}</p>
                 </div>
@@ -106,16 +130,11 @@
         }
 
         window.addEventListener('scroll', () => {
-            // Infinite scroll trigger
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
                 fetchGifs(currentQuery, !currentQuery, true);
             }
-            // Back to top visibility
-            if (window.scrollY > 800) {
-                backToTopBtn.classList.remove('hidden');
-            } else {
-                backToTopBtn.classList.add('hidden');
-            }
+            if (window.scrollY > 800) backToTopBtn.classList.remove('hidden');
+            else backToTopBtn.classList.add('hidden');
         });
 
         backToTopBtn.addEventListener('click', () => {
@@ -125,7 +144,7 @@
         function copyToClipboard(url) {
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
-            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#99F6E4] border-[4px] border-black px-6 py-3 font-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 animate-bounce";
+            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#99F6E4] border-[4px] border-black px-6 py-3 font-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 animate-bounce text-black";
             toast.innerText = "ASSET URL COPIED!";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
