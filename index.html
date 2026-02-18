@@ -1,27 +1,62 @@
-<!-- ... keep your head and header the same ... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandGIF Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        /* Neo-Brutalist Hard Shadow Utility */
+        .neo-shadow { shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]; }
+    </style>
+</head>
+<body class="bg-zinc-200 min-h-screen flex items-center justify-center p-6">
 
-<body class="bg-zinc-50 text-zinc-900 selection:bg-yellow-300">
-
-    <header class="p-8 border-b-4 border-black bg-white sticky top-0 z-50">
-        <!-- ... your title and search bar code here ... -->
-    </header>
-
-    <main class="max-w-7xl mx-auto p-8">
+    <!-- Main Container Card -->
+    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full">
         
-      <!-- Exact Match Category Tags -->
-<div class="flex flex-wrap gap-4 mb-8">
-    <button onclick="quickSearch('Tech')" class="bg-white border-4 border-black px-6 py-2 rounded-xl font-bold shadow-[4px_4px_0px_0px_black] hover:translate-y-1 hover:shadow-none transition-all">#Tech</button>
-    <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-4 border-black px-6 py-2 rounded-xl font-bold shadow-[4px_4px_0px_0px_black] hover:translate-y-1 hover:shadow-none transition-all">#Fashion</button>
-    <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-4 border-black px-6 py-2 rounded-xl font-bold shadow-[4px_4px_0px_0px_black] hover:translate-y-1 hover:shadow-none transition-all">#Gaming</button>
-    <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-4 border-black px-6 py-2 rounded-xl font-bold shadow-[4px_4px_0px_0px_black] hover:translate-y-1 hover:shadow-none transition-all">#Food</button>
-</div>
+        <!-- Search Bar Row -->
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+            
+            <!-- Search Input Container -->
+            <div class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center">
+                <span class="pl-4 text-zinc-400">
+                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8""")/>><path d="m21 21-4.3-4.3""")/>></svg>
+                </span>
+                <input type="text" id="search-box" 
+                       class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400" 
+                       placeholder="Search for GIFS...">
+            </div>
 
+            <!-- GO Button -->
+            <button id="submit-btn" 
+                    class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">
+                GO
+            </button>
+        </div>
 
-        <!-- Loader and Results below -->
-        <div id="loader" class="hidden text-center py-10">...</div>
-        <div id="gif-results" class="gif-grid"></div>
-    </main>
+        <!-- Category Tags Row -->
+        <div class="flex flex-wrap gap-4 mt-8">
+            <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all">#Tech</button>
+            
+            <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Fashion</button>
+            
+            <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Gaming</button>
+            
+            <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Food</button>
+        </div>
+    </div>
 
-    <!-- ... footer and script ... -->
+    <!-- Script connection to your app.js logic -->
+    <script>
+        function quickSearch(category) {
+            const box = document.getElementById('search-box');
+            box.value = category;
+            // Assuming your fetchGifs() exists in your external app.js
+            if(typeof fetchGifs === "function") fetchGifs();
+        }
+    </script>
 </body>
-
+</html>
