@@ -32,9 +32,12 @@ One-Click Copy: Instantly copy GIF URLs to your clipboard.
 Category Tags: Quick-search buttons for popular brands (e.g., Tech, Fashion, Food).
 Dark Mode: High-contrast dark theme for the neo-brutalist layout.
 
-<a href='https://github.com/samadpls/Programing-Gifs'>
-<img align='Centre' src='https://programing-gifs.vercel.app/' widht=50 height=150 alt='samadpls/Programming-Gifs'></a>
-  
+<div align="center">
+  <a href="https://github.com">
+    <img src="https://programing-gifs.vercel.app/" width="400" height="auto" alt="Programming Gifs">
+  </a>
+</div>
+
 
 
   
