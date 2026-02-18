@@ -8,22 +8,19 @@
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        /* Neo-Brutalist Hard Shadow Utility */
-        .neo-shadow { shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]; }
     </style>
 </head>
-<body class="bg-zinc-200 min-h-screen flex items-center justify-center p-6">
+<body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
     <!-- Main Container Card -->
-    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full">
+    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-10">
         
         <!-- Search Bar Row -->
         <div class="flex flex-col md:flex-row gap-4 items-center">
-            
             <!-- Search Input Container -->
             <div class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center">
                 <span class="pl-4 text-zinc-400">
-                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8""")/>><path d="m21 21-4.3-4.3""")/>></svg>
+                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </span>
                 <input type="text" id="search-box" 
                        class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400" 
@@ -40,23 +37,76 @@
         <!-- Category Tags Row -->
         <div class="flex flex-wrap gap-4 mt-8">
             <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all">#Tech</button>
-            
             <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Fashion</button>
-            
             <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Gaming</button>
-            
             <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all">#Food</button>
         </div>
     </div>
 
-    <!-- Script connection to your app.js logic -->
+    <!-- GIF Display Grid -->
+    <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl">
+        <!-- Resulting GIFs appear here -->
+    </div>
+
     <script>
-        function quickSearch(category) {
-            const box = document.getElementById('search-box');
-            box.value = category;
-            // Assuming your fetchGifs() exists in your external app.js
-            if(typeof fetchGifs === "function") fetchGifs();
+        // Configuration
+        const GIPHY_KEY = 'YOUR_API_KEY'; // ENTER YOUR KEY HERE
+        const API_URL = 'https://api.giphy.com';
+
+        // DOM Elements
+        const searchBox = document.getElementById('search-box');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsGrid = document.getElementById('gif-results');
+
+        // Debounce Logic
+        function debounce(fn, delay) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
         }
+
+        // Fetch Logic
+        async function fetchGifs(query) {
+            if (!query) return;
+            resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase">Loading Assets...</p>';
+
+            try {
+                const response = await fetch(`${API_URL}?api_key=${GIPHY_KEY}&q=${query}&limit=15&rating=g`);
+                const { data } = await response.json();
+                renderGifs(data);
+            } catch (error) {
+                resultsGrid.innerHTML = '<p class="text-red-600 font-black">API ERROR: Check console</p>';
+            }
+        }
+
+        // Render Logic
+        function renderGifs(gifs) {
+            resultsGrid.innerHTML = gifs.map(gif => `
+                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer" 
+                     onclick="copyToClipboard('${gif.images.original.url}')">
+                    <img src="${gif.images.fixed_height.url}" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
+                    <p class="mt-2 font-bold text-xs uppercase truncate">${gif.title || 'Untitled Asset'}</p>
+                </div>
+            `).join('');
+        }
+
+        // Clipboard Feature
+        function copyToClipboard(url) {
+            navigator.clipboard.writeText(url);
+            alert('GIF URL COPIED TO CLIPBOARD!');
+        }
+
+        // Event Listeners
+        const handleSearch = () => fetchGifs(searchBox.value);
+        searchBox.addEventListener('input', debounce(handleSearch, 600));
+        submitBtn.addEventListener('click', handleSearch);
+        
+        window.quickSearch = (category) => {
+            searchBox.value = category;
+            fetchGifs(category);
+        };
     </script>
 </body>
 </html>
