@@ -8,7 +8,7 @@
 
     <!-- SEO Meta Tags -->
     <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
-    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine with trending categories.">
+    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine with trending categories like Tech, Gaming, and Fashion.">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -40,6 +40,7 @@
 
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
+    <!-- Dark Mode Toggle -->
     <div class="fixed top-6 right-6 z-50">
         <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
             <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
@@ -92,7 +93,6 @@
         let currentOffset = 0;
         let isFetching = false;
 
-        // 1. Toast Notification
         function showToast(message) {
             const toast = document.createElement('div');
             toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-2xl border-[4px] border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] font-bold z-[100] animate-toast";
@@ -106,7 +106,6 @@
             showToast("LINK COPIED! ⚡");
         }
 
-        // 2. Dark Mode
         darkModeBtn.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             document.getElementById('main-card').classList.toggle('dark-card');
@@ -115,7 +114,6 @@
             document.getElementById('moon-icon').classList.toggle('hidden');
         });
 
-        // 3. Search Logic
         function updateURL(query) {
             const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}` : window.location.pathname;
             window.history.pushState({ path: newUrl }, '', newUrl);
@@ -135,7 +133,6 @@
         submitBtn.addEventListener('click', performSearch);
         searchBox.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
 
-        // 4. API Fetching
         async function fetchGifs(query, isTrending = false, append = false) {
             if (isFetching) return;
             isFetching = true;
@@ -177,7 +174,6 @@
             else resultsGrid.innerHTML = nodes;
         }
 
-        // 5. Infinite Scroll
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !isFetching && currentOffset > 0) {
                 const query = new URLSearchParams(window.location.search).get('q');
@@ -186,7 +182,6 @@
         }, { threshold: 0.1 });
         observer.observe(document.getElementById('scroll-sentinel'));
 
-        // Init
         window.addEventListener('DOMContentLoaded', () => {
             const query = new URLSearchParams(window.location.search).get('q');
             if (query) { searchBox.value = query; fetchGifs(query); }
