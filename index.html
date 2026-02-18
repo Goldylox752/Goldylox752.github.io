@@ -6,11 +6,9 @@
     <link rel="canonical" href="https://yourdomain.com" />
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <!-- SEO Meta Tags -->
     <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
-    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine with trending categories like Tech, Gaming, and Fashion.">
+    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine.">
     
-    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -40,7 +38,6 @@
 
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
-    <!-- Dark Mode Toggle -->
     <div class="fixed top-6 right-6 z-50">
         <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
             <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
@@ -54,8 +51,6 @@
     </header>
 
     <main class="w-full flex flex-col items-center">
-        <h2 class="sr-only">GIF Search Results</h2>
-
         <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
             <div class="flex flex-col md:flex-row gap-4 items-center">
                 <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
@@ -66,7 +61,6 @@
                 </div>
                 <button id="submit-btn" class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">GO</button>
             </div>
-
             <div class="flex flex-wrap gap-4 mt-8">
                 <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all text-black">#Tech</button>
                 <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Fashion</button>
@@ -74,15 +68,18 @@
                 <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Food</button>
             </div>
         </div>
-
         <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
         <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
 
+    <!-- Try to load local config if it exists -->
     <script src="config.js"></script>
     <script>
-        // FIXED ENDPOINTS: Added /v1/gifs/search and /v1/gifs/trending
-        const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
+        /** 
+         * Logic to handle Key from config.js (local) or Vercel Env Var
+         * On Vercel, make sure you add GIPHY_KEY in project settings.
+         */
+        const KEY = (typeof GIPHY_KEY !== 'undefined') ? GIPHY_KEY : '';
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
@@ -115,37 +112,17 @@
             document.getElementById('moon-icon').classList.toggle('hidden');
         });
 
-        function updateURL(query) {
-            const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}` : window.location.pathname;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-        }
-
-        async function performSearch() {
-            const query = searchBox.value.trim();
-            updateURL(query);
-            fetchGifs(query, !query);
-        }
-
-        function quickSearch(tag) {
-            searchBox.value = tag;
-            performSearch();
-        }
-
-        submitBtn.addEventListener('click', performSearch);
-        searchBox.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
-
         async function fetchGifs(query, isTrending = false, append = false) {
-            if (isFetching) return;
+            if (isFetching || !KEY) return;
             isFetching = true;
 
             if (!append) {
-                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading Assets...</p>';
+                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading...</p>';
                 currentOffset = 0;
             }
 
             try {
-                // Constructing the URL with the corrected path
-                const url = isTrending || !query
+                const url = isTrending 
                     ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=pg`
                     : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
                 
@@ -158,9 +135,8 @@
                     renderGifs(data, append);
                     currentOffset += 15;
                 }
-            } catch (error) {
-                console.error("Giphy API Error:", error);
-                resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500">API Connection Error</p>';
+            } catch (err) {
+                console.error(err);
             } finally {
                 isFetching = false;
             }
@@ -177,6 +153,21 @@
             else resultsGrid.innerHTML = nodes;
         }
 
+        function performSearch() {
+            const query = searchBox.value.trim();
+            const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}` : window.location.pathname;
+            window.history.pushState({}, '', newUrl);
+            fetchGifs(query, !query);
+        }
+
+        function quickSearch(tag) {
+            searchBox.value = tag;
+            performSearch();
+        }
+
+        submitBtn.addEventListener('click', performSearch);
+        searchBox.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !isFetching && currentOffset > 0) {
                 const query = new URLSearchParams(window.location.search).get('q');
@@ -187,12 +178,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const query = new URLSearchParams(window.location.search).get('q');
-            if (query) { 
-                searchBox.value = query; 
-                fetchGifs(query); 
-            } else { 
-                fetchGifs('', true); 
-            }
+            if (query) { searchBox.value = query; fetchGifs(query); }
+            else { fetchGifs('', true); }
         });
     </script>
 </body>
