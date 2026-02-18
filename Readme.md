@@ -31,6 +31,5 @@ A high-performance, responsive portfolio engine featuring a Neo-Brutalist UI and
 ## 📬 Contact Me
 *   **GitHub**: [Goldylox752](https://github.com/Goldylox752/Goldylox752.github.io)
 *   **LinkedIn**: [Byron Sanche](https://www.linkedin.com)
-*   **Portfolio**:
 ---
 **License:** [MIT](https://choosealicense.com)
