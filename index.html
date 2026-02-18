@@ -9,20 +9,6 @@
     <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
     <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine.">
     
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "BrandGIF",
-      "url": "https://yourdomain.com",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://yourdomain.com{search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
@@ -72,14 +58,11 @@
         <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
 
-    <!-- Try to load local config if it exists -->
     <script src="config.js"></script>
     <script>
-        /** 
-         * Logic to handle Key from config.js (local) or Vercel Env Var
-         * On Vercel, make sure you add GIPHY_KEY in project settings.
-         */
         const KEY = (typeof GIPHY_KEY !== 'undefined') ? GIPHY_KEY : '';
+        
+        // FIXED URLS
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
@@ -99,11 +82,6 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-        function copyGif(url) {
-            navigator.clipboard.writeText(url);
-            showToast("LINK COPIED! ⚡");
-        }
-
         darkModeBtn.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             document.getElementById('main-card').classList.toggle('dark-card');
@@ -113,11 +91,15 @@
         });
 
         async function fetchGifs(query, isTrending = false, append = false) {
-            if (isFetching || !KEY) return;
-            isFetching = true;
+            if (isFetching) return;
+            if (!KEY) {
+                resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500 italic">API KEY MISSING: Update Vercel Settings or config.js</p>';
+                return;
+            }
 
+            isFetching = true;
             if (!append) {
-                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading...</p>';
+                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading Assets...</p>';
                 currentOffset = 0;
             }
 
@@ -127,16 +109,16 @@
                     : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
                 
                 const response = await fetch(url);
-                const { data } = await response.json();
+                const result = await response.json();
                 
-                if (!append && (!data || data.length === 0)) {
+                if (!append && (!result.data || result.data.length === 0)) {
                     resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
                 } else {
-                    renderGifs(data, append);
+                    renderGifs(result.data, append);
                     currentOffset += 15;
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Fetch Error:", err);
             } finally {
                 isFetching = false;
             }
@@ -144,7 +126,7 @@
 
         function renderGifs(gifs, append) {
             const nodes = gifs.map(gif => `
-                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" onclick="copyGif('${gif.images.original.url}')">
+                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" onclick="navigator.clipboard.writeText('${gif.images.original.url}'); showToast('LINK COPIED! ⚡')">
                     <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
                 </div>
             `).join('');
