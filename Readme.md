@@ -23,6 +23,3 @@ A responsive portfolio website built to showcase my projects and technical skill
 - [ ] **Category Tags**: Quick-search buttons for popular brands (e.g., Tech, Fashion).
 - [ ] **Dark Mode**: High-contrast theme toggle for the neo-brutalist layout.
 - [ ] **Download Assets**: Direct local saving of GIF files.
-
-
-
