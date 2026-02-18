@@ -28,9 +28,7 @@ A sleek, responsive website designed to showcase my journey, projects, and techn
 *   **LinkedIn**: www.linkedin.com/in/byron-sanche-483214275
 
 ##  📈 Future Roadmap
-One-Click Copy: Instantly copy GIF URLs to your clipboard.
-Category Tags: Quick-search buttons for popular brands (e.g., Tech, Fashion, Food).
-Dark Mode: High-contrast dark theme for the neo-brutalist layout.
+
 
 <div align="center">
   <a href="https://github.com">
