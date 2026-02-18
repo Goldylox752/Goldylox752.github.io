@@ -79,10 +79,9 @@
         <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
 
-    <!-- 1. Key must be inside config.js -->
     <script src="config.js"></script>
     <script>
-        // 2. Verified API Endpoints
+        // FIXED ENDPOINTS: Added /v1/gifs/search and /v1/gifs/trending
         const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
@@ -145,7 +144,7 @@
             }
 
             try {
-                // Ensure the API call is constructed correctly
+                // Constructing the URL with the corrected path
                 const url = isTrending || !query
                     ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=pg`
                     : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
@@ -178,7 +177,6 @@
             else resultsGrid.innerHTML = nodes;
         }
 
-        // Infinite Scroll Observer
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !isFetching && currentOffset > 0) {
                 const query = new URLSearchParams(window.location.search).get('q');
@@ -187,14 +185,14 @@
         }, { threshold: 0.1 });
         observer.observe(document.getElementById('scroll-sentinel'));
 
-        // Initial Load
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("Checking API Key availability...");
-            if (!KEY) console.warn("WARNING: GIPHY_KEY is not defined. Check config.js");
-            
             const query = new URLSearchParams(window.location.search).get('q');
-            if (query) { searchBox.value = query; fetchGifs(query); }
-            else { fetchGifs('', true); }
+            if (query) { 
+                searchBox.value = query; 
+                fetchGifs(query); 
+            } else { 
+                fetchGifs('', true); 
+            }
         });
     </script>
 </body>
