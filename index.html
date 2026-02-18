@@ -47,9 +47,12 @@
         <!-- Resulting GIFs appear here -->
     </div>
 
+    <!-- 1. LOAD THE SECRET KEY FIRST (Make sure config.js exists in the same folder!) -->
+    <script src="config.js"></script>
+
     <script>
-        // CONFIG: Correct API Paths
-        const GIPHY_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
+        // Use the GIPHY_KEY from config.js, but fallback for safety
+        const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : 'YOUR_BACKUP_KEY';
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
@@ -71,7 +74,7 @@
             try {
                 const baseUrl = isTrending ? TRENDING_URL : API_URL;
                 const queryParam = isTrending ? '' : `&q=${encodeURIComponent(query)}`;
-                const url = `${baseUrl}?api_key=${GIPHY_KEY}${queryParam}&limit=15&rating=g`;
+                const url = `${baseUrl}?api_key=${KEY}${queryParam}&limit=15&rating=g`;
                 
                 const response = await fetch(url);
                 const { data } = await response.json();
@@ -83,7 +86,7 @@
                 renderGifs(data);
             } catch (error) {
                 console.error(error);
-                resultsGrid.innerHTML = '<p class="text-red-600 font-black col-span-full text-center">API ERROR: Check console</p>';
+                resultsGrid.innerHTML = '<p class="text-red-600 font-black col-span-full text-center">API ERROR: Check config.js</p>';
             }
         }
 
@@ -103,8 +106,8 @@
         }
 
         const handleSearch = () => {
-            if(searchBox.value.trim() === "") fetchGifs('', true);
-            else fetchGifs(searchBox.value);
+            const val = searchBox.value.trim();
+            val === "" ? fetchGifs('', true) : fetchGifs(val);
         };
 
         searchBox.addEventListener('input', debounce(handleSearch, 600));
