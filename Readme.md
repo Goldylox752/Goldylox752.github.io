@@ -2,6 +2,7 @@
 A responsive portfolio website built to showcase my projects and technical skills.
 
 ## 🛠 Key Features
+   **Category Tags**: Quick-search buttons for popular brands (e.g., Tech, Fashion).
 *   **Neo-Brutalist Design** – High-impact UI built with [Tailwind CSS 4.0](https://tailwindcss.com) featuring bold borders and heavy shadows.
 *   **High-Performance Search** – Direct [GIPHY API](https://developers.giphy.com) integration for sub-second asset delivery.
 *   **Smart Debouncing** – Optimized JS logic to minimize API overhead and improve performance.
