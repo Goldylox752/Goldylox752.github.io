@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
     <title>BrandGIF Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fixed Poppins weights for that bold Neo-Brutalist look -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        .neo-shadow { shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]; }
     </style>
 </head>
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
+    <!-- Header with Your New Logo -->
+    <div class="flex items-center gap-4 mb-2">
+        <img src="favicon.png" alt="Logo" class="w-16 h-16 border-[4px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter">BrandGIF</h1>
+    </div>
+
     <!-- Main Container Card -->
-    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-10">
+    <div class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4">
         
         <!-- Search Bar Row -->
         <div class="flex flex-col md:flex-row gap-4 items-center">
             <div class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center">
                 <span class="pl-4 text-zinc-400">
-                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8""")/>><path d="m21 21-4.3-4.3""")/>></svg>
                 </span>
                 <input type="text" id="search-box" 
                        class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400" 
@@ -50,8 +56,10 @@
     <script src="config.js"></script>
 
     <script>
-        // FIXED ENDPOINTS
+        // Use the key from config.js
         const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
+        
+        // FIXED ENDPOINTS: Added /v1/gifs/...
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
@@ -83,7 +91,7 @@
         }
 
         function renderGifs(gifs) {
-            if (!gifs.length) {
+            if (!gifs || gifs.length === 0) {
                 resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
                 return;
             }
@@ -96,7 +104,6 @@
             `).join('');
         }
 
-        // Custom Toast Notification instead of alert
         function copyToClipboard(url) {
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
