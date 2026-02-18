@@ -8,16 +8,8 @@
 
     <!-- SEO Meta Tags -->
     <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
-    <meta name="description" content="Search and discover the best branded GIFs for your projects. Fast, high-energy GIF engine with trending categories like Tech, Gaming, and Fashion.">
-    <meta name="keywords" content="GIF search, branded GIFs, Giphy engine, find GIFs, trending GIFs, BrandGIF">
-
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourdomain.com">
-    <meta property="og:title" content="BrandGIF | Find Your Brand's Movement">
-    <meta property="og:description" content="A brutalist, high-performance GIF search engine for creators and brands.">
-    <meta property="og:image" content="https://yourdomain.com">
-
+    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine with trending categories.">
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -25,9 +17,6 @@
       "@type": "WebApplication",
       "name": "BrandGIF",
       "url": "https://yourdomain.com",
-      "description": "High-energy brand GIF search engine.",
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "Any",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://yourdomain.com{search_term_string}",
@@ -44,12 +33,13 @@
         .dark-card { background-color: #18181b !important; border-color: #ffffff !important; color: #ffffff !important; }
         .dark-input { background-color: #27272a !important; border-color: #ffffff !important; color: #ffffff !important; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        @keyframes toast-in { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .animate-toast { animation: toast-in 0.3s ease forwards; }
     </style>
 </head>
 
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
-    <!-- Dark Mode Toggle -->
     <div class="fixed top-6 right-6 z-50">
         <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90">
             <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
@@ -57,7 +47,6 @@
         </button>
     </div>
 
-    <!-- Header -->
     <header class="flex items-center gap-4 mb-2">
         <img src="favicon.png" alt="BrandGIF Logo" class="w-16 h-16 border-[4px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <h1 class="text-4xl font-black italic uppercase tracking-tighter">BrandGIF</h1>
@@ -66,7 +55,6 @@
     <main class="w-full flex flex-col items-center">
         <h2 class="sr-only">GIF Search Results</h2>
 
-        <!-- Search Container -->
         <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
             <div class="flex flex-col md:flex-row gap-4 items-center">
                 <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
@@ -86,18 +74,124 @@
             </div>
         </div>
 
-        <!-- Results Grid -->
         <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
+        <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
-
-    <!-- Back to Top Button -->
-    <button id="back-to-top" aria-label="Back to Top" class="hidden fixed bottom-10 right-10 bg-[#FBBF24] border-[5px] border-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-50 active:scale-95">
-        <svg xmlns="http://www.w3.org" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-    </button>
 
     <script src="config.js"></script>
     <script>
-        // Your logic here...
+        const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
+        const API_URL = 'https://api.giphy.com';
+        const TRENDING_URL = 'https://api.giphy.com';
+
+        const searchBox = document.getElementById('search-box');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsGrid = document.getElementById('gif-results');
+        const darkModeBtn = document.getElementById('dark-mode-toggle');
+
+        let currentOffset = 0;
+        let isFetching = false;
+
+        // 1. Toast Notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-2xl border-[4px] border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] font-bold z-[100] animate-toast";
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function copyGif(url) {
+            navigator.clipboard.writeText(url);
+            showToast("LINK COPIED! ⚡");
+        }
+
+        // 2. Dark Mode
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('main-card').classList.toggle('dark-card');
+            document.getElementById('input-container').classList.toggle('dark-input');
+            document.getElementById('sun-icon').classList.toggle('hidden');
+            document.getElementById('moon-icon').classList.toggle('hidden');
+        });
+
+        // 3. Search Logic
+        function updateURL(query) {
+            const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}` : window.location.pathname;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        }
+
+        async function performSearch() {
+            const query = searchBox.value.trim();
+            updateURL(query);
+            fetchGifs(query, !query);
+        }
+
+        function quickSearch(tag) {
+            searchBox.value = tag;
+            performSearch();
+        }
+
+        submitBtn.addEventListener('click', performSearch);
+        searchBox.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
+        // 4. API Fetching
+        async function fetchGifs(query, isTrending = false, append = false) {
+            if (isFetching) return;
+            isFetching = true;
+
+            if (!append) {
+                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading...</p>';
+                currentOffset = 0;
+            }
+
+            try {
+                const url = isTrending 
+                    ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=g`
+                    : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=g`;
+                
+                const response = await fetch(url);
+                const { data } = await response.json();
+                
+                if (!append && (!data || data.length === 0)) {
+                    resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
+                } else {
+                    renderGifs(data, append);
+                    currentOffset += 15;
+                }
+            } catch (error) {
+                console.error("Giphy API Error:", error);
+            } finally {
+                isFetching = false;
+            }
+        }
+
+        function renderGifs(gifs, append) {
+            const nodes = gifs.map(gif => `
+                <div class="bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" onclick="copyGif('${gif.images.original.url}')">
+                    <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
+                </div>
+            `).join('');
+            
+            if (append) resultsGrid.insertAdjacentHTML('beforeend', nodes);
+            else resultsGrid.innerHTML = nodes;
+        }
+
+        // 5. Infinite Scroll
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isFetching && currentOffset > 0) {
+                const query = new URLSearchParams(window.location.search).get('q');
+                fetchGifs(query, !query, true);
+            }
+        }, { threshold: 0.1 });
+        observer.observe(document.getElementById('scroll-sentinel'));
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            const query = new URLSearchParams(window.location.search).get('q');
+            if (query) { searchBox.value = query; fetchGifs(query); }
+            else { fetchGifs('', true); }
+        });
     </script>
 </body>
 </html>
