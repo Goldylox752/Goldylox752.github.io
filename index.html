@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brand GIF Engine</title>
-    <!-- Connects to the p5.js library for animation -->
-    <script src="https://cdnjs.cloudflare.com"></script>
-    <style>
-        body { background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
-        canvas { border: 2px solid #00ffaa; box-shadow: 0 0 20px #00ffaa33; }
-    </style>
+    <title>GIF Brand Engine</title>
+    <!-- Link to your CSS file for styling -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>GIF Brand Engine v1.0</h1>
-    <div id="canvas-container"></div>
-    <p>Press <strong>'S'</strong> to export a 3-second loop.</p>
-    
-    <!-- Link to your local logic file -->
-    <script src="sketch.js"></script>
+    <div class="box">
+        <header>
+            <h1>GIF Brand Engine</h1>
+        </header>
+
+        <!-- Search input and button -->
+        <div class="search-container">
+            <input type="text" id="search-box" placeholder="Search for brand GIFs...">
+            <button id="submit-btn">Search</button>
+        </div>
+
+        <!-- Placeholder for loading animation -->
+        <div class="loader" id="loader" style="display: none;"></div>
+
+        <!-- Container where GIFs will be displayed -->
+        <div class="wrapper" id="gif-results"></div>
+    </div>
+
+    <!-- Link to your JavaScript logic -->
+    <script src="script.js"></script>
 </body>
 </html>
-
-
 
