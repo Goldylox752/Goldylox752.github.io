@@ -1,75 +1,25 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | High-Performance Engine</title>
-    
-    <!-- Modern Resources: Tailwind 4.0 & Poppins Font -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
-    <!-- Category Tags Row -->
-    
-<div class="max-w-7xl mx-auto px-8 mb-8 flex flex-wrap gap-3">
-    <button onclick="quickSearch('Tech')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-yellow-400 transition-all">#Tech</button>
-    <button onclick="quickSearch('Fashion')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-pink-400 transition-all">#Fashion</button>
-    <button onclick="quickSearch('Gaming')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-cyan-400 transition-all">#Gaming</button>
-    <button onclick="quickSearch('Food')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-400 transition-all">#Food</button>
-</div>
+<!-- ... keep your head and header the same ... -->
 
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .gif-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-    </style>
-</head>
 <body class="bg-zinc-50 text-zinc-900 selection:bg-yellow-300">
 
-    <!-- Neo-Brutalist Header -->
     <header class="p-8 border-b-4 border-black bg-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <h1 class="text-4xl font-black uppercase tracking-tighter italic">BrandGIF.</h1>
-            
-            <!-- Modernized Search Bar -->
-            <div class="flex w-full md:w-1/2 border-4 border-black overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                <input type="text" id="search-box" 
-                       class="w-full p-4 outline-none text-lg font-bold" 
-                       placeholder="Search global brands...">
-                <button id="submit-btn" 
-                        class="bg-yellow-400 px-8 py-4 font-black uppercase border-l-4 border-black hover:bg-black hover:text-white transition-colors">
-                    Find
-                </button>
-            </div>
-        </div>
+        <!-- ... your title and search bar code here ... -->
     </header>
 
     <main class="max-w-7xl mx-auto p-8">
-        <!-- Status Indicator (Micro-animation potential) -->
-        <div id="loader" class="hidden text-center py-10">
-            <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+        
+        <!-- MOVE THE CATEGORY TAGS HERE -->
+        <div class="flex flex-wrap gap-3 mb-8">
+            <button onclick="quickSearch('Tech')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-yellow-400 transition-all">#Tech</button>
+            <button onclick="quickSearch('Fashion')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-pink-400 transition-all">#Fashion</button>
+            <button onclick="quickSearch('Gaming')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-cyan-400 transition-all">#Gaming</button>
+            <button onclick="quickSearch('Food')" class="bg-white border-2 border-black px-4 py-1 font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-orange-400 transition-all">#Food</button>
         </div>
 
-        <!-- Masonry-style Results Container -->
-        <div id="gif-results" class="gif-grid">
-            <!-- JavaScript will inject cards here -->
-        </div>
+        <!-- Loader and Results below -->
+        <div id="loader" class="hidden text-center py-10">...</div>
+        <div id="gif-results" class="gif-grid"></div>
     </main>
 
-    <!-- Project Resources Footer -->
-    <footer class="p-12 bg-black text-white mt-20">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <p class="text-zinc-400 text-sm italic">Powered by [GIPHY API](https://developers.giphy.com)</p>
-            </div>
-            <div class="md:text-center">
-                <p>&copy; 2026 Brand Engine Labs</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="app.js"></script>
+    <!-- ... footer and script ... -->
 </body>
-</html>
-
-
-
-
