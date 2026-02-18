@@ -21,6 +21,30 @@
         .animate-toast { animation: toast-in 0.3s ease forwards; }
     </style>
 </head>
+<script>
+    // System Check: Priority 1: New Token | Priority 2: Old Key | Priority 3: URL Param
+    const TOKEN = (typeof NEXT_PUBLIC_ENGINE_TOKEN !== 'undefined') ? NEXT_PUBLIC_ENGINE_TOKEN : 
+                  (typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : 
+                  new URLSearchParams(window.location.search).get('token') || '');
+
+    const API_URL = 'https://api.giphy.com';
+    const TRENDING_URL = 'https://api.giphy.com';
+
+    async function fetchGifs(query, isTrending = false, append = false) {
+        if (isFetching || !TOKEN) {
+            if(!TOKEN) resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500 italic">TOKEN MISSING: Update Vercel Settings</p>';
+            return;
+        }
+        
+        isFetching = true;
+        // ... rest of your fetch logic using TOKEN instead of KEY ...
+        const url = isTrending 
+            ? `${TRENDING_URL}?api_key=${TOKEN}&limit=15&offset=${currentOffset}&rating=pg`
+            : `${API_URL}?api_key=${TOKEN}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
+        
+        // ... rest of your code ...
+    }
+</script>
 
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
@@ -171,3 +195,4 @@
     </script>
 </body>
 </html>
+
