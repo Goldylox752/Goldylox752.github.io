@@ -79,10 +79,10 @@
         <div id="scroll-sentinel" class="h-20 w-full"></div>
     </main>
 
-    <!-- External config for the GIPHY_KEY -->
+    <!-- 1. Key must be inside config.js -->
     <script src="config.js"></script>
     <script>
-        // Use key from config.js or fallback to empty string
+        // 2. Verified API Endpoints
         const KEY = typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : '';
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
@@ -140,14 +140,15 @@
             isFetching = true;
 
             if (!append) {
-                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading...</p>';
+                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading Assets...</p>';
                 currentOffset = 0;
             }
 
             try {
-                const url = isTrending 
-                    ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=g`
-                    : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=g`;
+                // Ensure the API call is constructed correctly
+                const url = isTrending || !query
+                    ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=pg`
+                    : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
                 
                 const response = await fetch(url);
                 const { data } = await response.json();
@@ -160,6 +161,7 @@
                 }
             } catch (error) {
                 console.error("Giphy API Error:", error);
+                resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500">API Connection Error</p>';
             } finally {
                 isFetching = false;
             }
@@ -176,6 +178,7 @@
             else resultsGrid.innerHTML = nodes;
         }
 
+        // Infinite Scroll Observer
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !isFetching && currentOffset > 0) {
                 const query = new URLSearchParams(window.location.search).get('q');
@@ -184,7 +187,11 @@
         }, { threshold: 0.1 });
         observer.observe(document.getElementById('scroll-sentinel'));
 
+        // Initial Load
         window.addEventListener('DOMContentLoaded', () => {
+            console.log("Checking API Key availability...");
+            if (!KEY) console.warn("WARNING: GIPHY_KEY is not defined. Check config.js");
+            
             const query = new URLSearchParams(window.location.search).get('q');
             if (query) { searchBox.value = query; fetchGifs(query); }
             else { fetchGifs('', true); }
