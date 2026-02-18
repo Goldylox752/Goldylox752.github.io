@@ -12,39 +12,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; }
+        body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; overflow-x: hidden; }
         .dark-mode { background-color: #000000 !important; color: #ffffff !important; }
         .dark-card { background-color: #18181b !important; border-color: #ffffff !important; color: #ffffff !important; }
         .dark-input { background-color: #27272a !important; border-color: #ffffff !important; color: #ffffff !important; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        
+        .loader {
+            width: 50px; height: 50px; border: 5px solid #000;
+            border-top: 5px solid #FBBF24; border-radius: 50%;
+            animation: spin 0.8s linear infinite; display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes toast-in { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         .animate-toast { animation: toast-in 0.3s ease forwards; }
     </style>
 </head>
-<script>
-    // System Check: Priority 1: New Token | Priority 2: Old Key | Priority 3: URL Param
-    const TOKEN = (typeof NEXT_PUBLIC_ENGINE_TOKEN !== 'undefined') ? NEXT_PUBLIC_ENGINE_TOKEN : 
-                  (typeof GIPHY_KEY !== 'undefined' ? GIPHY_KEY : 
-                  new URLSearchParams(window.location.search).get('token') || '');
-
-    const API_URL = 'https://api.giphy.com';
-    const TRENDING_URL = 'https://api.giphy.com';
-
-    async function fetchGifs(query, isTrending = false, append = false) {
-        if (isFetching || !TOKEN) {
-            if(!TOKEN) resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500 italic">TOKEN MISSING: Update Vercel Settings</p>';
-            return;
-        }
-        
-        isFetching = true;
-        // ... rest of your fetch logic using TOKEN instead of KEY ...
-        const url = isTrending 
-            ? `${TRENDING_URL}?api_key=${TOKEN}&limit=15&offset=${currentOffset}&rating=pg`
-            : `${API_URL}?api_key=${TOKEN}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
-        
-        // ... rest of your code ...
-    }
-</script>
 
 <body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6">
 
@@ -80,17 +63,17 @@
             </div>
         </div>
         <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
-        <div id="scroll-sentinel" class="h-20 w-full"></div>
+        <div id="scroll-sentinel" class="h-20 w-full flex justify-center py-10"></div>
     </main>
 
-    <!-- Try to load local config if it exists -->
+    <!-- Essential for local testing -->
     <script src="config.js"></script>
+
     <script>
-        // Setup Key Logic
+        // 1. DYNAMIC TOKEN LOGIC
         const urlParams = new URLSearchParams(window.location.search);
-        const KEY = (typeof GIPHY_KEY !== 'undefined') ? GIPHY_KEY : (urlParams.get('apikey') || '');
-        
-        // FIXED URLS
+        const TOKEN = (typeof GIPHY_KEY !== 'undefined') ? GIPHY_KEY : (urlParams.get('token') || '');
+
         const API_URL = 'https://api.giphy.com';
         const TRENDING_URL = 'https://api.giphy.com';
 
@@ -98,6 +81,7 @@
         const submitBtn = document.getElementById('submit-btn');
         const resultsGrid = document.getElementById('gif-results');
         const darkModeBtn = document.getElementById('dark-mode-toggle');
+        const sentinel = document.getElementById('scroll-sentinel');
 
         let currentOffset = 0;
         let isFetching = false;
@@ -120,34 +104,36 @@
 
         async function fetchGifs(query, isTrending = false, append = false) {
             if (isFetching) return;
-            if (!KEY) {
-                resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500 italic">API KEY MISSING: Provide ?apikey= in URL or update config.js</p>';
+            if (!TOKEN) {
+                resultsGrid.innerHTML = '<div class="col-span-full text-center p-10 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(255,0,0,1)]"><p class="text-2xl font-black italic uppercase">Token Missing</p><p class="mt-2 font-bold">Add ?token=YOUR_KEY to the URL to test live.</p></div>';
                 return;
             }
 
             isFetching = true;
             if (!append) {
-                resultsGrid.innerHTML = '<p class="text-3xl font-black italic uppercase col-span-full text-center">Loading Assets...</p>';
+                resultsGrid.innerHTML = '';
+                sentinel.innerHTML = '<div class="loader"></div>';
                 currentOffset = 0;
             }
 
             try {
-                const url = isTrending 
-                    ? `${TRENDING_URL}?api_key=${KEY}&limit=15&offset=${currentOffset}&rating=pg`
-                    : `${API_URL}?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
+                const url = isTrending || !query
+                    ? `${TRENDING_URL}?api_key=${TOKEN}&limit=15&offset=${currentOffset}&rating=pg`
+                    : `${API_URL}?api_key=${TOKEN}&q=${encodeURIComponent(query)}&limit=15&offset=${currentOffset}&rating=pg`;
                 
                 const response = await fetch(url);
-                const result = await response.json();
+                const { data } = await response.json();
                 
-                if (!append && (!result.data || result.data.length === 0)) {
+                if (!append && (!data || data.length === 0)) {
                     resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
+                    sentinel.innerHTML = '';
                 } else {
-                    renderGifs(result.data, append);
+                    renderGifs(data, append);
                     currentOffset += 15;
+                    sentinel.innerHTML = data.length >= 15 ? '<div class="loader"></div>' : '';
                 }
             } catch (err) {
-                console.error("Fetch Error:", err);
-                resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center text-red-500">API Connection Failed</p>';
+                console.error("API Error:", err);
             } finally {
                 isFetching = false;
             }
@@ -166,7 +152,7 @@
 
         function performSearch() {
             const query = searchBox.value.trim();
-            const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}` : window.location.pathname;
+            const newUrl = query ? `${window.location.pathname}?q=${encodeURIComponent(query)}&token=${TOKEN}` : `${window.location.pathname}?token=${TOKEN}`;
             window.history.pushState({}, '', newUrl);
             fetchGifs(query, !query);
         }
@@ -185,7 +171,7 @@
                 fetchGifs(query, !query, true);
             }
         }, { threshold: 0.1 });
-        observer.observe(document.getElementById('scroll-sentinel'));
+        observer.observe(sentinel);
 
         window.addEventListener('DOMContentLoaded', () => {
             const query = new URLSearchParams(window.location.search).get('q');
@@ -195,4 +181,3 @@
     </script>
 </body>
 </html>
-
