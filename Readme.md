@@ -24,11 +24,5 @@ A responsive portfolio website built to showcase my projects and technical skill
 - [ ] **Dark Mode**: High-contrast theme toggle for the neo-brutalist layout.
 - [ ] **Download Assets**: Direct local saving of GIF files.
 
----
-<div align="center">
-  <a href="https://github.com">
-    <img src="https://programing-gifs.vercel.app" width="400" height="auto" alt="Programming Gifs">
-  </a>
-</div>
 
 
