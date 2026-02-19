@@ -6,6 +6,7 @@ The high-velocity, Neobrutalist search engine for branded digital assets.
 BrandGIF is a zero-dependency, professional-grade utility designed for creators and brands. It strips away the friction of traditional asset search, delivering a "Fighter Jet" experience for finding, copying, and saving GIFs and Stickers.
 
 🛠 Engineering Stack
+
 🟦 HTML5 & Semantic Architecture
 Built for maximum SEO and accessibility. Uses a mobile-first, responsive viewport strategy to ensure the engine runs flawlessly on everything from iPhones to ultra-wide monitors. 
 
