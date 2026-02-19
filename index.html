@@ -4,62 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrandGIF | Neo-Brutalist v4</title>
-    
     <script src="https://cdn.jsdelivr.net"></script>
-    
     <style type="text/css">
         @theme {
           --color-brand-yellow: #facc15;
           --shadow-brutal: 8px 8px 0px 0px rgba(0,0,0,1);
-          --shadow-brutal-hover: 12px 12px 0px 0px rgba(0,0,0,1);
-          --shadow-dark: 8px 8px 0px 0px #facc15;
+          --shadow-dark: 8px 8px 0px 0px #fff;
         }
-
-        /* Base Styles */
-        .brutal-card { 
-            border: 4px solid black; 
-            box-shadow: var(--shadow-brutal); 
-            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .brutal-card:hover { transform: translate(-4px, -4px); box-shadow: var(--shadow-brutal-hover); }
-        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.1s; cursor: pointer; }
+        .brutal-card { border: 4px solid black; box-shadow: var(--shadow-brutal); transition: 0.15s; background: white; }
+        .brutal-card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px 0px #000; }
+        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
-        
-        /* Dark Mode Overrides */
         .dark-mode { background-color: #000 !important; color: #fff !important; }
         .dark-mode .brutal-card { border-color: #fff; box-shadow: 8px 8px 0px 0px #fff; background: #000; }
         .dark-mode .brutal-btn { border-color: #fff; box-shadow: 4px 4px 0px 0px #fff; background: #000; color: #fff; }
-        .dark-mode input { border-color: #fff; background: #000; color: #fff; box-shadow: 6px 6px 0px 0px #fff; }
-        .dark-mode h1 { text-decoration-color: #fff; }
-
-        .loader {
-            width: 60px; height: 60px; border: 8px solid black; border-top: 8px solid white;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-            display: none; margin: 2rem auto; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-        }
-        .dark-mode .loader { border-color: #fff; border-top-color: #000; box-shadow: 4px 4px 0px 0px #fff; }
+        .loader { width: 50px; height: 50px; border: 8px solid black; border-top: 8px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; margin: 2rem auto; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body id="body" class="bg-yellow-400 p-8 font-mono text-black transition-colors duration-300">
 
     <header class="text-center mb-12">
-        <div class="flex justify-center mb-4">
-            <!-- Dark Mode Toggle Button -->
-            <button onclick="toggleDarkMode()" class="brutal-btn bg-white px-4 py-1 font-black uppercase text-sm flex items-center gap-2">
-                <span id="mode-text">SWITCH TO NIGHT</span> 🌙
-            </button>
-        </div>
+        <button onclick="toggleDarkMode()" class="brutal-btn bg-white px-4 py-1 font-black uppercase text-sm mb-4">TOGGLE VIBE 🌙</button>
         <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
-        <p class="mt-4 font-bold text-xl bg-black text-white inline-block px-4 py-1 uppercase italic dark-mode-invert">Ultra-Fast Assets</p>
     </header>
 
     <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
-        <input type="text" id="search" placeholder="TRY 'NIKE' OR 'LEGO'..." 
-               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
-        <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">
-            GO
-        </button>
+        <input type="text" id="search" placeholder="SEARCH ASSETS..." class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase">
+        <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase">GO</button>
     </div>
 
     <div id="loader" class="loader"></div>
@@ -71,19 +43,13 @@
         const loader = document.getElementById('loader');
         const input = document.getElementById('search');
         const button = document.getElementById('go');
-        const body = document.getElementById('body');
 
-        function toggleDarkMode() {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            document.getElementById('mode-text').innerText = isDark ? 'SWITCH TO DAY' : 'SWITCH TO NIGHT';
-        }
+        function toggleDarkMode() { document.getElementById('body').classList.toggle('dark-mode'); }
 
         async function fetchGifs(query = '') {
             const isTrending = (query.trim() === '');
             const path = isTrending ? '/v1/gifs/trending' : '/v1/gifs/search';
-            const params = `?api_key=${API_KEY}&limit=12&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(query)}`}`;
-            const endpoint = `https://api.giphy.com${path}${params}`;
+            const endpoint = `https://api.giphy.com${path}?api_key=${API_KEY}&limit=12&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(query)}`}`;
 
             try {
                 loader.style.display = 'block';
@@ -92,41 +58,52 @@
                 const { data } = await res.json();
                 loader.style.display = 'none';
 
-                if (!data || data.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full text-center font-black text-2xl uppercase">ZERO RESULTS</div>`;
-                    return;
-                }
-
                 grid.innerHTML = data.map(gif => `
-                    <div class="brutal-card bg-white p-3 cursor-pointer group" onclick="copyLink('${gif.images.original.url}')">
-                        <div class="overflow-hidden border-2 border-black bg-gray-200 aspect-square">
-                            <img src="${gif.images.fixed_height.url}" 
-                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110">
+                    <div class="brutal-card p-3 group">
+                        <div class="overflow-hidden border-2 border-black aspect-square mb-3 cursor-pointer" onclick="copyLink('${gif.images.original.url}')">
+                            <img src="${gif.images.fixed_height.url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
                         </div>
-                        <p class="text-center font-black mt-2 truncate text-xs italic uppercase bg-black text-white py-1">
-                            ${gif.title || 'BRAND ASSET'}
-                        </p>
+                        <div class="flex gap-2">
+                            <button onclick="copyLink('${gif.images.original.url}')" class="flex-grow brutal-btn bg-white py-1 font-black text-xs uppercase">COPY</button>
+                            <button onclick="downloadGif('${gif.images.original.url}', '${gif.id}')" class="flex-grow brutal-btn bg-black text-white py-1 font-black text-xs uppercase">SAVE</button>
+                        </div>
                     </div>
                 `).join('');
-            } catch (err) {
-                loader.style.display = 'none';
-                grid.innerHTML = '<p class="col-span-full text-center font-black text-red-600 uppercase">API ERROR</p>';
+            } catch (err) { loader.style.display = 'none'; }
+        }
+
+        // ⚡ FORCED DOWNLOAD LOGIC
+        async function downloadGif(url, id) {
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "WAIT...";
+            
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `brand-asset-${id}.gif`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(blobUrl);
+                btn.innerText = "DONE!";
+            } catch (e) {
+                btn.innerText = "ERR!";
+                window.open(url, '_blank'); // Fallback to new tab
             }
+            setTimeout(() => btn.innerText = originalText, 2000);
         }
 
         function copyLink(url) {
             navigator.clipboard.writeText(url);
-            const isDark = body.classList.contains('dark-mode');
-            const toast = document.createElement('div');
-            toast.className = `fixed bottom-8 left-1/2 -translate-x-1/2 p-4 font-black border-4 shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic ${isDark ? 'bg-white text-black border-black' : 'bg-black text-white border-white'}`;
-            toast.innerText = "Copied! ⚡";
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            alert("LINK COPIED! ⚡");
         }
 
         button.onclick = () => fetchGifs(input.value);
         input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
-
         fetchGifs();
     </script>
 </body>
