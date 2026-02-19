@@ -55,7 +55,7 @@
         </div>
         
         <div id="loader" class="hidden text-center py-10">
-            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1">Syncing...</p>
+            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1 tracking-tighter">Syncing...</p>
         </div>
     </main>
 
@@ -67,7 +67,6 @@
     let isLoading = false;
     let currentQuery = '';
 
-    // Fun loading messages to keep it interesting
     const loadingVibes = [
         "Accessing Datastream...",
         "Capturing Pixels...",
@@ -94,7 +93,6 @@
         if (isLoading) return;
         isLoading = true;
 
-        // Randomize the loading message
         const randomMsg = loadingVibes[Math.floor(Math.random() * loadingVibes.length)];
         loader.querySelector('p').innerText = randomMsg;
         loader.classList.remove('hidden');
@@ -114,9 +112,9 @@
 
             if (data.length > 0) {
                 const cards = data.map(item => `
-                    <div class="brutal-card p-3 group animate-in fade-in duration-500">
+                    <div class="brutal-card p-3 group">
                         <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                            <img src="${item.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
+                            <img src="${item.images.fixed_height.url}" alt="${item.title}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
                         </div>
                         <button onclick="copyToClipboard('${item.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
                     </div>
@@ -168,4 +166,3 @@
 </script>
 </body>
 </html>
-
