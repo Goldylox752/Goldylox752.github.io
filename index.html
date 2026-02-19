@@ -91,9 +91,10 @@
         }
 
         async function fetchGifs(query = 'trending') {
+            const baseUrl = "https://api.giphy.com";
             const endpoint = (query === 'trending')
-                ? `https://api.giphy.com{API_KEY}&limit=8&rating=pg`
-                : `https://api.giphy.com{API_KEY}&q=${encodeURIComponent(query)}&limit=8&rating=pg`;
+                ? `${baseUrl}/trending?api_key=${API_KEY}&limit=8&rating=pg`
+                : `${baseUrl}/search?api_key=${API_KEY}&q=${encodeURIComponent(query)}&limit=8&rating=pg`;
             
             try {
                 const res = await fetch(endpoint);
@@ -109,7 +110,10 @@
                         </div>
                     </div>
                 `).join('');
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error(err);
+                grid.innerHTML = "<p class='col-span-full font-black uppercase text-center italic'>API Connection Failed</p>";
+            }
         }
 
         async function downloadGif(url, id) {
@@ -149,7 +153,7 @@
 
         function share(platform) {
             const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("Check out these Brand Assets on BrandGIF! ⚡");
+            const text = encodeURIComponent("Check out these Brand Assets! ⚡");
             const links = {
                 x: `https://twitter.com{url}&text=${text}`,
                 fb: `https://www.facebook.com{url}`,
@@ -159,7 +163,9 @@
         }
 
         document.getElementById('go').onclick = () => fetchGifs(document.getElementById('search').value);
-        document.getElementById('search').onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(document.getElementById('search').value); };
+        document.getElementById('search').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') fetchGifs(document.getElementById('search').value);
+        });
         
         fetchGifs(); 
     </script>
