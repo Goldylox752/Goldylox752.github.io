@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | Simple</title>
-    <!-- ⚡ Tailwind 4.0 Browser Engine -->
+    <title>BrandGIF | Asset Engine</title>
+    
+    <!-- ⚡ Tailwind 4.0 Modern Browser Engine -->
     <script src="https://cdn.jsdelivr.net"></script>
+    
     <style type="text/css">
         @theme {
           --shadow-brutal: 8px 8px 0px 0px #000;
@@ -26,7 +28,7 @@
 </head>
 <body class="bg-yellow-400 font-mono text-black p-6 md:p-12">
 
-    <!-- Header & Search -->
+    <!-- Simple Header -->
     <header class="max-w-6xl mx-auto text-center mb-12">
         <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8 mb-8">BrandGIF</h1>
         
@@ -46,18 +48,21 @@
         </div>
     </header>
 
-    <!-- Main Grid -->
+    <!-- Results Grid -->
     <main class="max-w-6xl mx-auto">
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20"></div>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
+            <!-- Assets will load here -->
+        </div>
         
-        <!-- Loading State -->
-        <div id="infinite-loader" class="hidden text-center py-10">
-            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1">Loading...</p>
+        <div id="loader" class="hidden text-center py-10">
+            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1">Syncing...</p>
         </div>
     </main>
 
     <script>
+        // 1. Get your key at developers.giphy.com
         const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
+        
         let currentMode = 'gifs';
         let offset = 0;
         let isLoading = false;
@@ -66,77 +71,91 @@
         const grid = document.getElementById('grid');
         const input = document.getElementById('search');
         const button = document.getElementById('go');
-        const infLoader = document.getElementById('infinite-loader');
+        const loader = document.getElementById('loader');
 
+        // Toggle between GIF and Sticker mode
         function setMode(mode) {
             currentMode = mode;
             document.getElementById('gif-mode').classList.toggle('active', mode === 'gifs');
             document.getElementById('sticker-mode').classList.toggle('active', mode === 'stickers');
-            resetAndSearch();
+            startFreshSearch();
         }
 
-        async function fetchGifs(append = false) {
+        async function performFetch(isAppend = false) {
             if (isLoading) return;
             isLoading = true;
-            infLoader.classList.remove('hidden');
+            loader.classList.remove('hidden');
 
-            const isTrending = (currentQuery.trim() === '');
-            const baseUrl = `https://api.giphy.com{currentMode}`;
-            const path = isTrending ? '/trending' : '/search';
-            const endpoint = `${baseUrl}${path}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(currentQuery)}`}`;
+            const isTrending = currentQuery.trim() === '';
+            const typePath = `/v1/${currentMode}`;
+            const actionPath = isTrending ? '/trending' : '/search';
             
+            // Build the URL
+            let url = `https://api.giphy.com${typePath}${actionPath}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg-13`;
+            if (!isTrending) url += `&q=${encodeURIComponent(currentQuery)}`;
+
             try {
-                const res = await fetch(endpoint);
-                const { data } = await res.json();
-                
-                if (data && data.length > 0) {
-                    const html = data.map(gif => `
+                const response = await fetch(url);
+                const { data, meta } = await response.json();
+
+                if (meta.status !== 200) throw new Error(meta.msg);
+
+                if (data.length > 0) {
+                    const cards = data.map(item => `
                         <div class="brutal-card p-3 group">
                             <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                                <img src="${gif.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
+                                <img src="${item.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
                             </div>
-                            <button onclick="copyLink('${gif.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
+                            <button onclick="copyToClipboard('${item.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
                         </div>
                     `).join('');
 
-                    append ? grid.insertAdjacentHTML('beforeend', html) : grid.innerHTML = html;
+                    if (isAppend) {
+                        grid.insertAdjacentHTML('beforeend', cards);
+                    } else {
+                        grid.innerHTML = cards;
+                    }
                     offset += 16;
-                } else if (!append) {
-                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase text-xl italic">No Results</p>';
+                } else if (!isAppend) {
+                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase italic">Zero Results</p>';
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Fetch Error:", err);
+                grid.innerHTML = `<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error: ${err.message}</p>`;
             } finally {
                 isLoading = false;
-                infLoader.classList.add('hidden');
+                loader.classList.add('hidden');
             }
         }
 
-        function resetAndSearch() {
+        function startFreshSearch() {
             offset = 0;
             currentQuery = input.value;
-            fetchGifs(false);
+            window.scrollTo(0,0);
+            performFetch(false);
         }
 
-        function copyLink(url) {
-            navigator.clipboard.writeText(url);
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
             const toast = document.createElement('div');
             toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
-            toast.innerText = "Copied! ⚡";
+            toast.innerText = "Link Secured! ⚡";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
 
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
-                fetchGifs(true);
+        // Infinite Scroll Logic
+        window.onscroll = () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
+                performFetch(true);
             }
-        });
+        };
 
-        button.onclick = resetAndSearch;
-        input.onkeypress = (e) => { if(e.key === 'Enter') resetAndSearch(); };
+        button.onclick = startFreshSearch;
+        input.onkeypress = (e) => { if(e.key === 'Enter') startFreshSearch(); };
         
-        fetchGifs(); 
+        // Initial Load
+        performFetch();
     </script>
 </body>
 </html>
