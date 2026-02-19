@@ -1,34 +1,32 @@
 ⚡ BrandGIF | Asset Engine
-A high-performance, Neobrutalist search engine for branded Giphy assets. This project is built with a "zero-dependency" philosophy, utilizing native browser APIs and the latest utility-first styling engines.
+The high-velocity, Neobrutalist search engine for branded digital assets.
 
-🛠 Tech Stack
-1. HTML5 (Semantic Structure)
-Role: The skeleton of the engine.
-Key Features: Uses semantic tags (<header>, <main>, <section>) for SEO and accessibility. It manages the viewport for a responsive, "mobile-first" experience.
 
-2. CSS3 & Tailwind CSS 4.0 (Design Engine)
-Role: Visual identity and layout.
-Implementation:
-Tailwind 4.0: Leverages the new high-performance engine for rapid styling via utility classes.
-Custom @theme: Extends the design system with "Brutal" variables (e.g., --shadow-brutal).
-Advanced CSS: Includes custom scrollbar styling and complex hover transitions (transform: translate) to achieve the Neobrutalist aesthetic.
 
-3. JavaScript (ES6+ Logic)
-Role: Powering the "Engine" and API interaction.
-Key Features:
-Asynchronous Fetch: Uses async/await to pull real-time data from the Giphy API.
-Infinite Scroll: A custom-built scroll listener that triggers data fetching as the user nears the bottom of the page.
-DOM Manipulation: Dynamically injects asset cards into the grid using template literals.
-Clipboard API: Uses navigator.clipboard for a seamless "one-click" link-sharing experience.
-
-🚀 Key Functionalities
-Dual Mode: Toggle instantly between Gifs and Stickers via state management.
-Dynamic Search: Real-time query updates with an "Enter" key listener.
-Visual Feedback: Randomised "Loading Vibes" messages to enhance the user experience during data fetching.
-Brutal UI: Heavy borders, high-contrast yellow/black palette, and 2D "hard" shadows.
-
-📦 Local Setup
-Clone the repository.
-Replace API_KEY in the script with your Giphy Developer Key.
-Open index.html in any modern browser. No build step required!
+BrandGIF is a zero-dependency, professional-grade utility designed for creators and brands. It strips away the friction of traditional asset search, delivering a "Fighter Jet" experience for finding, copying, and saving GIFs and Stickers.
+🛠 Engineering Stack
+🟦 HTML5 & Semantic Architecture
+Built for maximum SEO and accessibility. Uses a mobile-first, responsive viewport strategy to ensure the engine runs flawlessly on everything from iPhones to ultra-wide monitors. 
+🟨 CSS3 & Tailwind 4.0 (Alpha Engine)
+Utilizes the latest Tailwind 4.0 utility-first engine for extreme performance and zero CSS bloat.
+Custom @theme Design: Implements Neobrutalism via custom CSS variables for hard shadows (--shadow-brutal).
+High-Tactile UI: Features complex transform transitions and 4px mechanical borders.
+🟨 JavaScript (Native ES6+)
+A "Vanilla First" approach to state management and API interaction.
+Asynchronous Streams: Uses async/await and the Fetch API for non-blocking data retrieval.
+Blob-Stream Downloads: Direct-to-disk binary saving via custom Blob URL logic.
+Debounced Intent: Smart search logic that triggers only after the user stops typing, saving API quota and reducing flicker. 
+🚀 Key Performance Features
+Dual-Core Mode: Instant hot-swapping between GIFs (for messaging) and Stickers (for social overlays).
+Keyboard Mastery: Numeric keys 1-9 act as hotkeys to instantly copy the corresponding result to the clipboard.
+Infinite Scrolling: Smart Intersection-style logic that prefetches assets before you even hit the bottom.
+One-Click "Secured" Logic: Dual-action buttons for Copy Link (clipboard) and Save Asset (direct download).
+📦 Rapid Deployment 
+Clone: git clone https://github.com
+Configure: Replace API_KEY in the script with your Giphy Developer Key.
+Launch: Open index.html in any modern browser.
+No Node.js, no Bundlers, no Friction.
+📝 Compliance & Licensing
+Attribution: Powered by GIPHY.
+License: MIT License. Free for personal and commercial use.
 Built for speed. Built for brands. Built with BrandGIF.
