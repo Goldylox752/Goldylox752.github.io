@@ -1,84 +1,48 @@
-    <!-- Essential for local testing -->
-    <script src="config.js"></script>
-
-    <script>
-        // 1. DYNAMIC TOKEN LOGIC
-        const urlParams = new URLSearchParams(window.location.search);
-        // Use KLIPY_KEY from config.js or ?token= in URL
-        const TOKEN = (typeof KLIPY_KEY !== 'undefined') ? KLIPY_KEY : (urlParams.get('token') || '');
-        const API_URL = 'https://api.klipy.com';
-
-        const searchBox = document.getElementById('search-box');
-        const submitBtn = document.getElementById('submit-btn');
-        const resultsGrid = document.getElementById('gif-results');
-        const darkModeBtn = document.getElementById('dark-mode-toggle');
-        const sentinel = document.getElementById('scroll-sentinel');
-
-        let currentPage = 1;
-        let isFetching = false;
-
-        // UI: Toast Notification
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-2xl border-[4px] border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] font-bold z-[100] animate-toast";
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        // UI: Dark Mode Toggle
-        darkModeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            document.getElementById('main-card').classList.toggle('dark-card');
-            document.getElementById('input-container').classList.toggle('dark-input');
-            document.getElementById('sun-icon').classList.toggle('hidden');
-            document.getElementById('moon-icon').classList.toggle('hidden');
-        });
-
-        // CORE: Fetch Logic
+        // 2. CORE LOGIC
         async function fetchGifs(query = '', append = false) {
             if (isFetching || !TOKEN) return;
             isFetching = true;
 
             if (!append) {
                 resultsGrid.innerHTML = '';
-                currentPage = 1;
+                currentOffset = 0;
                 sentinel.innerHTML = '<div class="loader"></div>';
             }
 
-            // KLIPY endpoint handles trending if query is empty
-            const url = `${API_URL}/search?api_key=${TOKEN}&q=${encodeURIComponent(query)}&page=${currentPage}&limit=15`;
+            // GIPHY uses /trending if search is empty
+            const endpoint = query ? '/search' : '/trending';
+            const url = `${API_BASE}${endpoint}?api_key=${TOKEN}&q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=15&rating=pg`;
 
             try {
                 const response = await fetch(url);
                 const { data } = await response.json();
 
                 if (data && data.length > 0) {
-                    renderKlipyGifs(data, append);
-                    currentPage++;
+                    renderGifs(data, append);
+                    currentOffset += 15;
                 } else if (!append) {
                     resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
                 }
             } catch (err) {
-                showToast("KLIPY CONNECTION ERROR 📡");
+                showToast("GIPHY CONNECTION ERROR 📡");
             } finally {
                 isFetching = false;
                 sentinel.innerHTML = '';
             }
         }
 
-        // CORE: Render Logic
-        function renderKlipyGifs(gifs, append) {
+        function renderGifs(gifs, append) {
             const nodes = gifs.map(gif => `
                 <div class="relative bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" 
                      onclick="navigator.clipboard.writeText('${gif.images.original.url}'); showToast('LINK COPIED! ⚡')">
                     
-                    <button onclick="event.stopPropagation(); downloadFile('${gif.images.original.url}', '${gif.id}')" 
+                    <!-- Download Button -->
+                    <button onclick="event.stopPropagation(); downloadFile('${gif.images.original.url}', '${gif.slug}')" 
                             class="absolute top-4 right-4 z-20 bg-[#FBBF24] border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all opacity-0 group-hover:opacity-100">
                         <svg xmlns="http://www.w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                     </button>
 
-                    <img src="${gif.images.fixed_height.url}" alt="GIF" loading="lazy" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
+                    <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
                 </div>
             `).join('');
             
@@ -96,7 +60,7 @@
                 
                 const link = document.createElement('a');
                 link.href = blobUrl;
-                link.download = `brand-${filename}.gif`;
+                link.download = `${filename}.gif`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
