@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrandGIF | Neo-Brutalist v4.0 Pro</title>
-    <!-- ⚡ Tailwind 4.0 Browser Engine -->
     <script src="https://cdn.jsdelivr.net"></script>
     <style type="text/css">
         @theme {
@@ -16,11 +15,6 @@
         .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
         .locked-vibe { filter: blur(4px) grayscale(1); pointer-events: none; }
-        
-        /* Custom scrollbar for Neo-Brutalist aesthetic */
-        ::-webkit-scrollbar { width: 12px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #fff; border: 3px solid #000; }
     </style>
 </head>
 <body id="body" class="bg-yellow-400 font-mono text-black">
@@ -33,16 +27,16 @@
             </header>
 
             <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
-                <input type="text" id="search" placeholder="SEARCH ASSETS..." class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
-                <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
+                <input type="text" id="search" placeholder="SEARCH ASSETS..." class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase">
+                <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase">GO</button>
             </div>
 
             <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto"></div>
         </main>
 
-        <!-- SIDEBAR -->
-        <aside class="w-full lg:w-96 bg-white p-8 space-y-8 lg:sticky lg:top-0 lg:h-screen overflow-y-auto border-t-8 lg:border-t-0 border-black">
-            <!-- SOCIAL SHARE -->
+        <!-- UPDATED SIDEBAR -->
+        <aside class="w-full lg:w-96 bg-white p-8 space-y-8 lg:sticky lg:top-0 lg:h-screen overflow-y-auto">
+            <!-- SOCIAL SHARE BLOCK -->
             <div class="border-4 border-black p-4 bg-white shadow-[6px_6px_0px_0px_#000]">
                 <h2 class="text-xl font-black uppercase mb-3 italic">Share the Vibe ⚡</h2>
                 <div class="flex gap-2">
@@ -55,28 +49,18 @@
             <!-- NEWSLETTER / PRO GATE -->
             <section id="pro-gate-box" class="border-4 border-black p-5 bg-yellow-400 shadow-[6px_6px_0px_0px_#000]">
                 <h2 class="text-xl font-black uppercase italic mb-2">Unlock Pro Vibes</h2>
-                <p class="text-xs font-bold mb-4 uppercase leading-tight">Enter email to unlock Premium categories like #Glitch & #Corporate.</p>
+                <p class="text-xs font-bold mb-4 uppercase">Enter email to unlock Premium categories like #Glitch & #Corporate.</p>
                 <form onsubmit="unlockPro(event)" class="space-y-3">
-                    <input type="email" id="pro-email" placeholder="EMAIL@DOMAIN.COM" required class="w-full p-2 border-2 border-black font-black text-xs bg-white uppercase">
+                    <input type="email" id="pro-email" placeholder="EMAIL@DOMAIN.COM" required class="w-full p-2 border-2 border-black font-black text-xs bg-white">
                     <button type="submit" class="w-full brutal-btn bg-black text-white py-2 font-black uppercase text-xs">Get Access 🔓</button>
                 </form>
             </section>
 
             <h2 class="text-3xl font-black uppercase border-b-4 border-black pb-2 italic">Quick Vibe</h2>
             <div class="flex flex-wrap gap-2">
-                <div onclick="quickSearch('retro')" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white uppercase transition-colors">#Retro</div>
-                <div onclick="quickSearch('glitch', true)" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white uppercase transition-colors">#Glitch 🔒</div>
-                <div onclick="quickSearch('corporate', true)" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white uppercase transition-colors">#Corp 🔒</div>
-            </div>
-
-            <!-- Official GIPHY Attribution Badge -->
-            <div class="mt-8 border-t-4 border-black pt-4">
-                <p class="text-[10px] font-black uppercase mb-2 opacity-60 italic">Service Attribution:</p>
-                <a href="https://developers.giphy.com" target="_blank">
-                    <img src="https://raw.githubusercontent.com" 
-                         alt="Powered by GIPHY" 
-                         class="w-32 brutal-card p-1 bg-white hover:invert transition-all">
-                </a>
+                <div onclick="quickSearch('retro')" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white">#Retro</div>
+                <div onclick="quickSearch('glitch', true)" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white">#Glitch 🔒</div>
+                <div onclick="quickSearch('corporate', true)" class="border-2 border-black px-2 text-xs font-black cursor-pointer hover:bg-black hover:text-white">#Corp 🔒</div>
             </div>
         </aside>
     </div>
@@ -92,49 +76,26 @@
         function unlockPro(e) {
             e.preventDefault();
             isPro = true;
-            document.getElementById('pro-gate-box').innerHTML = "<h2 class='text-xl font-black uppercase italic'>PRO ACTIVE ✅</h2><p class='text-xs font-bold uppercase mt-2'>All vibes unlocked. Go wild.</p>";
+            document.getElementById('pro-gate-box').innerHTML = "<h2 class='text-xl font-black uppercase'>PRO ACTIVE ✅</h2><p class='text-xs font-bold'>All vibes unlocked.</p>";
+            alert("PRO VIBES UNLOCKED! ⚡");
         }
 
-        async function fetchGifs(query = 'trending') {
-            const baseUrl = "https://api.giphy.com";
-            const endpoint = (query === 'trending')
-                ? `${baseUrl}/trending?api_key=${API_KEY}&limit=8&rating=pg`
-                : `${baseUrl}/search?api_key=${API_KEY}&q=${encodeURIComponent(query)}&limit=8&rating=pg`;
-            
-            try {
-                const res = await fetch(endpoint);
-                const { data } = await res.json();
-                grid.innerHTML = data.map(gif => `
-                    <div class="brutal-card p-3 group transition-transform">
-                        <div class="overflow-hidden border-2 border-black aspect-square mb-3 bg-gray-100">
-                            <img src="${gif.images.fixed_height.url}" id="img-${gif.id}" crossorigin="anonymous" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveAsPng('${gif.images.fixed_height.url}', '${gif.id}')" class="flex-grow brutal-btn bg-yellow-400 py-1 font-black text-[10px] uppercase italic hover:bg-black hover:text-white">Save PNG</button>
-                            <button onclick="downloadGif('${gif.images.original.url}', '${gif.id}')" class="flex-grow brutal-btn bg-black text-white py-1 font-black text-[10px] uppercase italic hover:bg-white hover:text-black">Save GIF</button>
-                        </div>
+        async function fetchGifs(query = '') {
+            const endpoint = `https://api.giphy.com{API_KEY}&q=${encodeURIComponent(query)}&limit=8&rating=pg`;
+            const res = await fetch(endpoint);
+            const { data } = await res.json();
+            grid.innerHTML = data.map(gif => `
+                <div class="brutal-card p-3">
+                    <img src="${gif.images.fixed_height.url}" id="img-${gif.id}" crossorigin="anonymous" class="w-full aspect-square object-cover border-2 border-black mb-3">
+                    <div class="flex gap-2">
+                        <button onclick="saveAsPng('${gif.images.fixed_height.url}', '${gif.id}')" class="flex-grow brutal-btn bg-yellow-400 py-1 font-black text-[10px] uppercase italic">Save PNG</button>
+                        <button onclick="downloadGif('${gif.images.original.url}')" class="flex-grow brutal-btn bg-black text-white py-1 font-black text-[10px] uppercase italic">Save GIF</button>
                     </div>
-                `).join('');
-            } catch (err) { 
-                console.error(err);
-                grid.innerHTML = "<p class='col-span-full font-black uppercase text-center italic'>API Connection Failed</p>";
-            }
+                </div>
+            `).join('');
         }
 
-        async function downloadGif(url, id) {
-            try {
-                const res = await fetch(url);
-                const blob = await res.blob();
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `brandgif-${id}.gif`;
-                link.click();
-            } catch (err) {
-                console.error("Download failed:", err);
-                window.open(url, '_blank'); // Fallback
-            }
-        }
-
+        // PNG Conversion Logic
         function saveAsPng(url, id) {
             const canvas = document.getElementById('conversion-canvas');
             const ctx = canvas.getContext('2d');
@@ -157,29 +118,23 @@
                 alert("🔒 THIS VIBE REQUIRES PRO ACCESS. ENTER EMAIL IN SIDEBAR!");
                 return;
             }
-            document.getElementById('search').value = tag.toUpperCase();
+            document.getElementById('search').value = tag;
             fetchGifs(tag);
         }
 
         function share(platform) {
             const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("Check out these Brand Assets on BrandGIF! ⚡");
+            const text = encodeURIComponent("Check out these Brand Assets! ⚡");
             const links = {
                 x: `https://twitter.com{url}&text=${text}`,
                 fb: `https://www.facebook.com{url}`,
-                wa: `https://api.whatsapp.com{text}%20${url}`
+                wa: `https://wa.me{text}%20${url}`
             };
             window.open(links[platform], '_blank');
         }
 
         document.getElementById('go').onclick = () => fetchGifs(document.getElementById('search').value);
-        
-        // Add Enter key listener for the search bar
-        document.getElementById('search').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchGifs(document.getElementById('search').value);
-        });
-        
-        fetchGifs(); // Initial Load
+        fetchGifs('trending');
     </script>
 </body>
 </html>
