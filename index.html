@@ -3,188 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="https://goldylox752.github.io" />
-    <link rel="icon" type="image/png" href="favicon.png">
-
-    <title>BrandGIF | High-Energy Brand GIF Search Engine</title>
-    <meta name="description" content="Search and discover the best branded GIFs. Fast, high-energy engine.">
-    
+    <title>BrandGIF | Simple Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease; overflow-x: hidden; }
-        .dark-mode { background-color: #000000 !important; color: #ffffff !important; }
-        .dark-card { background-color: #18181b !important; border-color: #ffffff !important; color: #ffffff !important; }
-        .dark-input { background-color: #27272a !important; border-color: #ffffff !important; color: #ffffff !important; }
-        
-        .loader {
-            width: 50px; height: 50px; border: 5px solid #000;
-            border-top: 5px solid #FBBF24; border-radius: 50%;
-            animation: spin 0.8s linear infinite; display: inline-block;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes toast-in { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-        .animate-toast { animation: toast-in 0.3s ease forwards; }
+        /* Neo-Brutalist Style: Thick borders and hard shadows */
+        .brutal-card { border: 4px solid black; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); transition: 0.2s; }
+        .brutal-card:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px 0px rgba(0,0,0,1); }
+        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+        .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
     </style>
 </head>
+<body class="bg-yellow-400 p-8 font-mono">
 
-<body class="bg-zinc-200 min-h-screen flex flex-col items-center p-6 text-black">
-
-    <!-- Dark Mode Toggle -->
-    <div class="fixed top-6 right-6 z-50">
-        <button id="dark-mode-toggle" aria-label="Toggle Dark Mode" class="bg-white border-[4px] border-black p-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all active:scale-90 text-black">
-            <svg id="sun-icon" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-            <svg id="moon-icon" class="hidden w-7 h-7" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        </button>
-    </div>
-
-    <header class="flex items-center gap-4 mb-2">
-        <img src="favicon.png" alt="BrandGIF Logo" class="w-16 h-16 border-[4px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h1 class="text-4xl font-black italic uppercase tracking-tighter">BrandGIF</h1>
+    <header class="text-center mb-12">
+        <h1 class="text-6xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
+        <p class="mt-4 font-bold text-xl">High-Energy Brand Asset Finder</p>
     </header>
 
-    <main class="w-full flex flex-col items-center">
-        <div id="main-card" class="bg-white p-10 border-[6px] border-black rounded-[20px] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-2xl w-full mt-4 transition-colors duration-300">
-            <div class="flex flex-col md:flex-row gap-4 items-center">
-                <div id="input-container" class="relative flex-grow w-full border-[5px] border-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-[70px] flex items-center transition-colors duration-300">
-                    <span class="pl-4 text-zinc-400">
-                        <svg xmlns="http://www.w3.org" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    </span>
-                    <input type="text" id="search-box" class="w-full h-full pl-3 pr-4 outline-none text-xl font-bold placeholder-zinc-400 bg-transparent text-black" placeholder="Search for GIFs...">
-                </div>
-                <button id="submit-btn" class="bg-black text-white px-8 h-[70px] text-3xl font-black rounded-2xl border-[5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:scale-95">GO</button>
-            </div>
-            <div class="flex flex-wrap gap-4 mt-8">
-                <button onclick="quickSearch('Tech')" class="bg-white border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-zinc-100 transition-all text-black">#Tech</button>
-                <button onclick="quickSearch('Fashion')" class="bg-[#FCA5A5] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Fashion</button>
-                <button onclick="quickSearch('Gaming')" class="bg-[#99F6E4] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Gaming</button>
-                <button onclick="quickSearch('Food')" class="bg-[#FBBF24] border-[4px] border-black px-6 py-2 rounded-2xl font-bold text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:opacity-90 transition-all text-black">#Food</button>
-            </div>
-        </div>
-        <div id="gif-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 w-full max-w-6xl pb-20"></div>
-        <div id="scroll-sentinel" class="h-20 w-full flex justify-center py-10"></div>
-    </main>
+    <div class="max-w-2xl mx-auto flex gap-4 mb-12">
+        <input type="text" id="search" placeholder="Search brands..." 
+               class="flex-grow p-4 text-2xl font-bold border-4 border-black outline-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <button id="go" class="brutal-btn bg-black text-white px-8 text-2xl font-black uppercase">GO</button>
+    </div>
 
-    <!-- Essential for local testing -->
-    <script src="config.js"></script>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- GIFs will appear here -->
+    </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        // Uses GIPHY_KEY from config.js OR ?token= in the URL
-        const TOKEN = (typeof GIPHY_KEY !== 'undefined') ? GIPHY_KEY : (urlParams.get('token') || '');
-        const API_BASE = 'https://api.giphy.com';
+        const API_KEY = 'YOUR_API_KEY'; // Get one at developers.giphy.com
+        const grid = document.getElementById('grid');
+        const input = document.getElementById('search');
+        const button = document.getElementById('go');
 
-        const searchBox = document.getElementById('search-box');
-        const submitBtn = document.getElementById('submit-btn');
-        const resultsGrid = document.getElementById('gif-results');
-        const darkModeBtn = document.getElementById('dark-mode-toggle');
-        const sentinel = document.getElementById('scroll-sentinel');
+        async function fetchGifs(query = 'trending') {
+            const endpoint = query === 'trending' 
+                ? `https://api.giphy.com{API_KEY}&limit=12`
+                : `https://api.giphy.com{API_KEY}&q=${query}&limit=12`;
 
-        let currentOffset = 0;
-        let isFetching = false;
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-2xl border-[4px] border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] font-bold z- animate-toast";
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        darkModeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            document.getElementById('main-card').classList.toggle('dark-card');
-            document.getElementById('input-container').classList.toggle('dark-input');
-            document.getElementById('sun-icon').classList.toggle('hidden');
-            document.getElementById('moon-icon').classList.toggle('hidden');
-        });
-
-        async function fetchGifs(query = '', append = false) {
-            if (isFetching || !TOKEN) return;
-            isFetching = true;
-
-            if (!append) {
-                resultsGrid.innerHTML = '';
-                currentOffset = 0;
-                sentinel.innerHTML = '<div class="loader"></div>';
-            }
-
-            const endpoint = query ? '/search' : '/trending';
-            const url = `${API_BASE}${endpoint}?api_key=${TOKEN}&q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=15&rating=pg`;
-
-            try {
-                const response = await fetch(url);
-                const { data } = await response.json();
-
-                if (data && data.length > 0) {
-                    renderGifs(data, append);
-                    currentOffset += 15;
-                } else if (!append) {
-                    resultsGrid.innerHTML = '<p class="text-xl font-bold col-span-full text-center">No Assets Found</p>';
-                }
-            } catch (err) {
-                showToast("GIPHY CONNECTION ERROR 📡");
-            } finally {
-                isFetching = false;
-                sentinel.innerHTML = '';
-            }
-        }
-
-        function renderGifs(gifs, append) {
-            const nodes = gifs.map(gif => `
-                <div class="relative bg-white border-[5px] border-black p-2 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all group cursor-pointer text-black" 
-                     onclick="navigator.clipboard.writeText('${gif.images.original.url}'); showToast('LINK COPIED! ⚡')">
-                    
-                    <button onclick="event.stopPropagation(); downloadFile('${gif.images.original.url}', '${gif.slug}')" 
-                            class="absolute top-4 right-4 z-20 bg-[#FBBF24] border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all opacity-0 group-hover:opacity-100">
-                        <svg xmlns="http://www.w3.org" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                    </button>
-
-                    <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy" class="w-full grayscale group-hover:grayscale-0 transition-all duration-300 border-[3px] border-black">
+            const res = await fetch(endpoint);
+            const { data } = await res.json();
+            
+            grid.innerHTML = data.map(gif => `
+                <div class="brutal-card bg-white p-2 cursor-pointer group overflow-hidden" 
+                     onclick="copyLink('${gif.images.original.url}')">
+                    <img src="${gif.images.fixed_height.url}" class="w-full h-48 object-cover border-2 border-black grayscale group-hover:grayscale-0 transition-all">
+                    <p class="text-center font-bold mt-2 truncate">${gif.title || 'Brand Asset'}</p>
                 </div>
             `).join('');
-            
-            if (append) resultsGrid.insertAdjacentHTML('beforeend', nodes);
-            else resultsGrid.innerHTML = nodes;
         }
 
-        async function downloadFile(url, filename) {
-            showToast("PREPARING DOWNLOAD... 💾");
-            try {
-                const response = await fetch(url);
-                const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
-                
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = `${filename}.gif`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
-                
-                showToast("DOWNLOAD STARTED! 🔥");
-            } catch (err) {
-                showToast("DOWNLOAD FAILED! ❌");
-            }
+        function copyLink(url) {
+            navigator.clipboard.writeText(url);
+            alert("GIF LINK COPIED! ⚡");
         }
 
-        function quickSearch(tag) {
-            searchBox.value = tag;
-            fetchGifs(tag);
-        }
+        button.onclick = () => fetchGifs(input.value);
+        input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
 
-        submitBtn.onclick = () => fetchGifs(searchBox.value);
-        searchBox.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(searchBox.value); };
-
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && !isFetching && TOKEN) {
-                fetchGifs(searchBox.value, true);
-            }
-        }, { threshold: 0.1 });
-        observer.observe(sentinel);
-
-        window.addEventListener('DOMContentLoaded', () => fetchGifs('', false));
+        // Initial Load
+        fetchGifs();
     </script>
 </body>
 </html>
