@@ -16,6 +16,11 @@
         .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
         .locked-vibe { filter: blur(4px) grayscale(1); pointer-events: none; }
+        
+        /* Custom scrollbar for Neo-Brutalist aesthetic */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #fff; border: 3px solid #000; }
     </style>
 </head>
 <body id="body" class="bg-yellow-400 font-mono text-black">
@@ -117,12 +122,17 @@
         }
 
         async function downloadGif(url, id) {
-            const res = await fetch(url);
-            const blob = await res.blob();
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `brandgif-${id}.gif`;
-            link.click();
+            try {
+                const res = await fetch(url);
+                const blob = await res.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `brandgif-${id}.gif`;
+                link.click();
+            } catch (err) {
+                console.error("Download failed:", err);
+                window.open(url, '_blank'); // Fallback
+            }
         }
 
         function saveAsPng(url, id) {
@@ -153,7 +163,7 @@
 
         function share(platform) {
             const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("Check out these Brand Assets! ⚡");
+            const text = encodeURIComponent("Check out these Brand Assets on BrandGIF! ⚡");
             const links = {
                 x: `https://twitter.com{url}&text=${text}`,
                 fb: `https://www.facebook.com{url}`,
@@ -163,11 +173,13 @@
         }
 
         document.getElementById('go').onclick = () => fetchGifs(document.getElementById('search').value);
+        
+        // Add Enter key listener for the search bar
         document.getElementById('search').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') fetchGifs(document.getElementById('search').value);
         });
         
-        fetchGifs(); 
+        fetchGifs(); // Initial Load
     </script>
 </body>
 </html>
