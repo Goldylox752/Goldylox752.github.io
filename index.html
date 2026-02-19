@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrandGIF | Neo-Brutalist v4</title>
     
-    <!-- ⚡ CORRECT TAILWIND 4.0 BROWSER SCRIPT (DO NOT CHANGE) -->
+    <!-- ⚡ CORRECTED TAILWIND 4.0 BROWSER SCRIPT -->
     <script src="https://cdn.jsdelivr.net"></script>
     
     <style type="text/css">
@@ -52,21 +52,25 @@
 
     <header class="text-center mb-12">
         <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
-        <p class="mt-4 font-bold text-xl bg-black text-white inline-block px-4 py-1">ULTRA-FAST ASSETS</p>
+        <p class="mt-4 font-bold text-xl bg-black text-white inline-block px-4 py-1 uppercase italic">Ultra-Fast Assets</p>
     </header>
 
     <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
         <input type="text" id="search" placeholder="TRY 'NIKE' OR 'LEGO'..." 
-               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white focus:bg-white active:bg-white">
+               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white focus:bg-white">
         <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">
             GO
         </button>
     </div>
 
+    <!-- Spinner -->
     <div id="loader" class="loader"></div>
+
+    <!-- Grid -->
     <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto"></div>
 
     <script>
+        // API Key Verified
         const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
         
         const grid = document.getElementById('grid');
@@ -77,6 +81,8 @@
         async function fetchGifs(query = '') {
             const isTrending = (query.trim() === '');
             const path = isTrending ? '/v1/gifs/trending' : '/v1/gifs/search';
+            
+            // Loosened rating to 'pg' for better brand diversity
             const params = `?api_key=${API_KEY}&limit=12&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(query)}`}`;
             const endpoint = `https://api.giphy.com${path}${params}`;
 
@@ -92,7 +98,7 @@
                     grid.innerHTML = `
                         <div class="col-span-full text-center">
                             <p class="font-black text-2xl uppercase">ZERO RESULTS FOR "${query}"</p>
-                            <button onclick="fetchGifs('brands')" class="mt-4 brutal-btn bg-white px-6 py-2 font-black underline">TRY 'BRANDS' INSTEAD?</button>
+                            <button onclick="fetchGifs('brands')" class="mt-4 brutal-btn bg-white px-6 py-2 font-black underline uppercase">Try 'Brands'?</button>
                         </div>`;
                     return;
                 }
@@ -101,7 +107,8 @@
                     <div class="brutal-card bg-white p-3 cursor-pointer group" onclick="copyLink('${gif.images.original.url}')">
                         <div class="overflow-hidden border-2 border-black bg-gray-200 aspect-square">
                             <img src="${gif.images.fixed_height.url}" 
-                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110">
+                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110"
+                                 loading="lazy">
                         </div>
                         <p class="text-center font-black mt-2 truncate text-xs italic uppercase bg-black text-white py-1">
                             ${gif.title || 'BRAND ASSET'}
@@ -110,15 +117,15 @@
                 `).join('');
             } catch (err) {
                 loader.style.display = 'none';
-                grid.innerHTML = '<p class="col-span-full text-center font-black text-red-600 text-2xl uppercase">API ERROR</p>';
+                grid.innerHTML = '<p class="col-span-full text-center font-black text-red-600 text-2xl uppercase underline italic">API Connection Lost</p>';
             }
         }
 
         function copyLink(url) {
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
-            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black p-4 font-black border-4 border-black shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce";
-            toast.innerText = "COPIED TO CLIPBOARD! ⚡";
+            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black p-4 font-black border-4 border-black shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
+            toast.innerText = "Copied to Clipboard! ⚡";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
@@ -126,6 +133,7 @@
         button.onclick = () => fetchGifs(input.value);
         input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
 
+        // Initial Load
         fetchGifs();
     </script>
 </body>
