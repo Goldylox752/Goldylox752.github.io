@@ -3,22 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | Neo-Brutalist v4</title>
+    <title>BrandGIF | Neo-Brutalist v4.0</title>
+    
+    <!-- ⚡ Tailwind 4.0 Browser Engine -->
     <script src="https://cdn.jsdelivr.net"></script>
+    
     <style type="text/css">
         @theme {
           --color-brand-yellow: #facc15;
           --shadow-brutal: 8px 8px 0px 0px rgba(0,0,0,1);
           --shadow-dark: 8px 8px 0px 0px #fff;
         }
-        .brutal-card { border: 4px solid black; box-shadow: var(--shadow-brutal); transition: 0.15s; background: white; }
+
+        .brutal-card { 
+            border: 4px solid black; 
+            box-shadow: var(--shadow-brutal); 
+            transition: 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            background: white; 
+        }
         .brutal-card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px 0px #000; }
         .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+        
         .dark-mode { background-color: #000 !important; color: #fff !important; }
         .dark-mode .brutal-card { border-color: #fff; box-shadow: 8px 8px 0px 0px #fff; background: #000; }
         .dark-mode .brutal-btn { border-color: #fff; box-shadow: 4px 4px 0px 0px #fff; background: #000; color: #fff; }
+        .dark-mode input { border-color: #fff; background: #000; color: #fff; box-shadow: 6px 6px 0px 0px #fff; }
+
         .loader { width: 50px; height: 50px; border: 8px solid black; border-top: 8px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; margin: 2rem auto; }
+        .dark-mode .loader { border-color: #fff; border-top-color: #000; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -30,8 +43,9 @@
     </header>
 
     <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
-        <input type="text" id="search" placeholder="SEARCH ASSETS..." class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase">
-        <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase">GO</button>
+        <input type="text" id="search" placeholder="SEARCH ASSETS..." 
+               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
+        <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
     </div>
 
     <div id="loader" class="loader"></div>
@@ -61,18 +75,18 @@
                 grid.innerHTML = data.map(gif => `
                     <div class="brutal-card p-3 group">
                         <div class="overflow-hidden border-2 border-black aspect-square mb-3 cursor-pointer" onclick="copyLink('${gif.images.original.url}')">
-                            <img src="${gif.images.fixed_height.url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                            <img src="${gif.images.fixed_height.url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300">
                         </div>
                         <div class="flex gap-2">
                             <button onclick="copyLink('${gif.images.original.url}')" class="flex-grow brutal-btn bg-white py-1 font-black text-xs uppercase">COPY</button>
-                            <button onclick="downloadGif('${gif.images.original.url}', '${gif.id}')" class="flex-grow brutal-btn bg-black text-white py-1 font-black text-xs uppercase">SAVE</button>
+                            <button onclick="downloadGif('${gif.images.original.url}', '${gif.id}')" class="flex-grow brutal-btn bg-black text-white py-1 font-black text-xs uppercase hover:bg-white hover:text-black">SAVE</button>
                         </div>
                     </div>
                 `).join('');
             } catch (err) { loader.style.display = 'none'; }
         }
 
-        // ⚡ FORCED DOWNLOAD LOGIC
+        // ⚡ ASYNC DOWNLOADER (Blob Logic)
         async function downloadGif(url, id) {
             const btn = event.target;
             const originalText = btn.innerText;
@@ -83,28 +97,34 @@
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
+                a.style.display = 'none';
                 a.href = blobUrl;
-                a.download = `brand-asset-${id}.gif`;
+                a.download = `brandgif-${id}.gif`;
                 document.body.appendChild(a);
                 a.click();
-                a.remove();
                 window.URL.revokeObjectURL(blobUrl);
                 btn.innerText = "DONE!";
             } catch (e) {
                 btn.innerText = "ERR!";
-                window.open(url, '_blank'); // Fallback to new tab
+                console.error(e);
+                window.open(url, '_blank'); 
             }
             setTimeout(() => btn.innerText = originalText, 2000);
         }
 
         function copyLink(url) {
             navigator.clipboard.writeText(url);
-            alert("LINK COPIED! ⚡");
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-8 right-8 bg-black text-white p-4 font-black border-4 border-white brutal-card z-50 animate-bounce";
+            toast.innerText = "LINK COPIED! ⚡";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
         }
 
         button.onclick = () => fetchGifs(input.value);
         input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
-        fetchGifs();
+        
+        fetchGifs(); 
     </script>
 </body>
 </html>
