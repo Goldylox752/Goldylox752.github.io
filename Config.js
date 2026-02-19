@@ -1,1 +1,1 @@
-const NEXT_PUBLIC_GIPHY_KEY = "yI51wxZLtUjqGdALCfbNkxldrcXX5IVG";
+const GIPHY_KEY = "yI51wxZLtUjqGdALCfbNkxldrcXX5IVG";
