@@ -27,5 +27,4 @@ Lead Generation: The Pro Gate collects user emails before allowing access to pre
 Affiliate Real Estate: The sidebar is pre-styled for affiliate banners (e.g., Creative Market or Envato).
 SaaS Potential: Easily upgrade to a paid model by connecting the Pro Gate to a payment processor like Stripe. 
 
-📜 License
-MIT © [Your Name]
+
