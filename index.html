@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrandGIF | Neo-Brutalist v4.0</title>
+    <!-- ⚡ CORRECTED TAILWIND 4.0 BROWSER SCRIPT -->
     <script src="https://cdn.jsdelivr.net"></script>
     <style type="text/css">
         @theme {
@@ -27,7 +28,6 @@
 <body id="body" class="bg-yellow-400 font-mono text-black">
 
     <div class="flex flex-col lg:flex-row min-h-screen">
-        
         <!-- MAIN AREA -->
         <main class="flex-grow p-6 lg:p-12 lg:border-r-8 lg:border-black">
             <header class="text-center mb-10">
@@ -38,7 +38,7 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="text" id="search" placeholder="SEARCH ASSETS..." 
                            class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
-                    <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase">GO</button>
+                    <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
                 </div>
                 
                 <div class="flex items-center gap-4 mt-6 justify-center">
@@ -61,14 +61,21 @@
         <!-- SIDEBAR -->
         <aside class="w-full lg:w-96 bg-white p-8 space-y-8 lg:sticky lg:top-0 lg:h-screen overflow-y-auto border-t-8 lg:border-t-0 border-black">
             <h2 class="text-3xl font-black uppercase border-b-4 border-black pb-2 italic">Pro Tools ⚡</h2>
-            <a href="https://creativemarket.com" class="block brutal-card p-4 hover:bg-black hover:text-white transition-colors group">
-                <h3 class="text-xl font-black mb-2 uppercase">Brand Kits</h3>
-                <p class="text-sm font-bold opacity-70 group-hover:opacity-100">Vectors and fonts for pro results.</p>
+            <a href="https://creativemarket.com" target="_blank" class="block brutal-card p-4 hover:bg-black hover:text-white transition-colors group">
+                <h3 class="text-xl font-black mb-2 uppercase italic">Brand Kits</h3>
+                <p class="text-sm font-bold opacity-70 group-hover:opacity-100 uppercase">Vectors and fonts for pro results.</p>
                 <div class="mt-4 underline font-black text-sm italic uppercase">Upgrade Now →</div>
             </a>
 
             <div class="bg-yellow-400 border-4 border-black p-4 shadow-[6px_6px_0px_0px_#000]">
                 <h3 class="font-black uppercase italic mb-2 text-lg text-center font-black">Total Results: <span id="counter">0</span></h3>
+            </div>
+            
+            <!-- Official GIPHY Attribution Badge (Required for production keys) -->
+            <div class="mt-8 border-t-4 border-black pt-4">
+                <a href="https://developers.giphy.com" target="_blank">
+                    <img src="https://raw.githubusercontent.com" alt="Powered by GIPHY" class="w-32 brutal-card p-1 bg-white hover:invert transition-all">
+                </a>
             </div>
         </aside>
     </div>
@@ -99,6 +106,7 @@
             infLoader.classList.remove('hidden');
 
             const isTrending = (currentQuery.trim() === '');
+            // FIXED: Added /v1/ and corrected variable injection
             const baseUrl = `https://api.giphy.com{currentMode}`;
             const path = isTrending ? '/trending' : '/search';
             const endpoint = `${baseUrl}${path}?api_key=${API_KEY}&limit=12&offset=${offset}&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(currentQuery)}`}`;
@@ -111,9 +119,9 @@
                     const html = data.map(gif => `
                         <div class="brutal-card p-3 group">
                             <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                                <img src="${gif.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
+                                <img src="${gif.images.fixed_height.url}" alt="${gif.title}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
                             </div>
-                            <button onclick="copyLink('${gif.images.original.url}')" class="w-full brutal-btn bg-white py-1 font-black text-xs uppercase italic hover:bg-black hover:text-white">Copy Link</button>
+                            <button onclick="copyLink('${gif.images.original.url}')" class="w-full brutal-btn bg-white py-1 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
                         </div>
                     `).join('');
 
@@ -125,9 +133,12 @@
 
                     offset += 12;
                     counter.innerText = offset;
+                } else if (!append) {
+                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase">Zero Results Found</p>';
                 }
             } catch (err) {
                 console.error("API ERROR:", err);
+                if (!append) grid.innerHTML = '<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error - Check Connection</p>';
             } finally {
                 isLoading = false;
                 infLoader.classList.add('hidden');
@@ -144,14 +155,14 @@
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
             toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
-            toast.innerText = "COPIED! ⚡";
+            toast.innerText = "COPIED TO CLIPBOARD! ⚡";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
 
         // SCROLL SENSOR
         window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
                 fetchGifs(true);
             }
         });
