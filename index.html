@@ -3,65 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | Simple Search</title>
+    <title>BrandGIF | Neo-Brutalist</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Neo-Brutalist Style: Thick borders and hard shadows */
-        .brutal-card { border: 4px solid black; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); transition: 0.2s; }
+        .brutal-card { border: 4px solid black; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); transition: 0.15s; }
         .brutal-card:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px 0px rgba(0,0,0,1); }
-        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
     </style>
 </head>
-<body class="bg-yellow-400 p-8 font-mono">
+<body class="bg-yellow-400 p-8 font-mono text-black">
 
     <header class="text-center mb-12">
-        <h1 class="text-6xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
-        <p class="mt-4 font-bold text-xl">High-Energy Brand Asset Finder</p>
+        <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
+        <p class="mt-4 font-bold text-xl bg-black text-white inline-block px-4 py-1">ASSET SEARCH</p>
     </header>
 
-    <div class="max-w-2xl mx-auto flex gap-4 mb-12">
-        <input type="text" id="search" placeholder="Search brands..." 
-               class="flex-grow p-4 text-2xl font-bold border-4 border-black outline-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-        <button id="go" class="brutal-btn bg-black text-white px-8 text-2xl font-black uppercase">GO</button>
+    <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
+        <input type="text" id="search" placeholder="SEARCH VIBES..." 
+               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase">
+        <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">
+            GO
+        </button>
     </div>
 
-    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <!-- GIFs will appear here -->
-    </div>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto"></div>
 
     <script>
-        const API_KEY = 'YOUR_API_KEY'; // Get one at developers.giphy.com
+        // ⚡ PASTE KEY HERE
+        const API_KEY = 'YOUR_API_KEY'; 
+        
         const grid = document.getElementById('grid');
         const input = document.getElementById('search');
         const button = document.getElementById('go');
 
-        async function fetchGifs(query = 'trending') {
-            const endpoint = query === 'trending' 
-                ? `https://api.giphy.com{API_KEY}&limit=12`
-                : `https://api.giphy.com{API_KEY}&q=${query}&limit=12`;
-
-            const res = await fetch(endpoint);
-            const { data } = await res.json();
+        async function fetchGifs(query = '') {
+            const isTrending = (query.trim() === '');
             
-            grid.innerHTML = data.map(gif => `
-                <div class="brutal-card bg-white p-2 cursor-pointer group overflow-hidden" 
-                     onclick="copyLink('${gif.images.original.url}')">
-                    <img src="${gif.images.fixed_height.url}" class="w-full h-48 object-cover border-2 border-black grayscale group-hover:grayscale-0 transition-all">
-                    <p class="text-center font-bold mt-2 truncate">${gif.title || 'Brand Asset'}</p>
-                </div>
-            `).join('');
+            // FIXED URL STRUCTURE
+            const path = isTrending ? '/v1/gifs/trending' : '/v1/gifs/search';
+            const params = `?api_key=${API_KEY}&limit=12&rating=g${isTrending ? '' : `&q=${encodeURIComponent(query)}`}`;
+            const endpoint = `https://api.giphy.com${path}${params}`;
+
+            try {
+                grid.innerHTML = '<p class="col-span-full text-center font-black animate-pulse text-2xl uppercase">LOADING VIBES...</p>';
+                const res = await fetch(endpoint);
+                const { data } = await res.json();
+                
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase text-2xl">NO RESULTS FOUND</p>';
+                    return;
+                }
+
+                grid.innerHTML = data.map(gif => `
+                    <div class="brutal-card bg-white p-3 cursor-pointer group" onclick="copyLink('${gif.images.original.url}')">
+                        <div class="overflow-hidden border-2 border-black bg-gray-200">
+                            <img src="${gif.images.fixed_height.url}" class="w-full h-48 object-cover grayscale group-hover:grayscale-0 transition-all duration-300">
+                        </div>
+                        <p class="text-center font-black mt-2 truncate text-xs italic uppercase">${gif.title || 'ASSET'}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                grid.innerHTML = '<p class="col-span-full text-center font-black text-red-600 text-2xl uppercase underline">API ERROR - CHECK KEY</p>';
+            }
         }
 
         function copyLink(url) {
             navigator.clipboard.writeText(url);
-            alert("GIF LINK COPIED! ⚡");
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white brutal-card z-50";
+            toast.innerText = "LINK COPIED! ⚡";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
         }
 
         button.onclick = () => fetchGifs(input.value);
         input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
 
-        // Initial Load
         fetchGifs();
     </script>
 </body>
