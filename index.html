@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | Neo-Brutalist v4.0</title>
-    <!-- ⚡ CORRECTED TAILWIND 4.0 BROWSER SCRIPT -->
+    <title>BrandGIF | Simple</title>
+    <!-- ⚡ Tailwind 4.0 Browser Engine -->
     <script src="https://cdn.jsdelivr.net"></script>
     <style type="text/css">
         @theme {
-          --color-brand-yellow: #facc15;
           --shadow-brutal: 8px 8px 0px 0px #000;
         }
-        .brutal-card { border: 4px solid black; box-shadow: var(--shadow-brutal); background: white; transition: 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .brutal-card { border: 4px solid black; box-shadow: var(--shadow-brutal); background: white; transition: 0.15s; }
         .brutal-card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px 0px #000; }
         .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
         .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
         
-        .toggle-btn { background: white; border: 4px solid black; padding: 4px 12px; font-weight: 900; cursor: pointer; }
-        .toggle-btn.active { background: black; color: white; }
+        .mode-btn { background: white; border: 4px solid black; padding: 4px 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .mode-btn.active { background: black; color: white; }
         
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 10px; }
@@ -25,60 +24,37 @@
         ::-webkit-scrollbar-thumb { background: #fff; border: 2px solid #000; }
     </style>
 </head>
-<body id="body" class="bg-yellow-400 font-mono text-black">
+<body class="bg-yellow-400 font-mono text-black p-6 md:p-12">
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
-        <!-- MAIN AREA -->
-        <main class="flex-grow p-6 lg:p-12 lg:border-r-8 lg:border-black">
-            <header class="text-center mb-10">
-                <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8">BrandGIF</h1>
-            </header>
-
-            <div class="max-w-2xl mx-auto mb-16">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="text" id="search" placeholder="SEARCH ASSETS..." 
-                           class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
-                    <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
-                </div>
-                
-                <div class="flex items-center gap-4 mt-6 justify-center">
-                    <div class="flex border-4 border-black shadow-[4px_4px_0px_0px_#000]">
-                        <button onclick="setMode('gifs')" id="gif-mode" class="toggle-btn active uppercase text-xs">GIFS</button>
-                        <button onclick="setMode('stickers')" id="sticker-mode" class="toggle-btn uppercase text-xs">STICKERS</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- THE GRID -->
-            <div id="grid" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto pb-20"></div>
-            
-            <!-- LOADING STATE -->
-            <div id="infinite-loader" class="hidden text-center py-10">
-                <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4">Loading more vibes...</p>
-            </div>
-        </main>
-
-        <!-- SIDEBAR -->
-        <aside class="w-full lg:w-96 bg-white p-8 space-y-8 lg:sticky lg:top-0 lg:h-screen overflow-y-auto border-t-8 lg:border-t-0 border-black">
-            <h2 class="text-3xl font-black uppercase border-b-4 border-black pb-2 italic">Pro Tools ⚡</h2>
-            <a href="https://creativemarket.com" target="_blank" class="block brutal-card p-4 hover:bg-black hover:text-white transition-colors group">
-                <h3 class="text-xl font-black mb-2 uppercase italic">Brand Kits</h3>
-                <p class="text-sm font-bold opacity-70 group-hover:opacity-100 uppercase">Vectors and fonts for pro results.</p>
-                <div class="mt-4 underline font-black text-sm italic uppercase">Upgrade Now →</div>
-            </a>
-
-            <div class="bg-yellow-400 border-4 border-black p-4 shadow-[6px_6px_0px_0px_#000]">
-                <h3 class="font-black uppercase italic mb-2 text-lg text-center font-black">Total Results: <span id="counter">0</span></h3>
+    <!-- Header & Search -->
+    <header class="max-w-6xl mx-auto text-center mb-12">
+        <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8 mb-8">BrandGIF</h1>
+        
+        <div class="max-w-2xl mx-auto space-y-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="search" placeholder="FIND ASSETS..." 
+                       class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
+                <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
             </div>
             
-            <!-- Official GIPHY Attribution Badge (Required for production keys) -->
-            <div class="mt-8 border-t-4 border-black pt-4">
-                <a href="https://developers.giphy.com" target="_blank">
-                    <img src="https://raw.githubusercontent.com" alt="Powered by GIPHY" class="w-32 brutal-card p-1 bg-white hover:invert transition-all">
-                </a>
+            <div class="flex justify-center items-center gap-4">
+                <div class="flex border-4 border-black shadow-[4px_4px_0px_0px_#000]">
+                    <button onclick="setMode('gifs')" id="gif-mode" class="mode-btn active">Gifs</button>
+                    <button onclick="setMode('stickers')" id="sticker-mode" class="mode-btn">Stickers</button>
+                </div>
             </div>
-        </aside>
-    </div>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="max-w-6xl mx-auto">
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20"></div>
+        
+        <!-- Loading State -->
+        <div id="infinite-loader" class="hidden text-center py-10">
+            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1">Loading...</p>
+        </div>
+    </main>
 
     <script>
         const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
@@ -91,7 +67,6 @@
         const input = document.getElementById('search');
         const button = document.getElementById('go');
         const infLoader = document.getElementById('infinite-loader');
-        const counter = document.getElementById('counter');
 
         function setMode(mode) {
             currentMode = mode;
@@ -106,10 +81,9 @@
             infLoader.classList.remove('hidden');
 
             const isTrending = (currentQuery.trim() === '');
-            // FIXED: Added /v1/ and corrected variable injection
             const baseUrl = `https://api.giphy.com{currentMode}`;
             const path = isTrending ? '/trending' : '/search';
-            const endpoint = `${baseUrl}${path}?api_key=${API_KEY}&limit=12&offset=${offset}&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(currentQuery)}`}`;
+            const endpoint = `${baseUrl}${path}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(currentQuery)}`}`;
             
             try {
                 const res = await fetch(endpoint);
@@ -119,26 +93,19 @@
                     const html = data.map(gif => `
                         <div class="brutal-card p-3 group">
                             <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                                <img src="${gif.images.fixed_height.url}" alt="${gif.title}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
+                                <img src="${gif.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
                             </div>
-                            <button onclick="copyLink('${gif.images.original.url}')" class="w-full brutal-btn bg-white py-1 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
+                            <button onclick="copyLink('${gif.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
                         </div>
                     `).join('');
 
-                    if (append) {
-                        grid.insertAdjacentHTML('beforeend', html);
-                    } else {
-                        grid.innerHTML = html;
-                    }
-
-                    offset += 12;
-                    counter.innerText = offset;
+                    append ? grid.insertAdjacentHTML('beforeend', html) : grid.innerHTML = html;
+                    offset += 16;
                 } else if (!append) {
-                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase">Zero Results Found</p>';
+                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase text-xl italic">No Results</p>';
                 }
             } catch (err) {
-                console.error("API ERROR:", err);
-                if (!append) grid.innerHTML = '<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error - Check Connection</p>';
+                console.error(err);
             } finally {
                 isLoading = false;
                 infLoader.classList.add('hidden');
@@ -155,12 +122,11 @@
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
             toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
-            toast.innerText = "COPIED TO CLIPBOARD! ⚡";
+            toast.innerText = "Copied! ⚡";
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
 
-        // SCROLL SENSOR
         window.addEventListener('scroll', () => {
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
                 fetchGifs(true);
@@ -170,7 +136,7 @@
         button.onclick = resetAndSearch;
         input.onkeypress = (e) => { if(e.key === 'Enter') resetAndSearch(); };
         
-        fetchGifs(); // Init
+        fetchGifs(); 
     </script>
 </body>
 </html>
