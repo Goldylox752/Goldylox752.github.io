@@ -1,7 +1,7 @@
 ⚡ BrandGIF | Asset Engine
 A high-performance, Neobrutalist search engine for branded Giphy assets. This project is built with a "zero-dependency" philosophy, utilizing native browser APIs and the latest utility-first styling engines.
-🛠 Tech Stack
 
+🛠 Tech Stack
 1. HTML5 (Semantic Structure)
 Role: The skeleton of the engine.
 Key Features: Uses semantic tags (<header>, <main>, <section>) for SEO and accessibility. It manages the viewport for a responsive, "mobile-first" experience.
