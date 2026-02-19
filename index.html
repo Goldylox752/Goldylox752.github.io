@@ -60,102 +60,112 @@
     </main>
 
     <script>
-        // 1. Get your key at developers.giphy.com
-        const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
+    const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
+    
+    let currentMode = 'gifs';
+    let offset = 0;
+    let isLoading = false;
+    let currentQuery = '';
+
+    // Fun loading messages to keep it interesting
+    const loadingVibes = [
+        "Accessing Datastream...",
+        "Capturing Pixels...",
+        "Rerouting Mainframe...",
+        "Bypassing Firewalls...",
+        "Decrypting Vibes...",
+        "Syncing Assets...",
+        "Loading Energy..."
+    ];
+
+    const grid = document.getElementById('grid');
+    const input = document.getElementById('search');
+    const button = document.getElementById('go');
+    const loader = document.getElementById('loader');
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('gif-mode').classList.toggle('active', mode === 'gifs');
+        document.getElementById('sticker-mode').classList.toggle('active', mode === 'stickers');
+        startFreshSearch();
+    }
+
+    async function performFetch(isAppend = false) {
+        if (isLoading) return;
+        isLoading = true;
+
+        // Randomize the loading message
+        const randomMsg = loadingVibes[Math.floor(Math.random() * loadingVibes.length)];
+        loader.querySelector('p').innerText = randomMsg;
+        loader.classList.remove('hidden');
+
+        const isTrending = currentQuery.trim() === '';
+        const typePath = `/v1/${currentMode}`;
+        const actionPath = isTrending ? '/trending' : '/search';
         
-        let currentMode = 'gifs';
-        let offset = 0;
-        let isLoading = false;
-        let currentQuery = '';
+        let url = `https://api.giphy.com${typePath}${actionPath}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg-13`;
+        if (!isTrending) url += `&q=${encodeURIComponent(currentQuery)}`;
 
-        const grid = document.getElementById('grid');
-        const input = document.getElementById('search');
-        const button = document.getElementById('go');
-        const loader = document.getElementById('loader');
+        try {
+            const response = await fetch(url);
+            const { data, meta } = await response.json();
 
-        // Toggle between GIF and Sticker mode
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('gif-mode').classList.toggle('active', mode === 'gifs');
-            document.getElementById('sticker-mode').classList.toggle('active', mode === 'stickers');
-            startFreshSearch();
-        }
+            if (meta.status !== 200) throw new Error(meta.msg);
 
-        async function performFetch(isAppend = false) {
-            if (isLoading) return;
-            isLoading = true;
-            loader.classList.remove('hidden');
-
-            const isTrending = currentQuery.trim() === '';
-            const typePath = `/v1/${currentMode}`;
-            const actionPath = isTrending ? '/trending' : '/search';
-            
-            // Build the URL
-            let url = `https://api.giphy.com${typePath}${actionPath}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg-13`;
-            if (!isTrending) url += `&q=${encodeURIComponent(currentQuery)}`;
-
-            try {
-                const response = await fetch(url);
-                const { data, meta } = await response.json();
-
-                if (meta.status !== 200) throw new Error(meta.msg);
-
-                if (data.length > 0) {
-                    const cards = data.map(item => `
-                        <div class="brutal-card p-3 group">
-                            <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                                <img src="${item.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
-                            </div>
-                            <button onclick="copyToClipboard('${item.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
+            if (data.length > 0) {
+                const cards = data.map(item => `
+                    <div class="brutal-card p-3 group animate-in fade-in duration-500">
+                        <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
+                            <img src="${item.images.fixed_height.url}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
                         </div>
-                    `).join('');
+                        <button onclick="copyToClipboard('${item.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
+                    </div>
+                `).join('');
 
-                    if (isAppend) {
-                        grid.insertAdjacentHTML('beforeend', cards);
-                    } else {
-                        grid.innerHTML = cards;
-                    }
-                    offset += 16;
-                } else if (!isAppend) {
-                    grid.innerHTML = '<p class="col-span-full text-center font-black uppercase italic">Zero Results</p>';
+                if (isAppend) {
+                    grid.insertAdjacentHTML('beforeend', cards);
+                } else {
+                    grid.innerHTML = cards;
                 }
-            } catch (err) {
-                console.error("Fetch Error:", err);
-                grid.innerHTML = `<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error: ${err.message}</p>`;
-            } finally {
-                isLoading = false;
-                loader.classList.add('hidden');
+                offset += 16;
+            } else if (!isAppend) {
+                grid.innerHTML = '<p class="col-span-full text-center font-black uppercase italic">Zero Results Found</p>';
             }
+        } catch (err) {
+            grid.innerHTML = `<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error: ${err.message}</p>`;
+        } finally {
+            isLoading = false;
+            loader.classList.add('hidden');
         }
+    }
 
-        function startFreshSearch() {
-            offset = 0;
-            currentQuery = input.value;
-            window.scrollTo(0,0);
-            performFetch(false);
+    function startFreshSearch() {
+        offset = 0;
+        currentQuery = input.value;
+        window.scrollTo(0,0);
+        performFetch(false);
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        const toast = document.createElement('div');
+        toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
+        toast.innerText = "Link Secured! ⚡";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+
+    window.onscroll = () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
+            performFetch(true);
         }
+    };
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
-            toast.innerText = "Link Secured! ⚡";
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        // Infinite Scroll Logic
-        window.onscroll = () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-                performFetch(true);
-            }
-        };
-
-        button.onclick = startFreshSearch;
-        input.onkeypress = (e) => { if(e.key === 'Enter') startFreshSearch(); };
-        
-        // Initial Load
-        performFetch();
-    </script>
+    button.onclick = startFreshSearch;
+    input.onkeypress = (e) => { if(e.key === 'Enter') startFreshSearch(); };
+    
+    performFetch();
+</script>
 </body>
 </html>
+
