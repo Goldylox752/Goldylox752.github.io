@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrandGIF | Neo-Brutalist</title>
-    <!-- Modern Tailwind 4.0 Browser Engine -->
+    <title>BrandGIF | Neo-Brutalist v4</title>
+    
+    <!-- ⚡ CORRECT TAILWIND 4.0 BROWSER SCRIPT -->
     <script src="https://cdn.jsdelivr.net"></script>
+    
     <style type="text/css">
-        /* Neo-Brutalist design tokens */
+        /* v4 Theme Configuration */
         @theme {
           --color-brand-yellow: #facc15;
           --shadow-brutal: 8px 8px 0px 0px rgba(0,0,0,1);
           --shadow-brutal-hover: 12px 12px 0px 0px rgba(0,0,0,1);
         }
 
-        .brutal-card { border: 4px solid black; shadow: var(--shadow-brutal); transition: all 0.15s; }
-        .brutal-card:hover { transform: translate(-4px, -4px); shadow: var(--shadow-brutal-hover); }
-        .brutal-btn { border: 4px solid black; shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.1s; cursor: pointer; }
-        .brutal-btn:active { transform: translate(2px, 2px); shadow: none; }
+        /* Custom Brutalist Utilities */
+        .brutal-card { 
+            border: 4px solid black; 
+            box-shadow: var(--shadow-brutal); 
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .brutal-card:hover { 
+            transform: translate(-4px, -4px); 
+            box-shadow: var(--shadow-brutal-hover); 
+        }
+        .brutal-btn { 
+            border: 4px solid black; 
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); 
+            transition: 0.1s; 
+            cursor: pointer; 
+        }
+        .brutal-btn:active { 
+            transform: translate(2px, 2px); 
+            box-shadow: none; 
+        }
         
         .loader {
             width: 60px; height: 60px;
@@ -39,17 +57,22 @@
 
     <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-16">
         <input type="text" id="search" placeholder="TRY 'NIKE' OR 'LEGO'..." 
-               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase bg-white">
+               class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
         <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">
             GO
         </button>
     </div>
 
+    <!-- Spinner -->
     <div id="loader" class="loader"></div>
+
+    <!-- Grid -->
     <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto"></div>
 
     <script>
+        // Your active GIPHY key
         const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
+        
         const grid = document.getElementById('grid');
         const loader = document.getElementById('loader');
         const input = document.getElementById('search');
@@ -59,7 +82,7 @@
             const isTrending = (query.trim() === '');
             const path = isTrending ? '/v1/gifs/trending' : '/v1/gifs/search';
             
-            // CHANGED: rating set to 'pg' for better brand results
+            // Fixed URL template literals
             const params = `?api_key=${API_KEY}&limit=12&rating=pg${isTrending ? '' : `&q=${encodeURIComponent(query)}`}`;
             const endpoint = `https://api.giphy.com${path}${params}`;
 
@@ -82,8 +105,9 @@
 
                 grid.innerHTML = data.map(gif => `
                     <div class="brutal-card bg-white p-3 cursor-pointer group" onclick="copyLink('${gif.images.original.url}')">
-                        <div class="overflow-hidden border-2 border-black bg-gray-100 aspect-square">
-                            <img src="${gif.images.fixed_height.url}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 scale-105 group-hover:scale-100">
+                        <div class="overflow-hidden border-2 border-black bg-gray-200 aspect-square">
+                            <img src="${gif.images.fixed_height.url}" 
+                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110">
                         </div>
                         <p class="text-center font-black mt-2 truncate text-xs italic uppercase bg-black text-white py-1">
                             ${gif.title || 'BRAND ASSET'}
@@ -99,6 +123,7 @@
         function copyLink(url) {
             navigator.clipboard.writeText(url);
             const toast = document.createElement('div');
+            // Using Tailwind 4's dynamic classes
             toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black p-4 font-black border-4 border-black shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce";
             toast.innerText = "COPIED TO CLIPBOARD! ⚡";
             document.body.appendChild(toast);
@@ -108,6 +133,7 @@
         button.onclick = () => fetchGifs(input.value);
         input.onkeypress = (e) => { if(e.key === 'Enter') fetchGifs(input.value); };
 
+        // Initial Load
         fetchGifs();
     </script>
 </body>
