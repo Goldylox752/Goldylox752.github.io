@@ -1,1 +1,1 @@
-const GIPHY_KEY = "yI51wxZLtUjqGdALCfbNkxldrcXX5IVG";
+ https://api.klipy.com
