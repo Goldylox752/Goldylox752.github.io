@@ -28,5 +28,5 @@ One-Click "Secured" Logic: Dual-action buttons for Copy Link (clipboard) and Sav
 
 📝 Compliance & Licensing
 
-Attribution: Powered by GIPHY.
+Powered by GIPHY.
 
