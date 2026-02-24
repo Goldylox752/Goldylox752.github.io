@@ -1,5 +1,4 @@
 BrandGIF | Asset Engine 
-Search engine for branded digital assets.
 
 🟦 HTML5 & Semantic Architecture
 
