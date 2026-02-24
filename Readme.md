@@ -35,3 +35,6 @@ One-Click "Secured" Logic: Dual-action buttons for Copy Link (clipboard) and Sav
 Attribution: Powered by GIPHY.
 License: MIT License. Free for personal and commercial use.
 Built for speed. Built for brands. Built with BrandGIF.
+
+License
+MIT License © Goldylox752
