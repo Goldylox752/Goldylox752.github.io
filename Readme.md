@@ -27,12 +27,6 @@ Keyboard Mastery: Numeric keys 1-9 act as hotkeys to instantly copy the correspo
 Infinite Scrolling: Smart Intersection-style logic that prefetches assets before you even hit the bottom.
 One-Click "Secured" Logic: Dual-action buttons for Copy Link (clipboard) and Save Asset (direct download).
 
-📦 Rapid Deployment 
-
-Clone: git clone https://github.com
-Configure: Replace API_KEY in the script with your Giphy Developer Key.
-Launch: Open index.html in any modern browser.
-No Node.js, no Bundlers, no Friction.
 
 📝 Compliance & Licensing
 
