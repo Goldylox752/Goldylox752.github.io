@@ -1,6 +1,8 @@
-⚡ BrandGIF | Asset Engine
+⚡ BrandGIF | Asset Engine 
 
-The high-velocity, Neobrutalist search engine for branded digital assets.
+The high-velocity, 
+
+Neobrutalist search engine for branded digital assets.
 
 Engineering Stack
 
