@@ -1,12 +1,10 @@
 ⚡ BrandGIF | Asset Engine 
-
-The high-velocity, 
-
-Neobrutalist search engine for branded digital assets.
+search engine for branded digital assets.
 
 Engineering Stack
 
 🟦 HTML5 & Semantic Architecture
+
 Built for maximum SEO and accessibility. Uses a mobile-first, responsive viewport strategy to ensure the engine runs flawlessly on everything from iPhones to ultra-wide monitors. 
 
 🟨 CSS3 & Tailwind 4.0 (Alpha Engine)
