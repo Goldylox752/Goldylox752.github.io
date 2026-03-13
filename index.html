@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SS Solutions | Asset Engine</title>
 
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+background:#1e293b;
+padding:30px;
+border-radius:10px;
+width:350px;
+text-align:center;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+}
+
+button{
+margin-top:15px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:6px;
+background:#22c55e;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+.status{
+margin-top:10px;
+font-size:14px;
+color:#94a3b8;
+}
+
+.donate{
+margin-top:20px;
+}
+
+.donate a{
+color:#38bdf8;
+text-decoration:none;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Asset Downloader</h2>
+
+<p>Paste video or media URL</p>
+
+<input type="text" id="videoUrl" placeholder="Paste URL here">
+
+<button onclick="handleDownload()">Download</button>
+
+<div class="status" id="status"></div>
+
+<div class="donate">
+Support the project ❤️<br>
+<a href="https://buy.stripe.com/YOUR_LINK" target="_blank">
+Donate with Stripe
+</a>
+</div>
+
+</div>
+
+<script>
+
+function handleDownload(){
+
+let url = document.getElementById("videoUrl").value;
+let status = document.getElementById("status");
+
+if(url === ""){
+status.innerText = "Please enter a URL.";
+return;
+}
+
+status.innerText = "Processing...";
+
+setTimeout(()=>{
+status.innerText = "Download started (demo mode)";
+},1500);
+
+}
+
+</script>
+
+</body>
+</html>
