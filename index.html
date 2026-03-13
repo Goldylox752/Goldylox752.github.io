@@ -5,102 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Engine | SS Solutions</title>
     <script src="https://cdnjs.cloudflare.com"></script>
-   
-    .indicator { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-.offline { background: #ef4444; }
-
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --green: #22c55e; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: white; display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
-        .container { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid #334155; }
-        h1 { font-size: 26px; margin-bottom: 8px; }
-        .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
-        .section { background: rgba(15, 23, 42, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
-        input[type="text"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 10px; outline: none; }
-        .file-label { display: block; padding: 10px; background: #334155; border-radius: 8px; cursor: pointer; font-size: 13px; border: 1px dashed var(--accent); margin-bottom: 10px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; text-decoration: none; display: inline-block; }
-        .btn-dl { background: var(--green); color: white; margin-bottom: 5px; }
+        :root {
+            --bg: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+            --glass: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --subtext: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #38bdf8;
+            --green: #22c55e;
+            --stripe: #6366f1;
+        }
+
+        .light-mode {
+            --bg: radial-gradient(circle at top left, #f1f5f9, #cbd5e1);
+            --glass: rgba(255, 255, 255, 0.8);
+            --text: #0f172a;
+            --subtext: #475569;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .theme-toggle { position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 20px; opacity: 0.7; }
+        h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
+        .subtitle { color: var(--subtext); font-size: 14px; margin-bottom: 30px; }
+
+        .section {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+
+        input, select {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.1); color: var(--text); outline: none; margin-bottom: 12px;
+        }
+
+        .btn {
+            width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
+            text-transform: uppercase; font-size: 14px; text-decoration: none; display: inline-block;
+        }
+
+        .btn-dl { background: var(--green); color: white; }
         .btn-gif { background: var(--accent); color: #0f172a; }
-        .btn-stripe { background: #6366f1; color: white; margin-top: 10px; }
-        .status { font-size: 12px; color: var(--accent); margin-top: 8px; min-height: 18px; }
-        .gif-result { display: none; margin-top: 15px; padding: 10px; background: #0f172a; border-radius: 12px; border: 2px solid var(--accent); }
-        #gifPreview { width: 100%; border-radius: 6px; margin-bottom: 10px; }
-        .success-msg { display: none; background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; border: 1px solid var(--green); }
+        .btn-stripe { background: var(--stripe); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        .btn-copy { background: var(--accent); color: #0f172a; width: auto; padding: 8px 16px; font-size: 11px; display: none; margin: 10px auto 0; }
+
+        .btn:hover { transform: translateY(-2px); opacity: 0.95; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+
+        .status { font-size: 12px; color: var(--accent); margin-top: 10px; text-align: center; min-height: 18px; }
+
+        .gif-preview-box { display: none; margin-top: 20px; background: #000; border-radius: 12px; padding: 10px; border: 2px solid var(--accent); }
+        #gifPreview { width: 100%; border-radius: 8px; }
+
+        .support-text { font-size: 12px; color: var(--subtext); margin-bottom: 10px; font-weight: 500; }
+
+        footer { margin-top: 30px; font-size: 10px; color: var(--subtext); text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="paySuccess" class="success-msg">Success! Thank you for supporting SS Solutions ❤️</div>
-    
-    <h1>Asset Engine</h1>
-    <p class="subtitle">Premium Media Tools</p>
+    <div class="theme-toggle" onclick="document.body.classList.toggle('light-mode')">🌓</div>
 
+    <h1>Asset Engine</h1>
+    <p class="subtitle">SS Solutions Branded Media Tools</p>
+
+    <!-- Downloader -->
     <div class="section">
+        <label>Media Downloader</label>
         <input type="text" id="dlInput" placeholder="Paste Video URL">
-        <button class="btn btn-dl" onclick="doDownload()">Download Video</button>
+        
+        <label>Output Quality</label>
+        <select id="quality">
+            <option value="720">720p (Standard)</option>
+            <option value="1080">1080p (HD)</option>
+            <option value="2160">4K (Maximum)</option>
+        </select>
+
+        <button class="btn btn-dl" onclick="runDownload()">Download Asset</button>
         <div class="status" id="dlStatus"></div>
+        <button id="copyBtn" class="btn btn-copy" onclick="copyLink()">📋 Copy Link</button>
     </div>
 
+    <!-- GIF Section -->
     <div class="section">
-        <label for="fileInput" class="file-label" id="fileLabel">📁 Upload Video for GIF</label>
-        <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="document.getElementById('fileLabel').innerText='✅ File Loaded'">
-        <button class="btn btn-gif" onclick="makeGIF()">Create Branded GIF</button>
+        <label>GIF Creator (SS-Branded)</label>
+        <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="document.getElementById('fileLabel').innerText='✅ File Ready'">
+        <label for="fileInput" id="fileLabel" style="background:rgba(0,0,0,0.1); padding:12px; border-radius:8px; cursor:pointer; text-align:center; border: 1px dashed var(--accent); display: block;">📁 Upload Video</label>
+        
+        <button class="btn btn-gif" style="margin-top:15px;" onclick="runGif()">Generate Branded GIF</button>
         <div class="status" id="gifStatus"></div>
-        <div id="gifResult" class="gif-result">
+
+        <div id="gifResult" class="gif-preview-box">
             <img id="gifPreview" src="">
-            <a id="gifSave" href="#" download="SS-Branded.gif" class="btn btn-dl">Save GIF</a>
+            <a id="gifSave" href="#" download="SS-Branded.gif" class="btn btn-dl" style="margin-top:10px; text-align:center;">Save GIF</a>
         </div>
     </div>
 
-    <p style="font-size: 12px; color: #94a3b8;">Support the project</p>
-    <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">Donate with Stripe</a>
+    <!-- Payment Link Section -->
+    <div class="section" style="background:transparent; border:none; padding:10px 0;">
+        <p class="support-text">Keep the engine running ❤️</p>
+        <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">
+            Support via Stripe
+        </a>
+    </div>
 
-    <footer style="margin-top:20px; font-size:10px; color:#64748b;">SS SOLUTIONS © 2026</footer>
+    <footer>SS SOLUTIONS © 2026</footer>
 </div>
 
 <script>
-    // Handle Stripe Success
-    if (new URLSearchParams(window.location.search).get('status') === 'success') {
-        document.getElementById('paySuccess').style.display = 'block';
-    }
+    let currentDownloadUrl = "";
 
-    async function doDownload() {
+    async function runDownload() {
         const url = document.getElementById("dlInput").value;
+        const quality = document.getElementById("quality").value;
         const status = document.getElementById("dlStatus");
-        if(!url) return status.innerText = "Paste a link!";
-        status.innerText = "Processing...";
+        const copyBtn = document.getElementById("copyBtn");
+        
+        if (!url) return status.innerText = "⚠️ URL required";
+        status.innerText = "⚡ Scanning nodes...";
+        copyBtn.style.display = "none";
+
         try {
-            const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
+            const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&quality=${quality}`);
             const data = await res.json();
-            if(data.downloadUrl) window.open(data.downloadUrl, '_blank');
-            else status.innerText = "Error fetching link.";
-        } catch { status.innerText = "Server busy. Try again."; }
+            if (data.downloadUrl) {
+                currentDownloadUrl = data.downloadUrl;
+                status.innerText = "✅ Link Ready!";
+                copyBtn.style.display = "block";
+                window.open(data.downloadUrl, '_blank');
+            }
+        } catch (err) {
+            status.innerText = "❌ Connection failed. Try again.";
+        }
     }
 
-    function makeGIF() {
+    function copyLink() {
+        navigator.clipboard.writeText(currentDownloadUrl);
+        const copyBtn = document.getElementById("copyBtn");
+        copyBtn.innerText = "✅ Copied!";
+        setTimeout(() => { copyBtn.innerText = "📋 Copy Link"; }, 2000);
+    }
+
+    function runGif() {
         const file = document.getElementById("fileInput").files[0];
         const status = document.getElementById("gifStatus");
-        if(!file) return status.innerText = "Upload a file first!";
-        status.innerText = "Generating Branded GIF...";
+        if (!file) return status.innerText = "⚠️ Upload file first";
+
+        status.innerText = "🎨 Branding GIF...";
         gifshot.createGIF({
             video: [URL.createObjectURL(file)],
-            numFrames: 20,
+            numFrames: 25,
             text: 'SS SOLUTIONS',
             fontColor: '#38bdf8',
             textAlign: 'right',
             textBaseline: 'bottom'
-        }, (obj) => {
-            if(!obj.error) {
+        }, function (obj) {
+            if (!obj.error) {
                 document.getElementById("gifPreview").src = obj.image;
                 document.getElementById("gifSave").href = obj.image;
                 document.getElementById("gifResult").style.display = "block";
-                status.innerText = "Ready!";
+                status.innerText = "✅ Branded & Ready!";
             }
         });
     }
 </script>
 </body>
 </html>
+
