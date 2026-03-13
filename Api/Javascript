@@ -55,4 +55,38 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Leads");
+    const data = JSON.parse(e.postData.contents);
+    const userEmail = data.email;
+    const actionType = data.type === 'download' ? "4K Video Download" : "Branded GIF";
+
+    // 1. Save to Google Sheet
+    sheet.appendRow([new Date(), userEmail, data.type]);
+
+    // 2. Send Auto-Responder Email
+    MailApp.sendEmail({
+      to: userEmail,
+      subject: "Your Asset is Ready! 🚀 - SS Solutions",
+      htmlBody: `
+        <div style="font-family: sans-serif; color: #333; max-width: 600px; border: 1px solid #eee; padding: 20px;">
+          <h2 style="color: #38bdf8;">Welcome to the SS Solutions Network!</h2>
+          <p>Thank you for using the <b>Asset Engine</b> to generate your <b>${actionType}</b>.</p>
+          <p>As a member of our creator list, you'll get early access to our newest high-speed media tools before anyone else.</p>
+          <br>
+          <p style="font-size: 12px; color: #666;">Keep creating,<br><b>The SS Solutions Team</b></p>
+          <hr style="border: 0; border-top: 1px solid #eee;">
+          <p style="font-size: 10px; color: #999;">You received this because you used the Asset Engine tool.</p>
+        </div>
+      `
+    });
+
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
+
