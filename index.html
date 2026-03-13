@@ -5,7 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SS
         Solutions | Asset Engine</title>
-    
+    async function handleDownload() {
+    const urlInput = document.getElementById('videoUrl').value;
+    const status = document.getElementById('statusMessage');
+    const btn = document.getElementById('dlBtn');
+
+    if (!urlInput) return alert("Please paste a YouTube link!");
+
+    // UI Feedback
+    btn.disabled = true;
+    status.innerText = "Requesting download from Cobalt...";
+
+    try {
+        const response = await fetch('/api/cobalt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                url: urlInput,
+                mode: "auto" // Change to "audio" if you want an MP3 downloader
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.downloadUrl) {
+            status.innerText = "Download starting...";
+            // Automatically open the download link
+            window.location.href = data.downloadUrl;
+        } else {
+            status.innerText = "Error: " + data.error;
+        }
+    } catch (err) {
+        status.innerText = "Connection error. Check your API folder.";
+    } finally {
+        btn.disabled = false;
+    }
+}
+
     <!-- ⚡ Tailwind 4.0 Modern Browser Engine -->
     <script src="https://cdn.jsdelivr.net"></script>
     
