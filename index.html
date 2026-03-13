@@ -7,6 +7,8 @@
 
 <!-- GIF library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+<!-- Stripe JS -->
+<script src="https://js.stripe.com/v3/"></script>
 
 <style>
 :root {
@@ -15,8 +17,9 @@
     --accent: #38bdf8;
     --green: #22c55e;
     --text: #f8fafc;
-    --border: rgba(255, 255, 255, 0.1);
+    --border: rgba(255,255,255,0.1);
 }
+
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; transition:0.3s ease; }
 body { background: var(--bg); color: var(--text); display:flex; justify-content:center; padding:40px 20px; min-height:100vh; overflow-x:hidden; }
 .container { background: var(--glass); backdrop-filter: blur(20px); padding:40px; border-radius:28px; width:100%; max-width:480px; text-align:center; border:1px solid var(--border); box-shadow:0 25px 50px rgba(0,0,0,0.4); position:relative; }
@@ -85,8 +88,7 @@ footer { margin-top:30px; font-size:10px; color:#64748b; letter-spacing:3px; fon
 
   <div style="padding:10px 0;">
     <p style="font-size:11px; color:#475569; margin-bottom:8px; font-weight:600;">Support Project Infrastructure ❤️</p>
-    <!-- Fixed Stripe Donate Link -->
-    <a href="https://buy.stripe.com/4gM3co1erg5e2Fx3YY2ZO02" target="_blank" class="btn btn-stripe">Donate with Stripe</a>
+    <button id="stripeDonateBtn" class="btn btn-stripe">Donate with Stripe</button>
   </div>
 
   <footer>SS SOLUTIONS © 2026</footer>
@@ -96,41 +98,44 @@ footer { margin-top:30px; font-size:10px; color:#64748b; letter-spacing:3px; fon
 let pendingAction = null;
 const isReturningUser = localStorage.getItem('ss_lead_captured');
 
-function triggerAction(type) {
-  if (!isReturningUser) {
+// Gated content
+function triggerAction(type){
+  if(!isReturningUser){
     pendingAction = type;
     document.getElementById('leadModal').style.display = 'flex';
   } else {
-    type === 'download' ? runDownload() : runGif();
+    type==='download'?runDownload():runGif();
   }
 }
 
-function submitLead() {
+// Capture lead
+function submitLead(){
   const email = document.getElementById('leadEmail').value;
-  if (!email || !email.includes('@')) { alert("Please enter a valid email."); return; }
-  console.log("Captured Lead:", email);
+  if(!email || !email.includes('@')){ alert("Please enter a valid email."); return; }
   localStorage.setItem('ss_lead_captured','true');
-  localStorage.setItem('ss_user_email', email);
-  document.getElementById('leadModal').style.display = 'none';
-  pendingAction === 'download' ? runDownload() : runGif();
+  localStorage.setItem('ss_user_email',email);
+  document.getElementById('leadModal').style.display='none';
+  pendingAction==='download'?runDownload():runGif();
 }
 
-async function runDownload() {
+// Downloader
+async function runDownload(){
   const url = document.getElementById("dlInput").value;
   const status = document.getElementById("dlStatus");
-  if (!url) return status.innerText="⚠️ Please paste a link";
+  if(!url){ status.innerText="⚠️ Please paste a link"; return; }
   status.innerText="⚡ Routing through high-res nodes...";
-  try {
+  try{
     const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&quality=${document.getElementById("quality").value}`);
     const data = await res.json();
     if(data.downloadUrl){ window.open(data.downloadUrl,'_blank'); status.innerText="✅ Download Started"; }
-  } catch { status.innerText="❌ Error processing."; }
+  }catch{ status.innerText="❌ Error processing."; }
 }
 
-function runGif() {
+// GIF creator
+function runGif(){
   const file = document.getElementById("fileInput").files;
   const status = document.getElementById("gifStatus");
-  if(file.length===0) return status.innerText="⚠️ Upload file first";
+  if(file.length===0){ status.innerText="⚠️ Upload file first"; return; }
   status.innerText="🎨 Branding SS-Solutions GIF...";
   gifshot.createGIF({
     video: [URL.createObjectURL(file[0])],
@@ -139,15 +144,29 @@ function runGif() {
     fontColor: '#38bdf8',
     textAlign: 'right',
     textBaseline: 'bottom'
-  }, (obj) => {
+  }, (obj)=>{
     if(!obj.error){
-      document.getElementById("gifPreview").src = obj.image;
-      document.getElementById("gifSave").href = obj.image;
+      document.getElementById("gifPreview").src=obj.image;
+      document.getElementById("gifSave").href=obj.image;
       document.getElementById("gifResult").style.display="block";
       status.innerText="✅ Ready!";
     }
   });
 }
+
+// Stripe Donate
+const stripe = Stripe("pk_live_YOUR_PUBLIC_KEY_HERE"); // replace with your publishable key
+document.getElementById("stripeDonateBtn").addEventListener("click", async ()=>{
+  try{
+    const res = await fetch("/create-checkout-session", { method:"POST", headers:{"Content-Type":"application/json"} });
+    const session = await res.json();
+    const result = await stripe.redirectToCheckout({ sessionId: session.id });
+    if(result.error) alert(result.error.message);
+  }catch(err){
+    console.error(err);
+    alert("Error starting Stripe checkout.");
+  }
+});
 </script>
 </body>
 </html>
