@@ -5,102 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Engine | SS Solutions</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: #0f172a; color: white; display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --green: #22c55e; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: white; display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
         
-        .container { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .container { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid #334155; }
         
-        h1 { font-size: 24px; margin-bottom: 8px; color: #f8fafc; }
-        p { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+        h1 { font-size: 26px; margin-bottom: 8px; letter-spacing: -1px; }
+        .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
 
         input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; margin-bottom: 12px; transition: 0.3s; }
-        input:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        input:focus { border-color: var(--accent); }
 
         .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px; text-decoration: none; display: inline-block; }
-        .btn-primary { background: #22c55e; color: white; }
-        .btn-primary:hover { background: #16a34a; transform: translateY(-1px); }
-        
-        /* Stripe Button Styling */
-        .btn-stripe { background: #6366f1; color: white; margin-top: 15px; box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3); }
-        .btn-stripe:hover { background: #4f46e5; transform: translateY(-1px); }
+        .btn-download { background: var(--green); color: white; }
+        .btn-stripe { background: #6366f1; color: white; margin-top: 20px; }
 
-        .status { margin: 10px 0; font-size: 13px; color: #38bdf8; min-height: 20px; font-weight: 500; }
+        .status-box { margin: 15px 0; padding: 10px; border-radius: 8px; font-size: 13px; background: rgba(15, 23, 42, 0.5); min-height: 40px; display: flex; align-items: center; justify-content: center; }
+        
+        .success-banner { display: none; background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; border: 1px solid var(--green); }
+
         .divider { height: 1px; background: #334155; margin: 25px 0; }
-        
-        .success-banner { display: none; background: rgba(34, 197, 94, 0.1); color: #4ade80; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; font-weight: 600; border: 1px solid rgba(34, 197, 94, 0.2); }
-
-        footer { margin-top: 30px; font-size: 11px; color: #64748b; letter-spacing: 0.5px; }
+        footer { margin-top: 30px; font-size: 11px; color: #64748b; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Visible only after successful Stripe redirect -->
-    <div id="successBanner" class="success-banner">Thank you for your support! ❤️</div>
+    <div id="paySuccess" class="success-banner">Thank you for your support! ❤️</div>
 
     <h1>Asset Engine</h1>
-    <p>High-speed downloader for social media</p>
+    <p class="subtitle">Multi-node high-speed downloader</p>
 
     <input type="text" id="urlInput" placeholder="Paste YouTube, TikTok, or Twitter link">
-    <button class="btn btn-primary" id="dlBtn" onclick="startDownload()">Download Asset</button>
+    <button class="btn btn-download" id="dlBtn" onclick="handleDownload()">Download Asset</button>
     
-    <div class="status" id="statusMessage">Ready to process</div>
+    <div class="status-box" id="status">System Ready</div>
 
     <div class="divider"></div>
 
-    <div class="support-box">
-        <p style="margin-bottom: 8px; font-weight: 600; color: #f8fafc;">Support the project</p>
-        <!-- Your Verified Stripe Link -->
-        <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">
-            Donate with Stripe
-        </a>
-    </div>
+    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Support the project</p>
+    <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">Donate with Stripe</a>
 
-    <footer>SS SOLUTIONS &copy; 2026</footer>
+    <footer>SS SOLUTIONS © 2026</footer>
 </div>
 
 <script>
-    // Show success message if coming back from Stripe
-    window.onload = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('status') === 'success') {
-            document.getElementById('successBanner').style.display = 'block';
-        }
-    };
+    // Handle Stripe Redirect
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'success') document.getElementById('paySuccess').style.display = 'block';
 
-    async function startDownload() {
+    async function handleDownload() {
         const input = document.getElementById("urlInput");
-        const status = document.getElementById("statusMessage");
+        const status = document.getElementById("status");
         const btn = document.getElementById("dlBtn");
         const url = input.value.trim();
 
         if (!url) {
-            status.innerText = "⚠️ Please paste a valid URL";
-            status.style.color = "#f43f5e";
+            status.innerText = "⚠️ Please paste a link first";
+            status.style.color = "#fb7185";
             return;
         }
 
+        status.innerText = "⚡ Scanning nodes for availability...";
         status.style.color = "#38bdf8";
-        status.innerText = "⚡ Processing on server...";
         btn.disabled = true;
-        btn.style.opacity = "0.6";
+        btn.style.opacity = "0.5";
 
         try {
-            // Calls your Vercel backend /api/download.js
             const response = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
             if (data.downloadUrl) {
-                status.innerText = "✅ Download ready!";
-                status.style.color = "#22c55e";
-                window.open(data.downloadUrl, '_blank');
+                status.innerText = "✅ Connection established! Downloading...";
+                status.style.color = "#4ade80";
+                window.location.href = data.downloadUrl; // Direct download trigger
                 input.value = "";
             } else {
-                throw new Error(data.error || "Failed");
+                throw new Error(data.error);
             }
         } catch (err) {
-            status.innerText = "❌ Error: Could not process link";
-            status.style.color = "#f43f5e";
+            status.innerText = "❌ All nodes blocked. Try again later.";
+            status.style.color = "#fb7185";
         } finally {
             btn.disabled = false;
             btn.style.opacity = "1";
