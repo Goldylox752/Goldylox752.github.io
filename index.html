@@ -20,15 +20,20 @@
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px; text-decoration: none; display: inline-block; }
         .btn-primary { background: #22c55e; color: white; margin-bottom: 10px; }
         .btn-primary:hover { background: #16a34a; transform: translateY(-1px); }
-        .btn-stripe { background: #6366f1; color: white; }
-        .btn-stripe:hover { background: #4f46e5; }
+        .btn-gif { background: #38bdf8; color: white; }
+        .btn-gif:hover { background: #0ea5e9; }
 
         .status { margin: 10px 0; font-size: 13px; color: #38bdf8; min-height: 20px; }
-        
         .divider { height: 1px; background: #334155; margin: 25px 0; }
         
         .gif-output-container { margin-top: 15px; background: #0f172a; border-radius: 8px; overflow: hidden; display: none; padding: 10px; }
         #gifOutput { width: 100%; border-radius: 4px; margin-bottom: 10px; }
+
+        /* History Section Styles */
+        .history-section { text-align: left; margin-top: 20px; }
+        .history-list { list-style: none; padding: 0; }
+        .history-item { background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; border-left: 3px solid #22c55e; color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .history-item.gif { border-left-color: #38bdf8; }
 
         footer { margin-top: 30px; font-size: 11px; color: #64748b; letter-spacing: 1px; }
     </style>
@@ -39,18 +44,15 @@
     <h1>Asset Engine</h1>
     <p>High-speed media downloader & GIF creator</p>
 
-    <!-- Download Section -->
     <input type="text" id="urlInput" placeholder="Paste video or media URL">
     <button class="btn btn-primary" onclick="startDownload()">Download Asset</button>
     <div class="status" id="statusMessage">Ready</div>
 
     <div class="divider"></div>
 
-    <!-- GIF Generator Section -->
     <h2>GIF Generator</h2>
-    <p>Convert video URLs into optimized GIFs</p>
     <input type="text" id="gifUrlInput" placeholder="Paste video URL">
-    <button class="btn btn-primary" style="background: #38bdf8;" onclick="generateGIF()">Generate GIF</button>
+    <button class="btn btn-gif" onclick="generateGIF()">Generate GIF</button>
     <div class="status" id="gifStatus">Enter URL to begin</div>
     
     <div class="gif-output-container" id="gifContainer">
@@ -60,20 +62,22 @@
 
     <div class="divider"></div>
 
-    <!-- Donate Section -->
-    <div class="donate">
-        <p>Support the project ❤️</p>
-        <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">
-            Donate with Stripe
-        </a>
+    <div class="history-section">
+        <h2>Recent Activity</h2>
+        <ul id="historyList" class="history-list">
+            <!-- Items injected via JS -->
+        </ul>
     </div>
 
     <footer>SS SOLUTIONS &copy; 2026</footer>
 </div>
 
 <script>
+    // Load history on startup
+    window.onload = () => updateHistoryUI();
+
     function startDownload() {
-        const url = document.getElementById("urlInput").value;
+        const url = document.getElementById("urlInput").value.trim();
         const status = document.getElementById("statusMessage");
 
         if (!url) {
@@ -87,11 +91,13 @@
         
         setTimeout(() => {
             status.innerText = "✅ Download started (Demo Mode)";
+            status.style.color = "#22c55e";
+            saveToHistory(`Download: ${url}`, 'download');
         }, 1500);
     }
 
     async function generateGIF() {
-        const gifUrl = document.getElementById("gifUrlInput").value;
+        const gifUrl = document.getElementById("gifUrlInput").value.trim();
         const gifStatus = document.getElementById("gifStatus");
         const gifContainer = document.getElementById("gifContainer");
         const gifOutput = document.getElementById("gifOutput");
@@ -107,17 +113,38 @@
         gifStatus.innerText = "Processing video frames...";
         gifContainer.style.display = "none";
 
-        // Simulated API Delay
         setTimeout(() => {
             gifStatus.innerText = "✅ GIF Generated Successfully!";
             gifStatus.style.color = "#22c55e";
             gifContainer.style.display = "block";
             
-            // Using a high-quality placeholder for demo
             const demoImg = "https://media.giphy.com";
             gifOutput.src = demoImg;
             downloadLink.href = demoImg;
+            saveToHistory(`GIF: ${gifUrl}`, 'gif');
         }, 2500);
+    }
+
+    function saveToHistory(text, type) {
+        let history = JSON.parse(localStorage.getItem('assetHistory') || '[]');
+        history.unshift({ text, type }); // Add to start
+        history = history.slice(0, 5); // Keep last 5
+        localStorage.setItem('assetHistory', JSON.stringify(history));
+        updateHistoryUI();
+    }
+
+    function updateHistoryUI() {
+        const list = document.getElementById('historyList');
+        const history = JSON.parse(localStorage.getItem('assetHistory') || '[]');
+        
+        if (history.length === 0) {
+            list.innerHTML = '<li style="color:#64748b; font-size:12px;">No recent activity</li>';
+            return;
+        }
+
+        list.innerHTML = history.map(item => `
+            <li class="history-item ${item.type}">${item.text}</li>
+        `).join('');
     }
 </script>
 
