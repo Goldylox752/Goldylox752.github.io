@@ -8,25 +8,15 @@
     <style>
         :root {
             --bg: radial-gradient(circle at top left, #1e1b4b, #0f172a);
-            --glass: rgba(30, 41, 59, 0.75);
-            --text: #f8fafc;
-            --subtext: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(30, 41, 59, 0.8);
             --accent: #38bdf8;
             --green: #22c55e;
-            --red: #ef4444;
+            --text: #f8fafc;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        .light-mode {
-            --bg: radial-gradient(circle at top left, #f1f5f9, #cbd5e1);
-            --glass: rgba(255, 255, 255, 0.85);
-            --text: #0f172a;
-            --subtext: #475569;
-            --border: rgba(0, 0, 0, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: 0.3s ease; }
-        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.3s ease; }
+        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; overflow-x: hidden; }
 
         .container {
             background: var(--glass);
@@ -37,77 +27,86 @@
             max-width: 480px;
             text-align: center;
             border: 1px solid var(--border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
             position: relative;
         }
 
-        /* Status Indicator */
-        .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
-        .indicator { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .online { background: var(--green); box-shadow: 0 0 8px var(--green); }
-        .offline { background: var(--red); box-shadow: 0 0 8px var(--red); }
-
-        .theme-toggle { cursor: pointer; font-size: 18px; opacity: 0.6; }
-        .theme-toggle:hover { opacity: 1; }
-
-        h1 { font-size: 30px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 5px; }
-        .subtitle { color: var(--subtext); font-size: 14px; margin-bottom: 25px; }
-
-        .section {
-            background: rgba(0, 0, 0, 0.15);
-            padding: 24px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            text-align: left;
+        /* Lead Gen Modal Styling */
+        #leadModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
 
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        .modal-content {
+            background: #1e293b;
+            padding: 35px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+        }
+
+        h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+        .section { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); text-align: left; }
+        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
 
         input, select {
             width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
-            background: rgba(0, 0, 0, 0.1); color: var(--text); outline: none; margin-bottom: 12px; font-size: 14px;
+            background: rgba(0,0,0,0.1); color: white; outline: none; margin-bottom: 15px; font-size: 14px;
         }
 
         .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
-            text-transform: uppercase; font-size: 14px; text-decoration: none; display: inline-block; text-align: center;
+            width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
+            text-transform: uppercase; font-size: 14px; text-decoration: none; display: inline-block;
         }
 
         .btn-dl { background: var(--green); color: white; }
         .btn-gif { background: var(--accent); color: #0f172a; }
         .btn-stripe { background: #6366f1; color: white; margin-top: 10px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
 
-        .status-text { font-size: 12px; color: var(--accent); margin-top: 10px; text-align: center; min-height: 18px; font-style: italic; }
-
+        .status-text { font-size: 12px; color: var(--accent); margin-top: 10px; text-align: center; min-height: 18px; }
         .gif-result { display: none; margin-top: 20px; background: #000; border-radius: 16px; padding: 10px; border: 2px solid var(--accent); }
         #gifPreview { width: 100%; border-radius: 8px; margin-bottom: 10px; }
 
-        footer { margin-top: 30px; font-size: 10px; color: var(--subtext); text-transform: uppercase; letter-spacing: 3px; font-weight: 700; opacity: 0.5; }
+        footer { margin-top: 30px; font-size: 10px; color: #64748b; letter-spacing: 3px; font-weight: 700; opacity: 0.5; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="status-header">
-        <div><span id="light" class="indicator offline"></span> ENGINE: <span id="engineStatus">OFFLINE</span></div>
-        <div class="theme-toggle" onclick="document.body.classList.toggle('light-mode')">🌓</div>
+<!-- Lead Generation Modal -->
+<div id="leadModal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 10px; color: var(--accent);">JOIN THE ELITE LIST</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 25px;">Enter your email to unlock your download and receive premium updates from SS Solutions.</p>
+        <input type="email" id="leadEmail" placeholder="your@email.com" required>
+        <button class="btn btn-dl" onclick="submitLead()">UNLOCK NOW</button>
+        <p style="font-size: 10px; margin-top: 15px; color: #475569;">By joining, you agree to our creator network terms.</p>
     </div>
+</div>
 
+<div class="container">
     <h1>Asset Engine</h1>
-    <p class="subtitle">High-speed Extraction & Branded GIFs</p>
+    <p style="color:#94a3b8; font-size: 13px; margin-bottom: 25px;">High-Res Extraction & Branded GIF Creator</p>
 
-    <!-- Download Section -->
+    <!-- Downloader Section -->
     <div class="section">
         <label>Media Downloader</label>
         <input type="text" id="dlInput" placeholder="Paste Video URL">
-        <label>Output Quality</label>
+        <label>Quality</label>
         <select id="quality">
             <option value="720">720p (Fast)</option>
             <option value="1080">1080p (HD)</option>
             <option value="2160">4K (Maximum)</option>
         </select>
-        <button class="btn btn-dl" onclick="runDownload()">Extract Asset</button>
+        <button class="btn btn-dl" onclick="triggerAction('download')">Extract Asset</button>
         <div class="status-text" id="dlStatus"></div>
     </div>
 
@@ -116,17 +115,17 @@
         <label>Branded GIF Creator</label>
         <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="document.getElementById('fileLabel').innerText='✅ File Loaded'">
         <label for="fileInput" id="fileLabel" style="background:rgba(0,0,0,0.1); padding:12px; border-radius:12px; cursor:pointer; text-align:center; border: 1px dashed var(--accent); display: block;">📁 Upload Video</label>
-        <button class="btn btn-gif" onclick="runGif()">Generate GIF</button>
+        <button class="btn btn-gif" onclick="triggerAction('gif')">Generate GIF</button>
         <div class="status-text" id="gifStatus"></div>
+        
         <div id="gifResult" class="gif-result">
             <img id="gifPreview" src="">
             <a id="gifSave" href="#" download="SS-Branded.gif" class="btn btn-dl">Save Branded GIF</a>
         </div>
     </div>
 
-    <!-- Payment Section -->
     <div style="padding: 10px 0;">
-        <p style="font-size: 11px; color: var(--subtext); margin-bottom: 8px; font-weight: 600;">Support the infrastructure ❤️</p>
+        <p style="font-size: 11px; color: #475569; margin-bottom: 8px; font-weight: 600;">Support Project Infrastructure ❤️</p>
         <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">Donate with Stripe</a>
     </div>
 
@@ -134,58 +133,70 @@
 </div>
 
 <script>
-    // Engine Heartbeat Simulation
-    window.onload = () => {
-        const light = document.getElementById('light');
-        const text = document.getElementById('engineStatus');
-        
-        // Simulating a ping to your Vercel backend
-        setTimeout(() => {
-            light.className = "indicator online";
-            text.innerText = "ONLINE";
-        }, 1500);
-    };
+    let pendingAction = null;
+    const isReturningUser = localStorage.getItem('ss_lead_captured');
 
+    // 1. Logic to Gate Content
+    function triggerAction(type) {
+        if (!isReturningUser) {
+            pendingAction = type;
+            document.getElementById('leadModal').style.display = 'flex';
+        } else {
+            type === 'download' ? runDownload() : runGif();
+        }
+    }
+
+    // 2. Submit Lead to Local Storage (and optionally your DB)
+    function submitLead() {
+        const email = document.getElementById('leadEmail').value;
+        if (!email || !email.includes('@')) {
+            alert("Please enter a valid email to unlock.");
+            return;
+        }
+
+        // Logic: Send to your email service here (e.g., Mailchimp/Formspree)
+        console.log("Captured Lead:", email);
+        
+        localStorage.setItem('ss_lead_captured', 'true');
+        localStorage.setItem('ss_user_email', email);
+        
+        document.getElementById('leadModal').style.display = 'none';
+        
+        // Resume action
+        pendingAction === 'download' ? runDownload() : runGif();
+    }
+
+    // [Original Downloader & GIF functions remain here]
     async function runDownload() {
         const url = document.getElementById("dlInput").value;
-        const quality = document.getElementById("quality").value;
         const status = document.getElementById("dlStatus");
-        
         if (!url) return status.innerText = "⚠️ Please paste a link";
         status.innerText = "⚡ Routing through high-res nodes...";
-
         try {
-            const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&quality=${quality}`);
+            const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&quality=${document.getElementById("quality").value}`);
             const data = await res.json();
-            if (data.downloadUrl) {
-                status.innerText = "✅ Connection Ready!";
-                window.open(data.downloadUrl, '_blank');
-            } else { throw new Error(); }
-        } catch {
-            status.innerText = "❌ Nodes busy. Try a direct MP4 link.";
-        }
+            if (data.downloadUrl) { window.open(data.downloadUrl, '_blank'); status.innerText = "✅ Download Started"; }
+        } catch { status.innerText = "❌ Error processing."; }
     }
 
     function runGif() {
         const file = document.getElementById("fileInput").files;
         const status = document.getElementById("gifStatus");
-        if (!file[0]) return status.innerText = "⚠️ Upload file first";
-
+        if (file.length === 0) return status.innerText = "⚠️ Upload file first";
         status.innerText = "🎨 Branding SS-Solutions GIF...";
         gifshot.createGIF({
             video: [URL.createObjectURL(file[0])],
             numFrames: 25,
             text: 'SS SOLUTIONS',
             fontColor: '#38bdf8',
-            fontWeight: '800',
             textAlign: 'right',
             textBaseline: 'bottom'
-        }, function (obj) {
+        }, (obj) => {
             if (!obj.error) {
                 document.getElementById("gifPreview").src = obj.image;
                 document.getElementById("gifSave").href = obj.image;
                 document.getElementById("gifResult").style.display = "block";
-                status.innerText = "✅ Branded & Ready!";
+                status.innerText = "✅ Ready!";
             }
         });
     }
