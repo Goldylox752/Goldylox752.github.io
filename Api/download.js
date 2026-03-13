@@ -25,4 +25,11 @@ export default async function handler(req, res) {
     } catch (err) {
         return res.status(500).json({ error: "Home server connection lost." });
     }
-}
+}body: JSON.stringify({ 
+    url: url, 
+    videoQuality: "max", // High-quality 4K/8K where available
+    vCodec: "vp9",       // Best quality YouTube codec
+    isAudioOnly: false,
+    downloadMode: "auto"
+})
+
