@@ -56,7 +56,17 @@ font-size:14px;
 color:#94a3b8;
 }
 
-.donate{
+<div class="donate">
+  Support the project ❤️<br>
+  <!-- Replace with your actual Stripe script and button tag -->
+  <script async src="https://js.stripe.com"></script>
+  <stripe-buy-button
+    buy-button-id="YOUR_BUY_BUTTON_ID"
+    publishable-key="YOUR_PUBLISHABLE_KEY"
+  >
+  </stripe-buy-button>
+</div>
+{
 margin-top:20px;
 }
 
