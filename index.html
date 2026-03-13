@@ -3,39 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS Solutions | Asset Engine</title>
+    <title>Asset Engine | SS Solutions</title>
     <style>
-        /* [Keeping your previous CSS styling here] */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: #0f172a; color: white; display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
-        .container { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 450px; text-align: center; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 12px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; }
-        .btn-primary { background: #22c55e; }
-        .btn-stripe { background: #6366f1; margin-top: 10px; text-decoration: none; display: inline-block; }
-        .status { margin: 10px 0; font-size: 13px; color: #38bdf8; }
-        .divider { height: 1px; background: #334155; margin: 20px 0; }
-        .history-item { background: #0f172a; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 11px; text-align: left; }
+        
+        .container { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        h1 { font-size: 24px; margin-bottom: 8px; color: #f8fafc; }
+        p { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+
+        .input-group { position: relative; margin-bottom: 12px; }
+        input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        input:focus { border-color: #38bdf8; }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #22c55e; color: white; margin-bottom: 10px; }
+        .btn-primary:hover { background: #16a34a; }
+        .btn-stripe { background: #6366f1; color: white; margin-top: 15px; }
+        .btn-stripe:hover { background: #4f46e5; }
+
+        .status { margin: 10px 0; font-size: 13px; color: #38bdf8; min-height: 20px; font-weight: 500; }
+        .divider { height: 1px; background: #334155; margin: 25px 0; }
+        
+        .history-item { background: #0f172a; padding: 10px; border-radius: 8px; margin-top: 8px; font-size: 12px; text-align: left; border-left: 3px solid #22c55e; color: #94a3b8; }
+        footer { margin-top: 30px; font-size: 11px; color: #64748b; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Asset Engine</h1>
-    <p>Media Downloader & GIF Tool</p>
+    <p>High-speed downloader for social media</p>
 
-    <input type="text" id="urlInput" placeholder="Paste YouTube, Twitter, or TikTok URL">
+    <div class="input-group">
+        <input type="text" id="urlInput" placeholder="Paste YouTube, TikTok, or Twitter link">
+    </div>
+
     <button class="btn btn-primary" id="dlBtn" onclick="startDownload()">Download Asset</button>
-    <div class="status" id="statusMessage">Ready</div>
+    <div class="status" id="statusMessage">Ready to process</div>
 
     <div class="divider"></div>
 
-    <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">Support Project ❤️</a>
-
-    <div class="history-section" style="margin-top:20px;">
-        <h3 style="font-size:14px; text-align:left;">Recent Activity</h3>
-        <div id="historyList"></div>
+    <div class="support-box">
+        <p style="margin-bottom: 5px; font-weight: 600; color: #f8fafc;">Support the project ❤️</p>
+        <a href="https://buy.stripe.com" target="_blank" class="btn btn-stripe">
+            Donate with Stripe
+        </a>
     </div>
+
+    <div class="divider"></div>
+
+    <h3 style="font-size: 14px; text-align: left; margin-bottom: 10px;">Recent Activity</h3>
+    <div id="historyList"></div>
+
+    <footer>SS SOLUTIONS &copy; 2026</footer>
 </div>
 
 <script>
@@ -46,29 +68,33 @@
         const url = urlInput.value.trim();
 
         if (!url) {
-            status.innerText = "⚠️ Please paste a URL";
+            status.innerText = "⚠️ Please paste a valid URL";
+            status.style.color = "#f43f5e";
             return;
         }
 
-        // UI Feedback
-        status.innerText = "⚡ Requesting server...";
+        status.style.color = "#38bdf8";
+        status.innerText = "⚡ Processing on server...";
         btn.disabled = true;
-        btn.style.opacity = "0.5";
+        btn.style.opacity = "0.6";
 
         try {
-            // CALLING THE BACKEND
+            // Calling the Vercel API
             const response = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
             if (data.downloadUrl) {
-                status.innerText = "✅ Success! Opening download...";
-                window.open(data.downloadUrl, '_blank'); // Opens the direct file
+                status.innerText = "✅ Download ready!";
+                status.style.color = "#22c55e";
+                window.open(data.downloadUrl, '_blank');
                 saveToHistory(url);
+                urlInput.value = "";
             } else {
-                status.innerText = "❌ Error: " + (data.error || "Failed");
+                throw new Error(data.error || "Failed to fetch link");
             }
         } catch (err) {
-            status.innerText = "❌ Connection Failed";
+            status.innerText = "❌ Error: Could not process link";
+            status.style.color = "#f43f5e";
         } finally {
             btn.disabled = false;
             btn.style.opacity = "1";
@@ -79,7 +105,8 @@
         const list = document.getElementById("historyList");
         const entry = document.createElement("div");
         entry.className = "history-item";
-        entry.innerText = `Downloaded: ${url.substring(0, 40)}...`;
+        const cleanUrl = url.length > 35 ? url.substring(0, 35) + "..." : url;
+        entry.innerText = `Success: ${cleanUrl}`;
         list.prepend(entry);
     }
 </script>
