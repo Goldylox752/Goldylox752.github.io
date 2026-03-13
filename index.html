@@ -16,30 +16,8 @@ async function handleDownload() {
     const status = document.getElementById('statusMessage');
     const btn = document.getElementById('dlBtn');
 
-    if (!urlInput) {
-        alert("Please paste a YouTube link!");
-        return;
-    }
-
-    btn.disabled = true;
-    status.innerText = "Requesting download from Cobalt...";
-
-    try {
-
-        // Example placeholder
-        console.log("Downloading:", urlInput);
-        status.innerText = "Processing download...";
-
-    } catch (err) {
-
-        console.error(err);
-        status.innerText = "Download failed.";
-
-    } finally {
-
-        btn.disabled = false;
-
-    }
+if (!urlInput) {
+        
 
 }
 </script>
