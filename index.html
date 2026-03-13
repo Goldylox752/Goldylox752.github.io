@@ -1,201 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS
-        Solutions | Asset Engine</title>
-    async function handleDownload() {
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SS Solutions | Asset Engine</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+async function handleDownload() {
+
     const urlInput = document.getElementById('videoUrl').value;
     const status = document.getElementById('statusMessage');
     const btn = document.getElementById('dlBtn');
 
-    if (!urlInput) return alert("Please paste a YouTube link!");
+    if (!urlInput) {
+        alert("Please paste a YouTube link!");
+        return;
+    }
 
-    // UI Feedback
     btn.disabled = true;
     status.innerText = "Requesting download from Cobalt...";
 
     try {
-       
+
+        // Example placeholder
+        console.log("Downloading:", urlInput);
+        status.innerText = "Processing download...";
+
+    } catch (err) {
+
+        console.error(err);
+        status.innerText = "Download failed.";
+
+    } finally {
+
+        btn.disabled = false;
+
+    }
+
+}
+</script>
+
+<style>
+
+.brutal-card {
+border:4px solid black;
+box-shadow:8px 8px 0px black;
+background:white;
+transition:0.15s;
 }
 
-    <!-- ⚡ Tailwind 4.0 Modern Browser Engine -->
-    <script src="https://cdn.jsdelivr.net"></script>
-    
-    <style type="text/css">
-        @theme {
-          --shadow-brutal: 8px 8px 0px 0px #000;
-        }
-        .brutal-card { border: 4px solid black; box-shadow: var(--shadow-brutal); background: white; transition: 0.15s; }
-        .brutal-card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px 0px #000; }
-        .brutal-btn { border: 4px solid black; box-shadow: 4px 4px 0px 0px #000; transition: 0.1s; cursor: pointer; }
-        .brutal-btn:active { transform: translate(2px, 2px); box-shadow: none; }
-        
-        .mode-btn { background: white; border: 4px solid black; padding: 4px 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 12px; }
-        .mode-btn.active { background: black; color: white; }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #fff; border: 2px solid #000; }
-    </style>
+.brutal-card:hover{
+transform:translate(-4px,-4px);
+box-shadow:12px 12px 0px black;
+}
+
+.brutal-btn{
+border:4px solid black;
+box-shadow:4px 4px 0px black;
+transition:0.1s;
+cursor:pointer;
+}
+
+.brutal-btn:active{
+transform:translate(2px,2px);
+box-shadow:none;
+}
+
+</style>
+
 </head>
-<body class="bg-yellow-400 font-mono text-black p-6 md:p-12">
-<div style="text-align:center;margin-top:20px;">
-  <p>Enjoy the GIF Generator?</p>
-
-  <a href="https://buy.stripe.com/YOUR_LINK_HERE" target="_blank">
-    <button style="
-      background:#635bff;
-      color:white;
-      border:none;
-      padding:14px 22px;
-      font-size:16px;
-      border-radius:10px;
-      cursor:pointer;
-      box-shadow:0 4px 10px rgba(0,0,0,0.2);
-    ">
-      ❤️ Support the Project
-    </button>
-  </a>
-
-</div>
-    <!-- Simple Header -->
-    <header class="max-w-6xl mx-auto text-center mb-12">
-        <h1 class="text-6xl md:text-8xl font-black italic uppercase underline decoration-8 mb-8">BrandGIF</h1>
-        
-        <div class="max-w-2xl mx-auto space-y-6">
-            <div class="flex flex-col sm:flex-row gap-4">
-                <input type="text" id="search" placeholder="FIND ASSETS..." 
-                       class="flex-grow p-4 text-2xl font-black border-4 border-black outline-none shadow-[6px_6px_0px_0px_#000] uppercase bg-white">
-                <button id="go" class="brutal-btn bg-white px-10 py-4 text-2xl font-black uppercase hover:bg-black hover:text-white">GO</button>
-            </div>
-            
-            <div class="flex justify-center items-center gap-4">
-                <div class="flex border-4 border-black shadow-[4px_4px_0px_0px_#000]">
-                    <button onclick="setMode('gifs')" id="gif-mode" class="mode-btn active">Gifs</button>
-                    <button onclick="setMode('stickers')" id="sticker-mode" class="mode-btn">Stickers</button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Results Grid -->
-    <main class="max-w-6xl mx-auto">
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
-            <!-- Assets will load here -->
-        </div>
-        
-        <div id="loader" class="hidden text-center py-10">
-            <p class="font-black uppercase animate-pulse text-xl italic bg-black text-white inline-block px-4 py-1 tracking-tighter">Syncing...</p>
-        </div>
-    </main>
-
-    <script>
-    const API_KEY = 'yI51wxZLtUjqGdALCfbNkxldrcXX5IVG'; 
-    
-    let currentMode = 'gifs';
-    let offset = 0;
-    let isLoading = false;
-    let currentQuery = '';
-
-    const loadingVibes = [
-        "Accessing Datastream...",
-        "Capturing Pixels...",
-        "Rerouting Mainframe...",
-        "Bypassing Firewalls...",
-        "Decrypting Vibes...",
-        "Syncing Assets...",
-        "Loading Energy..."
-    ];
-
-    const grid = document.getElementById('grid');
-    const input = document.getElementById('search');
-    const button = document.getElementById('go');
-    const loader = document.getElementById('loader');
-
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('gif-mode').classList.toggle('active', mode === 'gifs');
-        document.getElementById('sticker-mode').classList.toggle('active', mode === 'stickers');
-        startFreshSearch();
-    }
-
-    async function performFetch(isAppend = false) {
-        if (isLoading) return;
-        isLoading = true;
-
-        const randomMsg = loadingVibes[Math.floor(Math.random() * loadingVibes.length)];
-        loader.querySelector('p').innerText = randomMsg;
-        loader.classList.remove('hidden');
-
-        const isTrending = currentQuery.trim() === '';
-        const typePath = `/v1/${currentMode}`;
-        const actionPath = isTrending ? '/trending' : '/search';
-        
-        let url = `https://api.giphy.com${typePath}${actionPath}?api_key=${API_KEY}&limit=16&offset=${offset}&rating=pg-13`;
-        if (!isTrending) url += `&q=${encodeURIComponent(currentQuery)}`;
-
-        try {
-            const response = await fetch(url);
-            const { data, meta } = await response.json();
-
-            if (meta.status !== 200) throw new Error(meta.msg);
-
-            if (data.length > 0) {
-                const cards = data.map(item => `
-                    <div class="brutal-card p-3 group">
-                        <div class="overflow-hidden border-2 border-black aspect-square mb-3 ${currentMode === 'stickers' ? 'bg-[url(https://www.transparenttextures.com)] bg-gray-200' : 'bg-gray-100'}">
-                            <img src="${item.images.fixed_height.url}" alt="${item.title}" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300">
-                        </div>
-                        <button onclick="copyToClipboard('${item.images.original.url}')" class="w-full brutal-btn bg-white py-2 font-black text-xs uppercase italic hover:bg-black hover:text-white transition-colors">Copy Link</button>
-                    </div>
-                `).join('');
-
-                if (isAppend) {
-                    grid.insertAdjacentHTML('beforeend', cards);
-                } else {
-                    grid.innerHTML = cards;
-                }
-                offset += 16;
-            } else if (!isAppend) {
-                grid.innerHTML = '<p class="col-span-full text-center font-black uppercase italic">Zero Results Found</p>';
-            }
-        } catch (err) {
-            grid.innerHTML = `<p class="col-span-full text-center font-black uppercase text-red-600 underline">API Error: ${err.message}</p>`;
-        } finally {
-            isLoading = false;
-            loader.classList.add('hidden');
-        }
-    }
-
-    function startFreshSearch() {
-        offset = 0;
-        currentQuery = input.value;
-        window.scrollTo(0,0);
-        performFetch(false);
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text);
-        const toast = document.createElement('div');
-        toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 bg-black text-white p-4 font-black border-4 border-white shadow-[8px_8px_0px_0px_#000] z-50 animate-bounce uppercase italic";
-        toast.innerText = "Link Secured! ⚡";
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-    }
-
-    window.onscroll = () => {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-            performFetch(true);
-        }
-    };
-
-    button.onclick = startFreshSearch;
-    input.onkeypress = (e) => { if(e.key === 'Enter') startFreshSearch(); };
-    
-    performFetch();
-</script>
-</body>
-</html>
