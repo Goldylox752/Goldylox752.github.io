@@ -15,13 +15,13 @@
 <meta property="og:description" content="I build web tools and automation systems for creators and businesses. Explore projects and live tools.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yourwebsite.com/">
-<meta property="og:image" content="/mnt/data/a_digital_promotional_banner_for_byron_sanchez_sho.png">
+<meta property="og:image" content="images/banner-placeholder.png">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Byron | Web Tools & Automation">
 <meta name="twitter:description" content="I build web tools and automation systems for creators and businesses. Explore projects and live tools.">
-<meta name="twitter:image" content="/mnt/data/a_digital_promotional_banner_for_byron_sanchez_sho.png">
+<meta name="twitter:image" content="images/banner-placeholder.png">
 
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json">
@@ -45,34 +45,20 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif; }
 body { background:#0f172a; color:white; line-height:1.6; }
-
-/* Navbar */
 nav { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:20px; background:#020617; }
 nav h2 { color:#38bdf8; font-size:24px; }
 nav a { color:white; text-decoration:none; margin:5px 10px; font-size:16px; }
-
-/* Hero Section */
 .hero { text-align:center; padding:80px 20px; }
 .hero h1 { font-size:36px; margin-bottom:20px; }
 .hero p { font-size:18px; color:#cbd5f5; margin-bottom:30px; }
-
-/* Buttons */
 .btn { background:#38bdf8; color:black; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:bold; cursor:pointer; margin:5px; display:inline-block; font-size:18px; }
-
-/* Sections */
 .section { padding:60px 20px; max-width:1000px; margin:auto; }
 h2 { font-size:28px; text-align:center; margin-bottom:30px; color:#38bdf8; }
-
-/* Grid layout */
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; margin-top:20px; }
 .card { background:#1e293b; padding:20px; border-radius:12px; text-align:center; }
 .card h3 { margin-bottom:10px; font-size:20px; color:#38bdf8; }
 input { padding:10px; width:100%; border-radius:6px; border:none; margin-top:10px; }
-
-/* Footer */
 footer { text-align:center; padding:40px 20px; background:#020617; margin-top:60px; color:#94a3b8; }
-
-/* Mobile adjustments */
 @media (max-width:600px) {
   .hero h1 { font-size:28px; }
   .hero p { font-size:16px; }
@@ -85,7 +71,6 @@ footer { text-align:center; padding:40px 20px; background:#020617; margin-top:60
 </head>
 <body>
 
-<!-- Navbar -->
 <nav>
 <h2>Byron.dev</h2>
 <div>
@@ -96,62 +81,72 @@ footer { text-align:center; padding:40px 20px; background:#020617; margin-top:60
 </div>
 </nav>
 
-<!-- Hero Section -->
 <section class="hero">
 <h1>Web Tools & Automation Developer</h1>
 <p>I build custom web tools and automation systems for creators and businesses. Explore projects, live tools, and get in touch for consulting.</p>
 </section>
 
-<!-- Services Section -->
 <section id="services" class="section">
 <h2>Our Services</h2>
 <div class="grid">
+
 <div class="card">
 <h3>Custom Web Tool Development</h3>
-<p>Build interactive web tools and mini-applications using JavaScript, HTML, and CSS. <em>Alt: Screenshot of a web tool</em></p>
+<p>Build interactive web tools and mini-applications using JavaScript, HTML, and CSS.</p>
+<img src="images/webtool-placeholder.png" alt="Placeholder screenshot of Byron's custom web tool interface">
 </div>
+
 <div class="card">
 <h3>Automation & Workflow Tools</h3>
-<p>Create pipelines and automation systems for video, media, or business processes. <em>Alt: Automation workflow image</em></p>
+<p>Create pipelines and automation systems for video, media, or business processes.</p>
+<img src="images/automation-placeholder.png" alt="Placeholder image showing automated workflow system">
 </div>
+
 <div class="card">
 <h3>Consulting & Technical Advice</h3>
-<p>Guidance on web tools, integration, and workflow automation. <em>Alt: Consulting illustration</em></p>
+<p>Guidance on web tools, integration, and workflow automation.</p>
+<img src="images/consulting-placeholder.png" alt="Placeholder illustration for consulting and technical advice by Byron">
 </div>
+
 </div>
 </section>
 
-<!-- Projects Section -->
 <section id="projects" class="section">
 <h2>Featured Projects</h2>
 <div class="grid">
+
 <div class="card">
 <h3>Asset Engine – GIF Generator</h3>
-<p>Generate GIFs from video files with a custom automation pipeline. <em>Alt: Screenshot of GIF generator</em></p>
+<p>Generate GIFs from video files with a custom automation pipeline.</p>
+<img src="images/gif-generator-placeholder.png" alt="Placeholder screenshot of GIF generator tool interface">
 </div>
+
 <div class="card">
 <h3>Video Processing Automation</h3>
-<p>Automated video workflows using FFmpeg for media creators. <em>Alt: Screenshot of video pipeline</em></p>
+<p>Automated video workflows using FFmpeg for media creators.</p>
+<img src="images/video-pipeline-placeholder.png" alt="Placeholder screenshot of video processing automation pipeline using FFmpeg">
 </div>
+
 </div>
 </section>
 
-<!-- Tools Section -->
 <section id="tools" class="section">
 <h2>Live Tools</h2>
 <div class="grid">
+
 <div class="card">
 <h3>GIF Generator Tool</h3>
-<p>Paste a video URL and generate a GIF instantly. <em>Alt: GIF generator input box</em></p>
+<p>Paste a video URL and generate a GIF instantly.</p>
+<img src="images/gif-input-placeholder.png" alt="Placeholder input box for GIF generator tool video URL">
 <input id="videoUrl" placeholder="Paste video URL here">
 <br>
 <button class="btn" onclick="generateGif()">Generate GIF</button>
 <p id="status"></p>
 </div>
+
 </div>
 </section>
 
-<!-- Contact Section -->
 <section id="contact" class="section">
 <h2>Contact & Collaboration</h2>
 <p>Interested in custom web tools or automation? Connect with me:</p>
@@ -159,13 +154,11 @@ footer { text-align:center; padding:40px 20px; background:#020617; margin-top:60
 <a class="btn" href="https://www.linkedin.com/in/byron-sanche-84230828a/" target="_blank">Message Me on LinkedIn</a>
 </section>
 
-<!-- Footer -->
 <footer>
 <p>© 2026 Byron | Web Tools Developer</p>
 </footer>
 
 <script>
-// GIF Generator Demo
 function generateGif() {
   let url = document.getElementById("videoUrl").value;
   let status = document.getElementById("status");
