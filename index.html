@@ -4,100 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Byron | Web Tools & Automation</title>
-
-<!-- Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
-
 <style>
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
-body {
-  background:#0f172a;
-  color:white;
-  line-height:1.6;
-}
-nav {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 40px;
-  background:#020617;
-}
-nav h2 {
-  color:#38bdf8;
-}
-nav a {
-  color:white;
-  text-decoration:none;
-  margin-left:20px;
-}
-.hero {
-  text-align:center;
-  padding:100px 20px;
-}
-.hero h1 {
-  font-size:48px;
-  margin-bottom:20px;
-}
-.hero p {
-  font-size:20px;
-  color:#cbd5f5;
-  margin-bottom:30px;
-}
-.btn {
-  background:#38bdf8;
-  color:black;
-  padding:14px 28px;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:bold;
-  cursor:pointer;
-  margin:5px 0;
-  display:inline-block;
-}
-.section {
-  padding:80px 20px;
-  max-width:1000px;
-  margin:auto;
-}
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:25px;
-  margin-top:40px;
-}
-.card {
-  background:#1e293b;
-  padding:25px;
-  border-radius:12px;
-}
-.card h3 {
-  margin-bottom:10px;
-  color:#38bdf8;
-}
-input {
-  padding:10px;
-  width:70%;
-  border-radius:6px;
-  border:none;
-}
-footer {
-  text-align:center;
-  padding:40px;
-  background:#020617;
-  margin-top:60px;
-  color:#94a3b8;
-}
-ul li {
-  margin:10px 0;
-}
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif; }
+body { background:#0f172a; color:white; line-height:1.6; }
+nav { display:flex; justify-content:space-between; align-items:center; padding:20px 40px; background:#020617; }
+nav h2 { color:#38bdf8; }
+nav a { color:white; text-decoration:none; margin-left:20px; }
+.hero { text-align:center; padding:100px 20px; }
+.hero h1 { font-size:48px; margin-bottom:20px; }
+.hero p { font-size:20px; color:#cbd5f5; margin-bottom:30px; }
+.btn { background:#38bdf8; color:black; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:bold; cursor:pointer; margin:5px 0; display:inline-block; }
+.section { padding:80px 20px; max-width:1000px; margin:auto; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:25px; margin-top:40px; }
+.card { background:#1e293b; padding:25px; border-radius:12px; }
+.card h3 { margin-bottom:10px; color:#38bdf8; }
+input { padding:10px; width:70%; border-radius:6px; border:none; }
+footer { text-align:center; padding:40px; background:#020617; margin-top:60px; color:#94a3b8; }
+ul li { margin:10px 0; }
 </style>
 </head>
-
 <body>
 
 <nav>
@@ -159,35 +85,15 @@ ul li {
 <button class="btn" onclick="generateGif()">Generate GIF</button>
 <p id="status"></p>
 </div>
-<div class="card">
-<h3>Video Downloader</h3>
-<p>Download and convert videos.</p>
-<a class="btn" href="#">Try Tool</a>
-</div>
 </div>
 </section>
 
-<section class="section">
-<h2>What I Build</h2>
-<ul>
-<li>Web automation tools</li>
-<li>Media processing pipelines</li>
-<li>Payment systems</li>
-<li>Creator tools</li>
-</ul>
-</section>
-
-<section id="contact" class="section contact">
+<section class="section" id="contact">
 <h2>Let's Work Together</h2>
 <p>If you need a web tool, automation system, or payment integration, let's connect.</p>
 <br>
-<!-- Stripe Checkout Popup Button -->
 <button id="checkout-button" class="btn">Hire Me ($300)</button>
-<!-- Optional LinkedIn contact -->
 <a class="btn" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank">Message Me</a>
-<br><br>
-<p>View my code and projects:</p>
-<a class="btn" href="https://github.com/YOURUSERNAME" target="_blank">View GitHub</a>
 </section>
 
 <footer>
@@ -195,28 +101,24 @@ ul li {
 </footer>
 
 <script>
-// GIF Generator Demo
-function generateGif(){
+// GIF generator demo
+function generateGif() {
   let url = document.getElementById("videoUrl").value;
   let status = document.getElementById("status");
-  if(url === ""){
+  if (!url) {
     status.innerText = "Please enter a video URL.";
     return;
   }
   status.innerText = "Processing video...";
-  setTimeout(function(){
-    status.innerText = "GIF created! (backend processing would happen here)";
-  },2000);
+  setTimeout(() => { status.innerText = "GIF created!"; }, 2000);
 }
 
-// Stripe Checkout Popup Integration
-const stripe = Stripe("YOUR_STRIPE_PUBLISHABLE_KEY"); // replace with your Stripe publishable key
-
-document.getElementById("checkout-button").addEventListener("click", () => {
-  fetch("/create-checkout-session", { method: "POST" })
-    .then(res => res.json())
-    .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
-    .catch(err => console.error("Error:", err));
+// Stripe $300 Checkout
+document.getElementById("checkout-button").addEventListener("click", async () => {
+  const res = await fetch("/create-checkout-session", { method: "POST" });
+  const session = await res.json();
+  const stripe = Stripe(session.publishableKey);
+  stripe.redirectToCheckout({ sessionId: session.id });
 });
 </script>
 
