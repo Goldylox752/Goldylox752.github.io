@@ -1,177 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Byron | Web Tools & Automation</title>
 
-<title>Goldylox Asset Engine</title>
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
 
 <style>
-
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
 body{
-font-family:Arial;
-background:#0f172a;
-color:white;
-text-align:center;
-margin:0;
+  background:#0f172a;
+  color:white;
+  line-height:1.6;
 }
-
-header{
-padding:40px;
-background:#020617;
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 40px;
+  background:#020617;
 }
-
-h1{
-font-size:40px;
+nav h2{
+  color:#38bdf8;
 }
-
-.engine{
-padding:40px;
+nav a{
+  color:white;
+  text-decoration:none;
+  margin-left:20px;
 }
-
+.hero{
+  text-align:center;
+  padding:100px 20px;
+}
+.hero h1{
+  font-size:48px;
+  margin-bottom:20px;
+}
+.hero p{
+  font-size:20px;
+  color:#cbd5f5;
+  margin-bottom:30px;
+}
+.btn{
+  background:#38bdf8;
+  color:black;
+  padding:14px 28px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+  cursor:pointer;
+  margin:5px 0;
+  display:inline-block;
+}
+.section{
+  padding:80px 20px;
+  max-width:1000px;
+  margin:auto;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  margin-top:40px;
+}
+.card{
+  background:#1e293b;
+  padding:25px;
+  border-radius:12px;
+}
+.card h3{
+  margin-bottom:10px;
+  color:#38bdf8;
+}
 input{
-width:60%;
-padding:12px;
-border-radius:8px;
-border:none;
-font-size:16px;
+  padding:10px;
+  width:70%;
+  border-radius:6px;
+  border:none;
 }
-
-button{
-padding:12px 20px;
-margin:10px;
-border:none;
-border-radius:8px;
-background:#22c55e;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#16a34a;
-}
-
-.gallery{
-padding:40px;
-background:#020617;
-}
-
-.gif-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-padding:20px;
-}
-
-.gif-grid img{
-width:100%;
-border-radius:10px;
-}
-
 footer{
-padding:40px;
+  text-align:center;
+  padding:40px;
+  background:#020617;
+  margin-top:60px;
+  color:#94a3b8;
 }
-
-.donate{
-background:#f59e0b;
+ul li{
+  margin:10px 0;
 }
-
 </style>
-
 </head>
 
 <body>
 
-<header>
+<nav>
+<h2>Byron.dev</h2>
+<div>
+<a href="#services">Services</a>
+<a href="#projects">Projects</a>
+<a href="#tools">Tools</a>
+<a href="#contact">Contact</a>
+</div>
+</nav>
 
-<h1>⚡ Goldylox Asset Engine</h1>
-<p>Generate GIFs • Download Media • Build Assets</p>
-
-</header>
-
-<section class="engine">
-
-<h2>Media Engine</h2>
-
-<input
-id="videoUrl"
-placeholder="Paste video URL or MP4 link"
->
-
-<br>
-
-<button onclick="generateGif()">
-Generate GIF
-</button>
-
-<button onclick="downloadMedia()">
-Download MP4
-</button>
-
+<section class="hero">
+<h1>I Build Web Tools & Automation</h1>
+<p>Helping creators and businesses launch digital tools, automation systems, and payment integrations.</p>
+<a class="btn" href="#contact">Work With Me</a>
 </section>
 
-<section class="gallery">
-
-<h2>Asset Gallery</h2>
-
-<div class="gif-grid" id="gifGallery">
-
-<img src="https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif">
-
-<img src="https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif">
-
-<img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif">
-
+<section id="services" class="section">
+<h2>Services</h2>
+<div class="grid">
+<div class="card">
+<h3>Web Tool Development</h3>
+<p>Custom JavaScript tools and mini web applications.</p>
 </div>
+<div class="card">
+<h3>Stripe Payment Integration</h3>
+<p>Add payments, subscriptions, or donation systems.</p>
+</div>
+<div class="card">
+<h3>Automation Tools</h3>
+<p>Build pipelines for media processing and workflows.</p>
+</div>
+</div>
+</section>
 
+<section id="projects" class="section projects">
+<h2>Projects</h2>
+<div class="grid">
+<div class="card">
+<h3>Asset Engine</h3>
+<p>GIF and media generation tool.</p>
+</div>
+<div class="card">
+<h3>Video Processing Pipeline</h3>
+<p>Automation system using FFmpeg.</p>
+</div>
+<div class="card">
+<h3>Creator Donation System</h3>
+<p>Stripe powered payment tool.</p>
+</div>
+</div>
+</section>
+
+<section id="tools" class="section">
+<h2>Live Tools</h2>
+<div class="grid">
+<div class="card">
+<h3>GIF Generator</h3>
+<p>Paste a video URL to generate a GIF.</p>
+<input id="videoUrl" placeholder="Paste video URL here">
+<br><br>
+<button class="btn" onclick="generateGif()">Generate GIF</button>
+<p id="status"></p>
+</div>
+<div class="card">
+<h3>Video Downloader</h3>
+<p>Download and convert videos.</p>
+<a class="btn" href="#">Try Tool</a>
+</div>
+<div class="card">
+<h3>Asset Engine</h3>
+<p>Generate media assets automatically.</p>
+<a class="btn" href="#">Try Tool</a>
+</div>
+</div>
+</section>
+
+<section class="section">
+<h2>What I Build</h2>
+<ul>
+<li>⚡ Web automation tools</li>
+<li>⚡ Media processing pipelines</li>
+<li>⚡ Payment systems</li>
+<li>⚡ Creator tools</li>
+</ul>
+</section>
+
+<section id="contact" class="section contact">
+<h2>Let's Work Together</h2>
+<p>If you need a web tool, automation system, or payment integration, let's connect.</p>
+<br>
+<!-- Stripe Checkout Popup Button -->
+<button id="checkout-button" class="btn">Hire Me ($300)</button>
+<!-- Optional LinkedIn contact -->
+<a class="btn" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank">Message Me</a>
+<br><br>
+<p>View my code and projects:</p>
+<a class="btn" href="https://github.com/YOURUSERNAME" target="_blank">View GitHub</a>
 </section>
 
 <footer>
-
-<h2>Support the Engine</h2>
-
-<a href="https://buy.stripe.com/4gM3co1erg5e2Fx3YY2ZO02">
-<button class="donate">
-Donate via Stripe
-</button>
-</a>
-
-<p>Goldylox Asset Engine © 2026</p>
-
+<p>© 2026 Byron | Web Tools Developer</p>
 </footer>
 
 <script>
-
+// GIF Generator Demo
 function generateGif(){
-
-let url=document.getElementById("videoUrl").value;
-
-if(!url){
-alert("Paste a video URL first");
-return;
+  let url = document.getElementById("videoUrl").value;
+  let status = document.getElementById("status");
+  if(url === ""){
+    status.innerText = "Please enter a video URL.";
+    return;
+  }
+  status.innerText = "Processing video...";
+  setTimeout(function(){
+    status.innerText = "GIF created! (backend processing would happen here)";
+  },2000);
 }
 
-alert("GIF generation pipeline started (connect FFmpeg backend next)");
+// Stripe Checkout Popup Integration
+const stripe = Stripe("YOUR_STRIPE_PUBLISHABLE_KEY"); // replace with your Stripe publishable key
 
-}
-
-function downloadMedia(){
-
-let url=document.getElementById("videoUrl").value;
-
-if(!url){
-alert("Paste a media URL first");
-return;
-}
-
-window.open(url)
-
-}
-
+document.getElementById("checkout-button").addEventListener("click", () => {
+  fetch("/create-checkout-session", { method: "POST" })
+    .then(res => res.json())
+    .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+    .catch(err => console.error("Error:", err));
+});
 </script>
 
 </body>
-
 </html>
