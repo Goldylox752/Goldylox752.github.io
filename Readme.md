@@ -25,7 +25,3 @@ Infinite Scrolling: Smart Intersection-style logic that prefetches assets before
 One-Click "Secured" Logic: Dual-action buttons for Copy Link (clipboard) and Save Asset (direct download).
 
 
-📝 Compliance & Licensing
-
-Powered by GIPHY
-
