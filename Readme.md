@@ -1,5 +1,3 @@
-BrandGIF | Asset Engine 
-
 🟦 HTML5 & Semantic Architecture
 
 Built for maximum SEO and accessibility. Uses a mobile-first, responsive viewport strategy to ensure the engine runs flawlessly on everything from iPhones to ultra-wide monitors. 
