@@ -4,94 +4,188 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIM2Door – $20 Prepaid SIM Cards Canada</title>
-<meta name="description" content="Get your $20 prepaid SIM card delivered fast anywhere in Canada. Works with Lucky Mobile, Freedom Mobile, Public Mobile. Easy activation.">
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- SEO Meta -->
+<meta name="description" content="Get your $20 prepaid SIM card delivered anywhere in Canada. Easy activation, fast shipping, live order tracking.">
+<meta name="keywords" content="SIM card, prepaid SIM, Canada SIM, $20 SIM, SIM2Door, fast delivery">
+<meta name="robots" content="index, follow">
 
-<style>
-body {
-    margin:0; padding:0; font-family:'Inter', sans-serif; background:#f4f5f7; color:#111;
-}
-header {
-    text-align:center; padding:80px 20px; background:#007bff; color:#fff;
-}
-header h1 { font-size:2.5em; margin-bottom:10px; }
-header p { font-size:1.2em; margin-bottom:20px; }
-button {
-    background:#ff7a00; color:#fff; font-size:1.2em; padding:15px 30px; border:none;
-    border-radius:8px; cursor:pointer; transition:0.2s;
-}
-button:hover { background:#e96b00; }
-main { max-width:800px; margin:40px auto; padding:0 20px; }
-section { margin-bottom:60px; text-align:center; }
-section h2 { font-size:2em; margin-bottom:20px; }
-section p { font-size:1.1em; line-height:1.6; margin-bottom:20px; }
-ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; text-align:left; max-width:500px; margin:0 auto; }
-ul li { background:#fff; padding:15px 20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-details { margin-bottom:10px; }
-footer { text-align:center; padding:40px 20px; font-size:0.9em; color:#555; }
-</style>
+<!-- Open Graph -->
+<meta property="og:title" content="SIM2Door – $20 Prepaid SIM Cards Canada">
+<meta property="og:description" content="Get your $20 prepaid SIM card delivered anywhere in Canada. Easy activation, fast shipping.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://goldylox752.github.io/">
+<meta property="og:image" content="https://goldylox752.github.io/sim-image.jpg">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SIM2Door – $20 Prepaid SIM Cards Canada">
+<meta name="twitter:description" content="Get your $20 prepaid SIM card delivered anywhere in Canada. Easy activation, fast shipping.">
+<meta name="twitter:image" content="https://goldylox752.github.io/sim-image.jpg">
 
 <!-- GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-XXXXXXX');
+gtag('config', 'G-528699336');
 </script>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background: #f5f6fa; margin:0; padding:0; color:#333; }
+header { background: #4CAF50; color:white; text-align:center; padding:1rem; font-size:1.5rem; font-weight:bold; }
+main { max-width:900px; margin:2rem auto; padding:1rem; background:white; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+h1, h2 { text-align:center; margin-bottom:2rem; }
+h1 { font-size:2rem; margin-top:0; }
+.dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; }
+.card { background:#eaf2f8; padding:1.5rem; border-radius:6px; text-align:center; transition:transform 0.2s; }
+.card:hover { transform:scale(1.05); }
+.card h3 { margin:0 0 1rem 0; font-size:1.1rem; color:#4CAF50; }
+.card p { font-size:1.8rem; font-weight:bold; margin:0; }
+.buy-btn { display:block; margin:2rem auto; padding:1rem 2rem; background:#ff6f00; color:white; border:none; border-radius:6px; font-size:1.2rem; cursor:pointer; transition:background 0.2s; }
+.buy-btn:hover { background:#e65c00; }
+footer { text-align:center; padding:1rem; margin-top:2rem; font-size:0.9rem; color:#777; }
+#thankYouPopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:1000;}
+#thankYouPopup div { background:white; padding:2rem; border-radius:8px; text-align:center; max-width:400px;}
+#thankYouPopup button { margin-top:1rem; padding:0.5rem 1rem; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;}
+#recentOrdersList { background:#f1f8ff; padding:1rem; border-radius:6px; max-width:900px; margin:1rem auto;}
+</style>
 </head>
 <body>
 
-<header>
-<h1>SIM2Door</h1>
-<p>$20 Prepaid SIM Cards Shipped Fast Across Canada</p>
-<button id="buy-sim-btn">Buy Your SIM Now – $20</button>
-</header>
+<header>SIM2Door – Buy SIM & Dashboard</header>
 
 <main>
-<section>
-<h2>Why Choose SIM2Door?</h2>
-<ul>
-<li>Ships anywhere in Canada – fast & reliable</li>
-<li>Works with Lucky Mobile, Freedom Mobile, Public Mobile</li>
-<li>Flat $20 rate – no hidden fees</li>
-<li>Quick activation – ready to use in minutes</li>
-</ul>
-</section>
+<h1>SIM2Door – $20 Prepaid SIM Cards Canada</h1>
 
-<section>
-<h2>Frequently Asked Questions</h2>
-<details>
-<summary>How long does shipping take?</summary>
-<p>Shipping usually takes 3–5 business days anywhere in Canada.</p>
-</details>
-<details>
-<summary>Can I use this SIM with my current phone?</summary>
-<p>Yes, as long as your phone is unlocked and supports Canadian networks.</p>
-</details>
-<details>
-<summary>Do I need an account with the carrier?</summary>
-<p>No. The SIM is prepaid and ready to use immediately.</p>
-</details>
-</section>
+<h2>Buy a $20 Prepaid SIM Card</h2>
+<button class="buy-btn" id="buySimBtn">Buy SIM Card</button>
+
+<h2>Live Dashboard</h2>
+<div class="dashboard-grid">
+<div class="card"><h3>Total SIMs Sold</h3><p id="simsSold">0</p></div>
+<div class="card"><h3>Total Revenue</h3><p id="totalRevenue">$0</p></div>
+<div class="card"><h3>Active Users</h3><p id="activeUsers">0</p></div>
+<div class="card"><h3>New Signups</h3><p id="newSignups">0</p></div>
+</div>
+
+<h2>Recent Orders</h2>
+<div id="recentOrdersList"><p>Loading recent orders...</p></div>
 </main>
 
-<footer>
-<p>&copy; 2026 SIM2Door</p>
-<a href="dashboard.html" target="_blank">Admin Dashboard</a>
-</footer>
+<div id="thankYouPopup">
+<div>
+<h2>Thank You!</h2>
+<p>Your SIM purchase was successful. 🎉</p>
+<button onclick="document.getElementById('thankYouPopup').style.display='none'">Close</button>
+</div>
+</div>
 
-<!-- Stripe & GA4 click tracking -->
+<footer>&copy; 2026 SIM2Door. All rights reserved.</footer>
+
 <script>
-const stripeCheckoutURL = 'https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06';
-document.querySelectorAll('#buy-sim-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        gtag('event', 'buy_click', { event_category: 'SIM Sales', event_label: 'Physical SIM $20' });
-        window.location.href = stripeCheckoutURL;
-    });
+// --- Sound for new orders ---
+const orderSound = new Audio('/notification.mp3');
+
+// --- Stripe Checkout ---
+const stripe = Stripe('pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4viKRBWQy0F800oOuE80hk');
+const checkoutApiUrl = 'https://your-vercel-project.vercel.app/api/create-checkout-session';
+const dashboardApiUrl = 'https://your-vercel-project.vercel.app/api/dashboard';
+const gsheetCsvUrl = 'YOUR_GOOGLE_SHEET_CSV_LINK_HERE';
+
+document.getElementById('buySimBtn').addEventListener('click', async () => {
+  gtag('event','click',{event_category:'Button', event_label:'Buy SIM Card'});
+  try {
+    const response = await fetch(checkoutApiUrl, { method:'POST' });
+    const session = await response.json();
+    const result = await stripe.redirectToCheckout({ sessionId: session.id });
+    if (result.error) alert(result.error.message);
+  } catch(err) { console.error('Checkout error:', err); }
 });
+
+let lastOrderId = null;
+
+async function fetchDashboardData() {
+  try {
+    const response = await fetch(dashboardApiUrl);
+    if(!response.ok) throw new Error('Stripe API failed');
+    const data = await response.json();
+    updateDashboard(data);
+    checkForNewOrder(data.recentOrders);
+  } catch(err) {
+    console.warn('Stripe API failed, using Google Sheets fallback', err);
+    try {
+      const resp = await fetch(gsheetCsvUrl);
+      const text = await resp.text();
+      const lines = text.split('\n').filter(l => l.trim() !== '');
+      const recentOrders = [];
+      const dataObj = { totalRevenue:0, totalSIMsSold:0, activeUsers:0, newSignups:0 };
+
+      lines.forEach((line,index)=>{
+        if(index===0) return;
+        const [id,name,amount,address,email,timestamp]=line.split(',');
+        dataObj.totalRevenue+=parseFloat(amount)||0;
+        dataObj.totalSIMsSold+=1;
+        recentOrders.push({id,name,amount,address,email,timestamp});
+      });
+
+      dataObj.recentOrders=recentOrders;
+      updateDashboard(dataObj);
+      checkForNewOrder(recentOrders);
+    } catch(sheetErr){console.error('Google Sheets fallback failed',sheetErr);}
+  }
+}
+
+function updateDashboard(data){
+  document.getElementById('simsSold').textContent=data.totalSIMsSold||0;
+  document.getElementById('totalRevenue').textContent=`$${data.totalRevenue||0}`;
+  document.getElementById('activeUsers').textContent=data.activeUsers||0;
+  document.getElementById('newSignups').textContent=data.newSignups||0;
+
+  const recentDiv=document.getElementById('recentOrdersList');
+  if(data.recentOrders && data.recentOrders.length>0){
+    recentDiv.innerHTML=data.recentOrders.map(o=>`<div style="padding:0.5rem 0;border-bottom:1px solid #ccc;"><strong>${o.name}</strong> – $${o.amount}<br>${o.address}<br>${o.email}</div>`).join('');
+  } else { recentDiv.innerHTML='<p>No recent orders.</p>'; }
+}
+
+function checkForNewOrder(orders){
+  if(!orders||orders.length===0) return;
+  const newestOrder=orders[0];
+  if(newestOrder.id && newestOrder.id!==lastOrderId){
+    lastOrderId=newestOrder.id;
+    orderSound.play().catch(e=>console.warn('Sound play blocked', e));
+    showOrderAlert(newestOrder);
+  }
+}
+
+function showOrderAlert(order){
+  const alertDiv=document.createElement('div');
+  alertDiv.style.position='fixed';
+  alertDiv.style.bottom='20px';
+  alertDiv.style.right='20px';
+  alertDiv.style.background='#4CAF50';
+  alertDiv.style.color='white';
+  alertDiv.style.padding='1rem 1.5rem';
+  alertDiv.style.borderRadius='8px';
+  alertDiv.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';
+  alertDiv.style.zIndex=2000;
+  alertDiv.innerHTML=`🎉 New SIM Sold!<br><strong>${order.name}</strong> – $${order.amount}<br>${order.address}`;
+  document.body.appendChild(alertDiv);
+  setTimeout(()=>alertDiv.remove(),10000);
+}
+
+// Thank You popup
+const urlParams=new URLSearchParams(window.location.search);
+if(urlParams.get('success')==='true'){
+  document.getElementById('thankYouPopup').style.display='flex';
+  window.history.replaceState({},document.title,window.location.pathname);
+}
+
+fetchDashboardData();
+setInterval(fetchDashboardData,10000);
 </script>
 
 </body>
