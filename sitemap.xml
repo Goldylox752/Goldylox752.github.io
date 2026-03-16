@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- Homepage -->
   <url>
-    <loc>https://goldylox752.github.io/index.html</loc>
+    <loc>https://goldylox752.github.io/</loc>
     <priority>1.0</priority>
   </url>
 
-  <url>
-    <loc>https://goldylox752.github.io/canada-sim.html</loc>
-    <priority>0.8</priority>
-  </url>
+  <!-- Carrier + City Pages -->
+  <url><loc>https://goldylox752.github.io/pages/lucky-mobile-toronto.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/lucky-mobile-vancouver.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/freedom-mobile-toronto.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/freedom-mobile-vancouver.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/public-mobile-montreal.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/public-mobile-toronto.html</loc></url>
 
-  <url>
-    <loc>https://goldylox752.github.io/travel-sim-canada.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://goldylox752.github.io/cheap-sim-canada.html</loc>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://goldylox752.github.io/prepaid-sim-canada.html</loc>
-    <priority>0.7</priority>
-  </url>
+  <!-- Problem / Keyword Pages -->
+  <url><loc>https://goldylox752.github.io/pages/cheap-sim-card-canada.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/buy-prepaid-sim-canada.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/sim-card-without-contract.html</loc></url>
+  <url><loc>https://goldylox752.github.io/pages/tourist-sim-card-canada.html</loc></url>
 
 </urlset>
