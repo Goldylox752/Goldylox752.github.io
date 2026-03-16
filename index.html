@@ -1,289 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Buy Prepaid SIM Card Canada | $20 SIM Delivered | SIM2Door</title>
-
-<meta name="description" content="Buy prepaid SIM cards online in Canada. Only $20 with fast delivery. Compatible with Lucky Mobile, Freedom Mobile and Public Mobile. Easy activation.">
-
-<meta name="keywords" content="buy SIM card Canada, prepaid SIM Canada, cheap SIM card Canada, Lucky Mobile SIM, Freedom Mobile SIM, Public Mobile SIM">
-
-<link rel="canonical" href="https://goldylox752.github.io/">
-
-<meta property="og:title" content="SIM2Door | $20 Prepaid SIM Cards Canada">
-<meta property="og:description" content="Order a prepaid SIM card delivered anywhere in Canada. Only $20 with fast shipping.">
-<meta property="og:type" content="website">
+<title>SIM2Door Dashboard – Real-Time GA4</title>
+<meta name="description" content="Live SIM2Door dashboard showing pageviews, button clicks, and $20 SIM purchases from GA4.">
+<link rel="stylesheet" href="style.css">
 
 <style>
-
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#f5f6f7;
-color:#222;
-scroll-behavior:smooth;
-}
-
-/* HEADER /
-
-header{
-background:white;
-padding:70px 20px;
-text-align:center;
-border-bottom:1px solid #ddd;
-}
-
-header h1{
-font-size:46px;
-margin-bottom:10px;
-}
-
-header p{
-font-size:20px;
-opacity:0.8;
-margin-bottom:30px;
-}
-
-.hero-btn{
-padding:16px 45px;
-font-size:20px;
-color:white;
-background:#3b82f6;
-border:none;
-border-radius:50px;
-cursor:pointer;
-text-decoration:none;
-display:inline-block;
-transition:0.25s;
-}
-
-.hero-btn:hover{
-transform:translateY(-3px);
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
-}
-
-/ MAIN /
-
-.container{
-max-width:1000px;
-margin:auto;
-padding:60px 20px;
-}
-
-/ FEATURES /
-
-.features{
-display:flex;
-flex-wrap:wrap;
-gap:30px;
-justify-content:center;
-margin-bottom:60px;
-}
-
-.feature{
-background:white;
-padding:30px;
-border-radius:15px;
-flex:1 1 250px;
-text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.feature h3{
-color:#3b82f6;
-margin-bottom:10px;
-}
-
-/ PLAN /
-
-.plan{
-background:white;
-padding:60px;
-border-radius:20px;
-text-align:center;
-box-shadow:0 12px 35px rgba(0,0,0,0.1);
-}
-
-.plan h2{
-font-size:36px;
-margin-bottom:10px;
-}
-
-.price{
-font-size:64px;
-font-weight:bold;
-color:#3b82f6;
-margin:20px 0;
-}
-
-.buy-btn{
-padding:18px 50px;
-font-size:22px;
-background:#3b82f6;
-color:white;
-border:none;
-border-radius:50px;
-cursor:pointer;
-text-decoration:none;
-display:inline-block;
-transition:0.25s;
-}
-
-.buy-btn:hover{
-transform:translateY(-3px);
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
-}
-
-/ CONTENT /
-
-.content{
-margin-top:70px;
-line-height:1.7;
-font-size:18px;
-}
-
-.content h2{
-margin-top:40px;
-font-size:30px;
-}
-
-/ TRUST /
-
-.trust{
-margin-top:30px;
-font-size:15px;
-opacity:0.85;
-}
-
-/ FOOTER */
-
-footer{
-background:#111;
-color:white;
-text-align:center;
-padding:40px 20px;
-margin-top:80px;
-}
-
-@media(max-width:800px){
-.features{flex-direction:column;}
-}
-
+body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f9f9f9; }
+h1 { color:#222; text-align:center; margin-bottom:20px; }
+section { background:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+th, td { border:1px solid #ddd; padding:10px; text-align:center; }
+th { background:#007bff; color:#fff; }
 </style>
 </head>
-
 <body>
 
-<header>
+<h1>SIM2Door Live GA4 Dashboard</h1>
 
-<h1>Buy Prepaid SIM Cards Online in Canada</h1>
+<section id="traffic">
+<h2>Landing Page Traffic</h2>
+<table>
+<tr><th>Page</th><th>Pageviews</th></tr>
+<tr><td>Home</td><td id="pv-home">0</td></tr>
+<tr><td>Canada SIM</td><td id="pv-canada">0</td></tr>
+<tr><td>Travel SIM</td><td id="pv-travel">0</td></tr>
+<tr><td>Cheap SIM</td><td id="pv-cheap">0</td></tr>
+<tr><td>Prepaid SIM</td><td id="pv-prepaid">0</td></tr>
+</table>
+</section>
 
-<p>$20 SIM cards delivered fast anywhere in Canada</p>
+<section id="buy-clicks">
+<h2>Buy Button Clicks</h2>
+<table>
+<tr><th>Button</th><th>Clicks</th></tr>
+<tr><td>Buy SIM Home</td><td id="click-home">0</td></tr>
+<tr><td>Buy SIM Canada</td><td id="click-canada">0</td></tr>
+<tr><td>Buy SIM Travel</td><td id="click-travel">0</td></tr>
+<tr><td>Buy SIM Cheap</td><td id="click-cheap">0</td></tr>
+<tr><td>Buy SIM Prepaid</td><td id="click-prepaid">0</td></tr>
+</table>
+</section>
 
-<a href="#order" class="hero-btn">Order Your SIM</a>
+<section id="sales">
+<h2>Confirmed $20 SIM Purchases</h2>
+<p>Total Revenue: <strong id="total-revenue">$0</strong></p>
+<p>Total SIMs Sold: <strong id="total-sims">0</strong></p>
+</section>
 
-</header>
+<script>
+// === CONFIG ===
+const SIM_PRICE = 20; // $20 per SIM
+const GA4_API_KEY = 'YOUR_API_KEY_OR_SERVICE_ACCOUNT'; // Replace with your GA4 key
+const GA4_PROPERTY_ID = 'YOUR_GA4_PROPERTY_ID'; // Replace with GA4 property number
 
-<div class="container">
+// Example fetch function (replace with actual GA4 API integration)
+async function fetchGA4Data() {
+  try {
+    // Placeholder: Replace this URL with GA4 Reporting API endpoint
+    // Example: https://analyticsdata.googleapis.com/v1beta/properties/YOUR_PROPERTY_ID:runReport
+    // Fetch pageviews and buy_click events
+    const response = await fetch('https://your-server-endpoint.com/get-ga4-data'); 
+    const data = await response.json();
 
-<div class="features">
+    // Example structure returned: 
+    // data = {pageviews: {home: 125, canada:87,...}, clicks:{home:15,...}, totalSims:50}
+    
+    document.getElementById('pv-home').textContent = data.pageviews.home;
+    document.getElementById('pv-canada').textContent = data.pageviews.canada;
+    document.getElementById('pv-travel').textContent = data.pageviews.travel;
+    document.getElementById('pv-cheap').textContent = data.pageviews.cheap;
+    document.getElementById('pv-prepaid').textContent = data.pageviews.prepaid;
 
-<div class="feature">
-<h3>📶 Prepaid Ready</h3>
-<p>Compatible with Lucky Mobile, Freedom Mobile and Public Mobile.</p>
-</div>
+    document.getElementById('click-home').textContent = data.clicks.home;
+    document.getElementById('click-canada').textContent = data.clicks.canada;
+    document.getElementById('click-travel').textContent = data.clicks.travel;
+    document.getElementById('click-cheap').textContent = data.clicks.cheap;
+    document.getElementById('click-prepaid').textContent = data.clicks.prepaid;
 
-<div class="feature">
-<h3>🚚 Fast Canada Shipping</h3>
-<p>We ship SIM cards quickly anywhere in Canada.</p>
-</div>
-
-<div class="feature">
-<h3>⚡ Easy Activation</h3>
-<p>Activate your SIM online with your preferred prepaid carrier.</p>
-</div>
-
-</div>
-
-<div class="plan" id="order">
-
-<h2>Starter SIM</h2>
-
-<div class="price">$20</div>
-
-<p>SIM card + shipping included</p>
-
-<a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" target="_blank" class="buy-btn">Buy SIM Now</a>
-
-<div class="trust">
-
-<p>✔ Secure checkout powered by Stripe</p>
-<p>✔ Ships anywhere in Canada</p>
-<p>✔ Compatible with major prepaid carriers</p>
-
-</div>
-
-</div>
-
-<div class="content">
-
-<h2>Buy SIM Cards Online in Canada</h2>
-
-<p>
-SIM2Door makes it easy to buy prepaid SIM cards online in Canada.
-Instead of visiting a store, simply order your SIM card online and
-have it delivered directly to your home. Our SIM cards work with
-popular Canadian prepaid carriers and can be activated quickly.
-</p>
-
-<h2>Compatible Canadian Networks</h2>
-
-<p>
-Our SIM cards are compatible with several prepaid networks
-including Lucky Mobile, Freedom Mobile and Public Mobile.
-These carriers provide affordable mobile plans across Canada,
-making them ideal for students, travelers, and anyone who
-needs a reliable prepaid phone connection.
-</p>
-
-<h2>Perfect for Travel or New Residents</h2>
-
-<p>
-If you are new to Canada or visiting temporarily,
-buying a prepaid SIM card online is the fastest way
-to get connected. Order today and have your SIM card
-delivered anywhere in Canada with easy activation.
-</p>
-
-</div>
-
-</div>
-
-<footer>
-
-<p>SIM2Door • Prepaid SIM Delivery Canada</p>
-
-<p>© 2026 SIM2Door. All rights reserved.</p>
-
-</footer>
-
-<script type="application/ld+json">
-{
-"@context":"https://schema.org",
-"@type":"Product",
-"name":"SIM2Door Prepaid SIM Card",
-"description":"Prepaid SIM card delivered anywhere in Canada for $20.",
-"brand":"SIM2Door",
-"offers":{
-"@type":"Offer",
-"priceCurrency":"CAD",
-"price":"20",
-"availability":"https://schema.org/InStock"
+    document.getElementById('total-sims').textContent = data.totalSims;
+    document.getElementById('total-revenue').textContent = `$${data.totalSims*SIM_PRICE}`;
+  } catch (error) {
+    console.error('Error fetching GA4 data:', error);
+  }
 }
-}
+
+// Refresh every 30 seconds
+fetchGA4Data();
+setInterval(fetchGA4Data, 30000);
 </script>
 
 </body>
