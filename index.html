@@ -6,29 +6,30 @@
 <title>SIM2Door – $20 Prepaid SIM Cards Canada</title>
 <meta name="description" content="Get your $20 prepaid SIM card delivered fast anywhere in Canada. Works with Lucky Mobile, Freedom Mobile, Public Mobile. Easy activation.">
 
-<!-- Google Fonts for modern look -->
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 body {
-  margin:0; padding:0; font-family: 'Inter', sans-serif; background:#f4f5f7; color:#111;
+    margin:0; padding:0; font-family:'Inter', sans-serif; background:#f4f5f7; color:#111;
 }
 header {
-  text-align:center; padding:80px 20px; background:#007bff; color:#fff;
+    text-align:center; padding:80px 20px; background:#007bff; color:#fff;
 }
 header h1 { font-size:2.5em; margin-bottom:10px; }
-header p { font-size:1.2em; }
+header p { font-size:1.2em; margin-bottom:20px; }
+button {
+    background:#ff7a00; color:#fff; font-size:1.2em; padding:15px 30px; border:none;
+    border-radius:8px; cursor:pointer; transition:0.2s;
+}
+button:hover { background:#e96b00; }
 main { max-width:800px; margin:40px auto; padding:0 20px; }
 section { margin-bottom:60px; text-align:center; }
 section h2 { font-size:2em; margin-bottom:20px; }
 section p { font-size:1.1em; line-height:1.6; margin-bottom:20px; }
 ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; text-align:left; max-width:500px; margin:0 auto; }
 ul li { background:#fff; padding:15px 20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-button {
-  background:#ff7a00; color:#fff; font-size:1.2em; padding:15px 30px;
-  border:none; border-radius:8px; cursor:pointer; transition:0.2s;
-}
-button:hover { background:#e96b00; }
+details { margin-bottom:10px; }
 footer { text-align:center; padding:40px 20px; font-size:0.9em; color:#555; }
 </style>
 
@@ -61,7 +62,7 @@ gtag('config', 'G-XXXXXXX');
 </section>
 
 <section>
-<h2>FAQ</h2>
+<h2>Frequently Asked Questions</h2>
 <details>
 <summary>How long does shipping take?</summary>
 <p>Shipping usually takes 3–5 business days anywhere in Canada.</p>
@@ -82,6 +83,16 @@ gtag('config', 'G-XXXXXXX');
 <a href="dashboard.html" target="_blank">Admin Dashboard</a>
 </footer>
 
-<script src="script.js"></script>
+<!-- Stripe & GA4 click tracking -->
+<script>
+const stripeCheckoutURL = 'https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06';
+document.querySelectorAll('#buy-sim-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        gtag('event', 'buy_click', { event_category: 'SIM Sales', event_label: 'Physical SIM $20' });
+        window.location.href = stripeCheckoutURL;
+    });
+});
+</script>
+
 </body>
 </html>
