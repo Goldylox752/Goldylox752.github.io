@@ -1,0 +1,25 @@
+<script>
+  const stripe = Stripe("pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4");
+
+  document.getElementById("checkout-button").addEventListener("click", () => {
+    fetch("/api/create-checkout-session", { method: "POST" })
+      .then(res => res.json())
+      .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+      .catch(err => console.error(err));
+  });
+
+  async function updateDashboard() {
+    try {
+      const res = await fetch("/api/dashboard");
+      const data = await res.json();
+      document.getElementById("totalOrders").innerText = data.totalOrders;
+      document.getElementById("totalRevenue").innerText = data.totalRevenue;
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    }
+  }
+
+  // Update dashboard immediately and every 30 seconds
+  updateDashboard();
+  setInterval(updateDashboard, 30000);
+</script>
