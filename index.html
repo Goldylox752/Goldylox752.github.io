@@ -10,19 +10,6 @@
 <meta name="keywords" content="SIM card, prepaid SIM, Canada SIM, $20 SIM, SIM2Door, fast delivery">
 <meta name="robots" content="index, follow">
 
-<!-- Open Graph -->
-<meta property="og:title" content="SIM2Door – $20 Prepaid SIM Cards Canada">
-<meta property="og:description" content="Get your $20 prepaid SIM card delivered anywhere in Canada. Easy activation, fast shipping.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://goldylox752.github.io/">
-<meta property="og:image" content="https://goldylox752.github.io/sim-image.jpg">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SIM2Door – $20 Prepaid SIM Cards Canada">
-<meta name="twitter:description" content="Get your $20 prepaid SIM card delivered anywhere in Canada. Easy activation, fast shipping.">
-<meta name="twitter:image" content="https://goldylox752.github.io/sim-image.jpg">
-
 <!-- GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
 <script>
@@ -39,7 +26,6 @@ body { font-family: Arial, sans-serif; background: #f5f6fa; margin:0; padding:0;
 header { background: #4CAF50; color:white; text-align:center; padding:1rem; font-size:1.5rem; font-weight:bold; }
 main { max-width:900px; margin:2rem auto; padding:1rem; background:white; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 h1, h2 { text-align:center; margin-bottom:2rem; }
-h1 { font-size:2rem; margin-top:0; }
 .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; }
 .card { background:#eaf2f8; padding:1.5rem; border-radius:6px; text-align:center; transition:transform 0.2s; }
 .card:hover { transform:scale(1.05); }
@@ -108,9 +94,9 @@ document.getElementById('buySimBtn').addEventListener('click', async () => {
   } catch(err) { console.error('Checkout error:', err); }
 });
 
-// --- Track last order and ignore existing orders on first load ---
-let lastOrderId = null;
-let initialized = false; // first load flag
+// --- Track all known orders to avoid first-load alerts ---
+let knownOrderIds = new Set();
+let initialized = false;
 
 async function fetchDashboardData() {
   try {
@@ -120,16 +106,24 @@ async function fetchDashboardData() {
     updateDashboard(data);
 
     if (!initialized) {
-      // first load: set lastOrderId but do NOT alert
+      // first load: mark all existing orders as known, no alerts
       if (data.recentOrders && data.recentOrders.length > 0) {
-        lastOrderId = data.recentOrders[0].id;
+        data.recentOrders.forEach(o => knownOrderIds.add(o.id));
       }
       initialized = true;
-      return; // exit early, no popup or sound
+      return; // exit early
     }
 
-    // subsequent loads: check for new orders
-    checkForNewOrder(data.recentOrders);
+    // subsequent loads: alert only for new orders
+    if (data.recentOrders && data.recentOrders.length > 0) {
+      data.recentOrders.forEach(order => {
+        if (!knownOrderIds.has(order.id)) {
+          knownOrderIds.add(order.id);
+          orderSound.play().catch(e=>console.warn('Sound blocked', e));
+          showOrderAlert(order);
+        }
+      });
+    }
 
   } catch(err) {
     console.warn('Stripe API failed, using Google Sheets fallback', err);
@@ -150,10 +144,16 @@ async function fetchDashboardData() {
       updateDashboard(dataObj);
 
       if (!initialized && recentOrders.length>0) {
-        lastOrderId = recentOrders[0].id;
+        recentOrders.forEach(o => knownOrderIds.add(o.id));
         initialized = true;
       } else {
-        checkForNewOrder(recentOrders);
+        recentOrders.forEach(order => {
+          if (!knownOrderIds.has(order.id)) {
+            knownOrderIds.add(order.id);
+            orderSound.play().catch(e=>console.warn('Sound blocked', e));
+            showOrderAlert(order);
+          }
+        });
       }
 
     } catch(sheetErr){console.error('Google Sheets fallback failed',sheetErr);}
@@ -170,16 +170,6 @@ function updateDashboard(data){
   if(data.recentOrders && data.recentOrders.length>0){
     recentDiv.innerHTML=data.recentOrders.map(o=>`<div style="padding:0.5rem 0;border-bottom:1px solid #ccc;"><strong>${o.name}</strong> – $${o.amount}<br>${o.address}<br>${o.email}</div>`).join('');
   } else { recentDiv.innerHTML='<p>No recent orders.</p>'; }
-}
-
-function checkForNewOrder(orders){
-  if(!orders||orders.length===0) return;
-  const newestOrder=orders[0];
-  if(newestOrder.id && newestOrder.id!==lastOrderId){
-    lastOrderId=newestOrder.id;
-    orderSound.play().catch(e=>console.warn('Sound play blocked', e));
-    showOrderAlert(newestOrder);
-  }
 }
 
 function showOrderAlert(order){
