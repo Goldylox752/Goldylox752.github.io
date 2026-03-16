@@ -1,138 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SIM2Door – $20 Prepaid SIM Cards</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM2Door Admin | Prepaid SIM Dashboard</title>
 
-<!-- GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-528699336');
-</script>
+    <!-- GA4 Tracking -->
+    <script async src="https://www.googletagmanager.com"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-528699336');
+    </script>
 
-<script src="https://js.stripe.com/v3/"></script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com"></script>
 
-<style>
-body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f5f6fa;color:#333;}
-header{background:#4CAF50;color:#fff;text-align:center;padding:1rem;font-size:1.5rem;}
-main{max-width:900px;margin:2rem auto;padding:1rem;background:#fff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-h1,h2{text-align:center;margin-bottom:1.5rem;}
-.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;}
-.card{background:#eaf2f8;padding:1rem;border-radius:6px;text-align:center;}
-.buy-btn{display:block;margin:2rem auto;padding:1rem 2rem;background:#ff6f00;color:#fff;border:none;border-radius:6px;font-size:1.2rem;cursor:pointer;}
-#recentOrdersList{background:#f1f8ff;padding:1rem;border-radius:6px;margin:1rem 0;}
-#thankYouPopup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:1000;}
-#thankYouPopup div{background:white;padding:2rem;border-radius:8px;text-align:center;}
-#thankYouPopup button{margin-top:1rem;padding:0.5rem 1rem;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;}
-</style>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #ff6f00;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+        }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+        header { background: var(--primary); color: white; padding: 1.5rem; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        
+        /* Dashboard Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card h3 { margin: 0; color: #636e72; font-size: 0.9rem; text-transform: uppercase; }
+        .stat-card p { margin: 10px 0 0; font-size: 2rem; font-weight: bold; color: var(--primary); }
+
+        /* Action Area */
+        .action-box { background: white; padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 2rem; border: 2px dashed #dfe6e9; }
+        .buy-btn { background: var(--secondary); color: white; border: none; padding: 1rem 3rem; font-size: 1.2rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
+        .buy-btn:hover { opacity: 0.9; }
+        .buy-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+
+        /* Orders Table */
+        .orders-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .orders-header { padding: 1rem 1.5rem; background: #f1f2f6; border-bottom: 1px solid #dfe6e9; display: flex; justify-content: space-between; align-items: center; }
+        #recentOrdersList { padding: 0; margin: 0; list-style: none; }
+        .order-item { padding: 1rem 1.5rem; border-bottom: 1px solid #f1f2f6; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; font-size: 0.95rem; }
+        .order-item:last-child { border-bottom: none; }
+        .order-name { font-weight: 600; }
+        .order-meta { color: #636e72; font-size: 0.85rem; }
+
+        /* Popups & Alerts */
+        #thankYouPopup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+        .popup-content { background: white; padding: 2.5rem; border-radius: 16px; text-align: center; max-width: 400px; }
+    </style>
 </head>
 <body>
 
-<header>SIM2Door – Buy SIM & Dashboard</header>
+<header>SIM2Door • Operations Dashboard</header>
 
 <main>
-<h1>SIM2Door – $20 Prepaid SIM</h1>
+    <!-- Metric Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>SIMs Sold</h3>
+            <p id="simsSold">--</p>
+        </div>
+        <div class="stat-card">
+            <h3>Gross Revenue</h3>
+            <p id="totalRevenue">$0.00</p>
+        </div>
+    </div>
 
-<h2>Buy a SIM Card</h2>
-<button class="buy-btn" id="buySimBtn">Buy SIM Card</button>
+    <!-- Sales Trigger -->
+    <div class="action-box">
+        <h2>Customer Portal Simulation</h2>
+        <p>Use this button to trigger a new $20 SIM purchase session.</p>
+        <button class="buy-btn" id="buySimBtn">Purchase New SIM</button>
+    </div>
 
-<h2>Dashboard</h2>
-<div class="dashboard-grid">
-<div class="card"><h3>Total SIMs Sold</h3><p id="simsSold">0</p></div>
-<div class="card"><h3>Total Revenue</h3><p id="totalRevenue">$0</p></div>
-</div>
-
-<h2>Recent Orders</h2>
-<div id="recentOrdersList"><p>Loading...</p></div>
+    <!-- Order Feed -->
+    <div class="orders-container">
+        <div class="orders-header">
+            <strong>Recent Orders</strong>
+            <span id="lastUpdated" style="font-size: 0.75rem; color: #b2bec3;">Syncing...</span>
+        </div>
+        <div id="recentOrdersList">
+            <div style="padding: 2rem; text-align: center; color: #b2bec3;">Loading transaction data...</div>
+        </div>
+    </div>
 </main>
 
 <div id="thankYouPopup">
-<div>
-<h2>Thank You!</h2>
-<p>Your SIM purchase was successful. 🎉</p>
-<button onclick="document.getElementById('thankYouPopup').style.display='none'">Close</button>
-</div>
+    <div class="popup-content">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+        <h2>Order Confirmed!</h2>
+        <p>Your prepaid SIM card order was successful and is being processed.</p>
+        <button class="buy-btn" style="padding: 0.5rem 2rem;" onclick="closePopup()">Dismiss</button>
+    </div>
 </div>
 
 <script>
-// --- Stripe setup ---
-const stripe = Stripe('pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4viKRBWQy0F800oOuE80hk');
-const checkoutApiUrl = '/api/create-checkout-session';
-const dashboardApiUrl = '/api/dashboard';
-const orderSound = new Audio('/notification.mp3'); // optional
+    // Configuration
+    const STRIPE_PUBLIC_KEY = 'pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4viKRBWQy0F800oOuE80hk';
+    const stripe = Stripe(STRIPE_PUBLIC_KEY);
+    const API_ENDPOINTS = {
+        checkout: '/api/create-checkout-session',
+        dashboard: '/api/dashboard'
+    };
 
-// Buy button
-document.getElementById('buySimBtn').addEventListener('click', async () => {
-  gtag('event','click',{event_category:'Button', event_label:'Buy SIM Card'});
-  try {
-    const resp = await fetch(checkoutApiUrl,{method:'POST'});
-    const session = await resp.json();
-    await stripe.redirectToCheckout({sessionId: session.id});
-  } catch(e){console.error(e);}
-});
+    let knownOrderIds = new Set();
+    let isInitialLoad = true;
 
-// --- Track known orders to prevent first-load popup ---
-let knownOrderIds = new Set();
-let initialized = false;
+    // 1. Stripe Checkout Handler
+    document.getElementById('buySimBtn').addEventListener('click', async (e) => {
+        const btn = e.target;
+        btn.disabled = true;
+        btn.textContent = 'Connecting to Stripe...';
 
-async function fetchDashboardData(){
-  try {
-    const resp = await fetch(dashboardApiUrl);
-    const data = await resp.json();
-    updateDashboard(data);
+        gtag('event', 'purchase_attempt', { 'event_category': 'Sales' });
 
-    if(!initialized){
-      if(data.recentOrders) data.recentOrders.forEach(o=>knownOrderIds.add(o.id));
-      initialized = true;
-      return; // no popup on first load
-    }
-
-    if(data.recentOrders){
-      data.recentOrders.forEach(order=>{
-        if(!knownOrderIds.has(order.id)){
-          knownOrderIds.add(order.id);
-          orderSound.play().catch(()=>{});
-          showOrderAlert(order);
+        try {
+            const response = await fetch(API_ENDPOINTS.checkout, { method: 'POST' });
+            const session = await response.json();
+            
+            // New redirection standard
+            if (session.url) {
+                window.location.href = session.url;
+            } else {
+                // Fallback for older API versions
+                await stripe.redirectToCheckout({ sessionId: session.id });
+            }
+        } catch (err) {
+            console.error('Checkout Error:', err);
+            alert('Failed to initiate checkout. Please check console.');
+            btn.disabled = false;
+            btn.textContent = 'Purchase New SIM';
         }
-      });
+    });
+
+    // 2. Dashboard Sync Logic
+    async function syncDashboard() {
+        try {
+            const response = await fetch(API_ENDPOINTS.dashboard);
+            if (!response.ok) throw new Error('API Unavailable');
+            const data = await response.json();
+
+            updateUI(data);
+            checkForNewOrders(data.recentOrders);
+            
+            document.getElementById('lastUpdated').textContent = `Last sync: ${new Date().toLocaleTimeString()}`;
+            isInitialLoad = false;
+        } catch (err) {
+            console.warn('Sync failed:', err.message);
+        }
     }
 
-  } catch(err){console.error('Dashboard fetch failed',err);}
-}
+    function updateUI(data) {
+        document.getElementById('simsSold').textContent = data.totalSIMsSold || 0;
+        document.getElementById('totalRevenue').textContent = `$${(data.totalRevenue || 0).toLocaleString()}`;
+        
+        const list = document.getElementById('recentOrdersList');
+        if (data.recentOrders?.length > 0) {
+            list.innerHTML = data.recentOrders.map(order => `
+                <div class="order-item">
+                    <div class="order-name">${order.name}</div>
+                    <div class="order-meta">${order.email}</div>
+                    <div style="text-align: right; font-weight: bold; color: var(--primary);">+$${order.amount}</div>
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = '<div style="padding: 2rem; text-align: center;">No orders found yet.</div>';
+        }
+    }
 
-function updateDashboard(data){
-  document.getElementById('simsSold').textContent = data.totalSIMsSold||0;
-  document.getElementById('totalRevenue').textContent = `$${data.totalRevenue||0}`;
-  const div = document.getElementById('recentOrdersList');
-  if(data.recentOrders && data.recentOrders.length>0){
-    div.innerHTML = data.recentOrders.map(o=>`<div><strong>${o.name}</strong> – $${o.amount}<br>${o.address}<br>${o.email}</div>`).join('');
-  } else div.innerHTML = '<p>No recent orders.</p>';
-}
+    function checkForNewOrders(orders = []) {
+        orders.forEach(order => {
+            if (!knownOrderIds.has(order.id)) {
+                knownOrderIds.add(order.id);
+                if (!isInitialLoad) {
+                    playNotification();
+                }
+            }
+        });
+    }
 
-function showOrderAlert(order){
-  const div = document.createElement('div');
-  div.style.position='fixed'; div.style.bottom='20px'; div.style.right='20px';
-  div.style.background='#4CAF50'; div.style.color='#fff'; div.style.padding='1rem';
-  div.style.borderRadius='8px'; div.style.zIndex=2000;
-  div.innerHTML = `🎉 New SIM Sold!<br><strong>${order.name}</strong> – $${order.amount}<br>${order.address}`;
-  document.body.appendChild(div);
-  setTimeout(()=>div.remove(),10000);
-}
+    // 3. Utilities
+    function closePopup() {
+        document.getElementById('thankYouPopup').style.display = 'none';
+        const url = new URL(window.location);
+        url.searchParams.delete('success');
+        window.history.replaceState({}, '', url);
+    }
 
-// Thank you popup
-const params = new URLSearchParams(window.location.search);
-if(params.get('success')==='true'){
-  document.getElementById('thankYouPopup').style.display='flex';
-  window.history.replaceState({},document.title,window.location.pathname);
-}
+    function playNotification() {
+        const audio = new Audio('/notification.mp3');
+        audio.play().catch(() => console.log('Audio blocked by browser'));
+    }
 
-fetchDashboardData();
-setInterval(fetchDashboardData,10000);
+    // On Load
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') {
+        document.getElementById('thankYouPopup').style.display = 'flex';
+    }
+
+    syncDashboard();
+    setInterval(syncDashboard, 15000); // Sync every 15s
 </script>
-
 </body>
 </html>
