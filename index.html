@@ -9,14 +9,14 @@
 body {
     margin:0;
     font-family: 'Arial', sans-serif;
-    background:#f8f8f8; /* soft silver background */
+    background:#f8f8f8; 
     color:#222;
     scroll-behavior: smooth;
 }
 
 /* Header */
 header {
-    background:#e8e8e8; /* light silver */
+    background:#e8e8e8; 
     color:#111;
     padding:60px 20px;
     text-align:center;
@@ -95,12 +95,21 @@ header p {
 }
 .plan:hover { transform: translateY(-5px); box-shadow:0 18px 40px rgba(0,0,0,0.15); }
 .plan h2 { font-size:36px; margin-bottom:15px; letter-spacing:1px; }
+
+/* Animated Price */
 .plan .price {
     font-size:64px;
     font-weight:bold;
     color:#4a90e2;
     margin-bottom:20px;
+    animation: pulse 1.5s infinite;
 }
+@keyframes pulse {
+    0% { text-shadow: 0 0 5px #4a90e2, 0 0 10px #4a90e2; }
+    50% { text-shadow: 0 0 20px #4a90e2, 0 0 30px #357ABD; }
+    100% { text-shadow: 0 0 5px #4a90e2, 0 0 10px #4a90e2; }
+}
+
 .buy-btn {
     padding:16px 50px;
     font-size:22px;
@@ -128,9 +137,7 @@ footer {
     font-size:14px;
 }
 
-@media(max-width:800px){
-    .features { flex-direction:column; align-items:center; }
-}
+@media(max-width:800px){ .features { flex-direction:column; align-items:center; } }
 </style>
 </head>
 
@@ -162,7 +169,7 @@ footer {
 <h2>Starter SIM</h2>
 <div class="price">$20</div>
 <p>SIM card + shipping included</p>
-<a href="https://buy.stripe.com/6oUdR22iv5qAa7Z3YY2ZO05" target="_blank" class="buy-btn">Buy SIM Now</a>
+<a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" target="_blank" class="buy-btn">Buy SIM Now</a>
 <p style="margin-top:12px; font-size:14px;">Secure checkout powered by Stripe</p>
 </div>
 </div>
