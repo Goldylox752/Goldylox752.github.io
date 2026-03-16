@@ -108,7 +108,7 @@ document.getElementById('buySimBtn').addEventListener('click', async () => {
   } catch(err) { console.error('Checkout error:', err); }
 });
 
-let lastOrderId = null;
+let lastOrderId = null; // initialize but do NOT trigger alert on first load
 
 async function fetchDashboardData() {
   try {
@@ -116,7 +116,14 @@ async function fetchDashboardData() {
     if(!response.ok) throw new Error('Stripe API failed');
     const data = await response.json();
     updateDashboard(data);
-    checkForNewOrder(data.recentOrders);
+
+    // --- only alert for truly new orders ---
+    if (lastOrderId) {
+      checkForNewOrder(data.recentOrders);
+    } else if (data.recentOrders && data.recentOrders.length > 0) {
+      // set the newest order id without alerting
+      lastOrderId = data.recentOrders[0].id;
+    }
   } catch(err) {
     console.warn('Stripe API failed, using Google Sheets fallback', err);
     try {
@@ -134,7 +141,13 @@ async function fetchDashboardData() {
       });
       dataObj.recentOrders=recentOrders;
       updateDashboard(dataObj);
-      checkForNewOrder(recentOrders);
+
+      if (lastOrderId) {
+        checkForNewOrder(recentOrders);
+      } else if (recentOrders.length > 0) {
+        lastOrderId = recentOrders[0].id;
+      }
+
     } catch(sheetErr){console.error('Google Sheets fallback failed',sheetErr);}
   }
 }
