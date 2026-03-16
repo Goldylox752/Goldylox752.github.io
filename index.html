@@ -92,8 +92,10 @@ const orderSound = new Audio('/notification.mp3');
 
 // --- Stripe Checkout ---
 const stripe = Stripe('pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4viKRBWQy0F800oOuE80hk');
-const checkoutApiUrl = 'https://your-vercel-project.vercel.app/api/create-checkout-session';
-const dashboardApiUrl = 'https://your-vercel-project.vercel.app/api/dashboard';
+
+// ===== Replace with your deployed Vercel function URLs =====
+const checkoutApiUrl = 'https://sim2door.vercel.app/api/create-checkout-session';
+const dashboardApiUrl = 'https://sim2door.vercel.app/api/dashboard';
 const gsheetCsvUrl = 'YOUR_GOOGLE_SHEET_CSV_LINK_HERE';
 
 document.getElementById('buySimBtn').addEventListener('click', async () => {
@@ -123,7 +125,6 @@ async function fetchDashboardData() {
       const lines = text.split('\n').filter(l => l.trim() !== '');
       const recentOrders = [];
       const dataObj = { totalRevenue:0, totalSIMsSold:0, activeUsers:0, newSignups:0 };
-
       lines.forEach((line,index)=>{
         if(index===0) return;
         const [id,name,amount,address,email,timestamp]=line.split(',');
@@ -131,7 +132,6 @@ async function fetchDashboardData() {
         dataObj.totalSIMsSold+=1;
         recentOrders.push({id,name,amount,address,email,timestamp});
       });
-
       dataObj.recentOrders=recentOrders;
       updateDashboard(dataObj);
       checkForNewOrder(recentOrders);
