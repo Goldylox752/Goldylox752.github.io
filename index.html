@@ -108,7 +108,9 @@ document.getElementById('buySimBtn').addEventListener('click', async () => {
   } catch(err) { console.error('Checkout error:', err); }
 });
 
-let lastOrderId = null; // initialize but do NOT trigger alert on first load
+// --- Track last order and ignore existing orders on first load ---
+let lastOrderId = null;
+let initialized = false; // first load flag
 
 async function fetchDashboardData() {
   try {
@@ -117,13 +119,18 @@ async function fetchDashboardData() {
     const data = await response.json();
     updateDashboard(data);
 
-    // --- only alert for truly new orders ---
-    if (lastOrderId) {
-      checkForNewOrder(data.recentOrders);
-    } else if (data.recentOrders && data.recentOrders.length > 0) {
-      // set the newest order id without alerting
-      lastOrderId = data.recentOrders[0].id;
+    if (!initialized) {
+      // first load: set lastOrderId but do NOT alert
+      if (data.recentOrders && data.recentOrders.length > 0) {
+        lastOrderId = data.recentOrders[0].id;
+      }
+      initialized = true;
+      return; // exit early, no popup or sound
     }
+
+    // subsequent loads: check for new orders
+    checkForNewOrder(data.recentOrders);
+
   } catch(err) {
     console.warn('Stripe API failed, using Google Sheets fallback', err);
     try {
@@ -142,10 +149,11 @@ async function fetchDashboardData() {
       dataObj.recentOrders=recentOrders;
       updateDashboard(dataObj);
 
-      if (lastOrderId) {
-        checkForNewOrder(recentOrders);
-      } else if (recentOrders.length > 0) {
+      if (!initialized && recentOrders.length>0) {
         lastOrderId = recentOrders[0].id;
+        initialized = true;
+      } else {
+        checkForNewOrder(recentOrders);
       }
 
     } catch(sheetErr){console.error('Google Sheets fallback failed',sheetErr);}
