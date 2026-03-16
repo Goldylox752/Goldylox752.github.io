@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM2Door Ops Dashboard</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root { --primary: #2ecc71; --dark: #2c3e50; --accent: #e67e22; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: #f4f7f6; color: var(--dark); }
+        header { background: var(--dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; color: #95a5a6; }
+        .card p { margin: 0.5rem 0 0; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        .ops-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .order-list { background: white; border-radius: 12px; padding: 1rem; }
+        .buy-zone { background: white; border-radius: 12px; padding: 1.5rem; text-align: center; border: 2px dashed #bdc3c7; }
+        .btn { background: var(--accent); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        #success-pop { display: none; position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 1rem 2rem; border-radius: 8px; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <span>SIM2Door <strong>OPERATIONS</strong></span>
+    <span id="status" style="font-size: 0.8rem; opacity: 0.7;">Syncing...</span>
+</header>
+
+<div class="container">
+    <div class="stats">
+        <div class="card"><h3>Total SIMs Sold</h3><p id="totalCount">--</p></div>
+        <div class="card"><h3>Revenue (USD)</h3><p id="totalRevenue">$0</p></div>
+        <div class="card"><h3>Active Sessions</h3><p>Live</p></div>
+    </div>
+
+    <div class="ops-grid">
+        <div class="order-list">
+            <h3>Recent Transactions</h3>
+            <div id="transactions">Loading transactions...</div>
+        </div>
+        
+        <div class="buy-zone">
+            <h3>New Fulfillment</h3>
+            <p style="font-size: 0.9rem; color: #7f8c8d;">Generate a manual $20 payment link for a customer.</p>
+            <button class="btn" id="genLink">Create Checkout</button>
+        </div>
+    </div>
+</div>
+
+<div id="success-pop">✅ Order successful! Syncing dashboard...</div>
+
+<script>
+    const stripe = Stripe('pk_live_51T32y52I6PKuEO3bxVEBe9FOCBYY5sH1yRLNn5zr9JFFm1QaggQ2A5HPxPNJTORYRTX8Wj7bmaHj4viKRBWQy0F800oOuE80hk');
+
+    // 1. Sync Dashboard Data
+    async function sync() {
+        try {
+            const res = await fetch('/api/dashboard');
+            const data = await res.json();
+            document.getElementById('totalCount').innerText = data.totalSIMsSold;
+            document.getElementById('totalRevenue').innerText = `$${data.totalRevenue}`;
+            document.getElementById('transactions').innerHTML = data.recentOrders.map(o => 
+                `<div style="padding: 10px; border-bottom: 1px solid #eee;">
+                    <strong>${o.name}</strong><br><small>${o.email} | $${o.amount}</small>
+                </div>`).join('') || 'No orders yet.';
+            document.getElementById('status').innerText = 'Last Updated: ' + new Date().toLocaleTimeString();
+        } catch (e) { console.error("Sync failed"); }
+    }
+
+    // 2. Handle Manual Checkout
+    document.getElementById('genLink').addEventListener('click', async () => {
+        const res = await fetch('/api/create-checkout-session', { method: 'POST' });
+        const session = await res.json();
+        window.location.href = session.url;
+    });
+
+    // 3. Success Handling
+    if (new URLSearchParams(window.location.search).get('success')) {
+        document.getElementById('success-pop').style.display = 'block';
+        setTimeout(() => document.getElementById('success-pop').style.display = 'none', 5000);
+        window.history.replaceState({}, '', '/');
+    }
+
+    sync();
+    setInterval(sync, 20000); // Polling every 20s
+</script>
+</body>
+</html>
