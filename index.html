@@ -1,97 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>SIM2Door | $20 SIM Cards Delivered Canada</title>
-
-<meta name="description" content="Order prepaid SIM cards online. $20 SIM cards delivered anywhere in Canada. Works with Lucky Mobile, Freedom Mobile and Public Mobile.">
-<meta name="keywords" content="SIM cards Canada, prepaid SIM delivery, Lucky Mobile SIM, Freedom Mobile SIM">
-
-<!-- Google Search Console verification -->
-<meta name="google-site-verification" content="Z_lkfwS9ez0oYgNTOeLbOrCgBi-UfN1GxEjwCPzh0DY" />
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-528699336');
-</script>
-
+<title>SIM2Door | $20 Prepaid SIM Cards Delivered Across Canada</title>
+<meta name="description" content="SIM2Door delivers prepaid SIM cards across Canada for $20. Works with Lucky Mobile, Freedom Mobile, and Public Mobile. Fast delivery, no contract.">
 <style>
-body{font-family:Arial;margin:0;background:#fff;color:#222;}
-header{background:#000;color:#fff;padding:25px;text-align:center;}
-.hero{padding:100px 20px;text-align:center;background:#f5f5f5;}
-.hero h1{font-size:42px;margin-bottom:10px;}
-.hero p{font-size:18px;}
-.button{display:inline-block;margin-top:20px;padding:15px 40px;background:#000;color:#fff;text-decoration:none;border-radius:6px;font-size:18px;}
-.section{padding:70px 20px;max-width:900px;margin:auto;text-align:center;}
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:30px;}
+body{margin:0;font-family:Arial,sans-serif;color:#222;background:#fff;}
+header{background:#000;color:#fff;padding:30px;text-align:center;}
+header h1{margin:0;font-size:36px;}
+header p{font-size:18px;margin-top:10px;}
+nav{margin-top:15px;}
+nav a{margin:0 8px;color:#fff;text-decoration:none;font-weight:bold;}
+nav a:hover{text-decoration:underline;}
+.hero{background:#f5f5f5;text-align:center;padding:80px 20px;position:relative;}
+.hero h2{font-size:40px;margin-bottom:20px;}
+.hero p{font-size:20px;}
+.button{display:inline-block;padding:15px 40px;margin-top:20px;background:#000;color:#fff;text-decoration:none;border-radius:6px;font-size:18px;}
+.button:hover{opacity:0.9;}
+.section{padding:60px 20px;text-align:center;max-width:1000px;margin:auto;}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;margin-top:40px;}
 .feature{background:#f5f5f5;padding:25px;border-radius:8px;}
-form{max-width:500px;margin:auto;margin-top:30px;}
-input{width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:6px;}
-footer{background:#000;color:#fff;padding:30px;text-align:center;margin-top:60px;}
-.nav{margin-top:10px;}
-.nav a{margin:0 10px;color:#fff;text-decoration:none;font-weight:bold;}
-.nav a:hover{text-decoration:underline;}
+.city-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:30px;}
+footer{background:#000;color:#fff;text-align:center;padding:30px;margin-top:50px;}
+ul{list-style:none;padding:0;margin:0;}
+li{margin:8px 0;}
+.sticky-order{position:fixed;bottom:15px;right:15px;z-index:999;background:#000;color:#fff;padding:15px 25px;border-radius:6px;font-size:18px;text-decoration:none;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+.countdown{font-size:20px;color:red;font-weight:bold;margin-top:15px;}
 </style>
-
 </head>
 <body>
 
 <header>
-<h2>SIM2Door</h2>
-<p>$20 SIM Cards Delivered Across Canada</p>
-<div class="nav">
-  <a href="/pages/lucky-mobile-toronto.html">Lucky Mobile</a>
-  <a href="/pages/freedom-mobile-vancouver.html">Freedom Mobile</a>
-  <a href="/pages/public-mobile-montreal.html">Public Mobile</a>
-</div>
+<h1>SIM2Door Canada</h1>
+<p>Prepaid SIM Cards Delivered Across Canada for $20</p>
+<nav>
+<a href="/pages/cheap-sim-canada.html">Canada</a>
+<a href="/pages/sim-card-toronto.html">Toronto</a>
+<a href="/pages/sim-card-vancouver.html">Vancouver</a>
+<a href="/pages/sim-card-montreal.html">Montreal</a>
+<a href="/pages/sim-card-ottawa.html">Ottawa</a>
+<a href="/pages/sim-card-winnipeg.html">Winnipeg</a>
+<a href="/pages/sim-card-halifax.html">Halifax</a>
+<a href="/pages/sim-card-quebec.html">Quebec City</a>
+</nav>
 </header>
 
 <section class="hero">
-<h1>Get Your SIM Card Delivered</h1>
-<p>Works with Lucky Mobile, Freedom Mobile & Public Mobile</p>
-<a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" class="button" onclick="trackCheckout()">Order SIM Card</a>
+<h2>Get Your $20 SIM Card Delivered Fast</h2>
+<p>Works with Lucky Mobile, Freedom Mobile, and Public Mobile. No contract, no credit check.</p>
+<p class="countdown" id="countdown">Hurry! Only 20 SIM cards left today!</p>
+<a href="#" class="button" onclick="openOffer()">Order Your SIM Now →</a>
 </section>
 
 <section class="section">
-<h2>Why Customers Choose SIM2Door</h2>
+<h2>Why Choose SIM2Door</h2>
 <div class="features">
-<div class="feature"><h3>$20 SIM Cards</h3><p>Affordable prepaid SIM cards.</p></div>
-<div class="feature"><h3>Fast Shipping</h3><p>Delivered anywhere in Canada.</p></div>
-<div class="feature"><h3>Easy Activation</h3><p>Works with major prepaid carriers.</p></div>
+<div class="feature"><h3>$20 SIM Cards</h3><p>Affordable prepaid SIM cards delivered nationwide.</p></div>
+<div class="feature"><h3>Fast Delivery</h3><p>We ship across all Canadian cities quickly and safely.</p></div>
+<div class="feature"><h3>No Contracts</h3><p>Easy activation, no credit check required.</p></div>
+<div class="feature"><h3>Works With Major Carriers</h3><p>Compatible with Lucky Mobile, Freedom Mobile, and Public Mobile.</p></div>
 </div>
 </section>
 
 <section class="section">
-<h2>Track Your Order</h2>
-<form>
-<input type="text" placeholder="Full Name">
-<input type="email" placeholder="Email">
-<input type="text" placeholder="Shipping Address">
-<input type="text" placeholder="City">
-<input type="text" placeholder="Postal Code">
-<a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" class="button" onclick="trackCheckout()">Continue To Payment</a>
-</form>
+<h2>Order SIM Cards in Your City</h2>
+<div class="city-links">
+<a href="/pages/sim-card-toronto.html" class="button">Toronto</a>
+<a href="/pages/sim-card-vancouver.html" class="button">Vancouver</a>
+<a href="/pages/sim-card-montreal.html" class="button">Montreal</a>
+<a href="/pages/sim-card-ottawa.html" class="button">Ottawa</a>
+<a href="/pages/sim-card-winnipeg.html" class="button">Winnipeg</a>
+<a href="/pages/sim-card-halifax.html" class="button">Halifax</a>
+<a href="/pages/sim-card-quebec.html" class="button">Quebec City</a>
+<!-- add remaining cities similarly -->
+</div>
 </section>
 
+<section class="section">
+<h2>Protect Your Data Online</h2>
+<p>Stay secure while browsing public Wi-Fi and protect your passwords.</p>
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a>
+</section>
+
+<!-- POPUP -->
+<div id="offerPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;">
+<div style="background:#fff;padding:30px;max-width:400px;margin:100px auto;text-align:center;border-radius:10px;">
+<h2>Complete Your Order</h2>
+<p>Get your SIM now and optionally secure your connection with VPN or password manager.</p>
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a><br><br>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a><br><br>
+<a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" class="button">Continue to Checkout →</a>
+</div>
+</div>
+
+<!-- STICKY ORDER BUTTON -->
+<a href="#" class="sticky-order" onclick="openOffer()">Order SIM Now</a>
+
 <footer>
-<p>© 2026 SIM2Door Canada</p>
+<p>© 2026 SIM2Door Canada. All rights reserved.</p>
+<p style="font-size:12px;">*We may earn commissions from affiliate links.</p>
 </footer>
 
 <script>
-function trackCheckout(){
-  gtag('event','begin_checkout',{
-    currency:'CAD',
-    value:20,
-    item_name:'SIM Card'
-  });
+// POPUP
+function openOffer(){document.getElementById('offerPopup').style.display='block';}
+
+// EXIT-INTENT POPUP
+document.addEventListener('mouseout', function(e) {
+if(e.clientY < 0) openOffer();
+});
+
+// COUNTDOWN SIM STOCK
+let stock = 20;
+function updateCountdown(){
+document.getElementById('countdown').textContent = `Hurry! Only ${stock} SIM cards left today!`;
+if(stock>0){stock--;setTimeout(updateCountdown, 5000);}
 }
+updateCountdown();
 </script>
 
 </body>
