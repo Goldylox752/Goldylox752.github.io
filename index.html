@@ -23,8 +23,6 @@ nav a:hover{text-decoration:underline;}
 .feature{background:#f5f5f5;padding:25px;border-radius:8px;}
 .city-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:30px;}
 footer{background:#000;color:#fff;text-align:center;padding:30px;margin-top:50px;}
-ul{list-style:none;padding:0;margin:0;}
-li{margin:8px 0;}
 .sticky-order{position:fixed;bottom:15px;right:15px;z-index:999;background:#000;color:#fff;padding:15px 25px;border-radius:6px;font-size:18px;text-decoration:none;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
 .countdown{font-size:20px;color:red;font-weight:bold;margin-top:15px;}
 </style>
@@ -43,6 +41,16 @@ li{margin:8px 0;}
 <a href="/pages/sim-card-winnipeg.html">Winnipeg</a>
 <a href="/pages/sim-card-halifax.html">Halifax</a>
 <a href="/pages/sim-card-quebec.html">Quebec City</a>
+<a href="/pages/sim-card-calgary.html">Calgary</a>
+<a href="/pages/sim-card-edmonton.html">Edmonton</a>
+<a href="/pages/sim-card-mississauga.html">Mississauga</a>
+<a href="/pages/sim-card-surrey.html">Surrey</a>
+<a href="/pages/sim-card-brampton.html">Brampton</a>
+<a href="/pages/sim-card-laval.html">Laval</a>
+<a href="/pages/sim-card-london.html">London</a>
+<a href="/pages/sim-card-victoria.html">Victoria</a>
+<a href="/pages/sim-card-kitchener.html">Kitchener</a>
+<a href="/pages/sim-card-windsor.html">Windsor</a>
 </nav>
 </header>
 
@@ -73,15 +81,24 @@ li{margin:8px 0;}
 <a href="/pages/sim-card-winnipeg.html" class="button">Winnipeg</a>
 <a href="/pages/sim-card-halifax.html" class="button">Halifax</a>
 <a href="/pages/sim-card-quebec.html" class="button">Quebec City</a>
-<!-- add remaining cities similarly -->
+<a href="/pages/sim-card-calgary.html" class="button">Calgary</a>
+<a href="/pages/sim-card-edmonton.html" class="button">Edmonton</a>
+<a href="/pages/sim-card-mississauga.html" class="button">Mississauga</a>
+<a href="/pages/sim-card-surrey.html" class="button">Surrey</a>
+<a href="/pages/sim-card-brampton.html" class="button">Brampton</a>
+<a href="/pages/sim-card-laval.html" class="button">Laval</a>
+<a href="/pages/sim-card-london.html" class="button">London</a>
+<a href="/pages/sim-card-victoria.html" class="button">Victoria</a>
+<a href="/pages/sim-card-kitchener.html" class="button">Kitchener</a>
+<a href="/pages/sim-card-windsor.html" class="button">Windsor</a>
 </div>
 </section>
 
 <section class="section">
 <h2>Protect Your Data Online</h2>
 <p>Stay secure while browsing public Wi-Fi and protect your passwords.</p>
-<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a>
-<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a>
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a>
 </section>
 
 <!-- POPUP -->
@@ -89,13 +106,12 @@ li{margin:8px 0;}
 <div style="background:#fff;padding:30px;max-width:400px;margin:100px auto;text-align:center;border-radius:10px;">
 <h2>Complete Your Order</h2>
 <p>Get your SIM now and optionally secure your connection with VPN or password manager.</p>
-<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a><br><br>
-<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=YOURID" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a><br><br>
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=" target="_blank" rel="nofollow sponsored" class="button">Get NordVPN</a><br><br>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=" target="_blank" rel="nofollow sponsored" class="button" style="background:#0057ff;">Get NordPass</a><br><br>
 <a href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" class="button">Continue to Checkout →</a>
 </div>
 </div>
 
-<!-- STICKY ORDER BUTTON -->
 <a href="#" class="sticky-order" onclick="openOffer()">Order SIM Now</a>
 
 <footer>
@@ -104,15 +120,14 @@ li{margin:8px 0;}
 </footer>
 
 <script>
-// POPUP
 function openOffer(){document.getElementById('offerPopup').style.display='block';}
 
-// EXIT-INTENT POPUP
+// Exit-intent popup
 document.addEventListener('mouseout', function(e) {
 if(e.clientY < 0) openOffer();
 });
 
-// COUNTDOWN SIM STOCK
+// Countdown simulation
 let stock = 20;
 function updateCountdown(){
 document.getElementById('countdown').textContent = `Hurry! Only ${stock} SIM cards left today!`;
