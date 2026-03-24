@@ -71,10 +71,12 @@ main{max-width:900px;margin:120px auto 60px auto;padding:0 20px;}
 <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=" class="cta">🔑 NordPass</a>
 </div>
 
+<!-- Bitcoin Payment with QR -->
 <div class="card">
 <h2>₿ Pay with Bitcoin</h2>
-<p>Click the button below to pay $25 with Bitcoin. Your wallet will open with the payment ready.</p>
-<a href="bitcoin:bc1qegcga7mxckqh69jrwwfvy4e3w554ycceeur3w?amount=0.001" class="cta" id="btcBtn" target="_blank">💰 Pay $25 with Bitcoin</a>
+<p>Click the button or scan the QR code below to pay $25 with Bitcoin.</p>
+<a href="bitcoin:bc1qnhqdezdg80sjn28chhrj3t876gh4cefpuvddde?amount=0.001" class="cta" id="btcBtn" target="_blank">💰 Pay $25 with Bitcoin</a>
+<div id="btcQR" style="margin-top:15px;text-align:center;"></div>
 </div>
 
 <!-- Blog Links -->
@@ -99,9 +101,12 @@ main{max-width:900px;margin:120px auto 60px auto;padding:0 20px;}
 <a href="https://buy.stripe.com/8x26oAf5h7yIfsjanm2ZO09">💰 $25 Plan</a> |
 <a href="https://buy.stripe.com/14A28k3mz4mw93Vanm2ZO07">🔥 $40 Plan</a> |
 <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=">🔒 NordVPN</a> |
-<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=">🔑 NordPass</a>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=">🔑 NordPass</a> |
+<a href="bitcoin:bc1qnhqdezdg80sjn28chhrj3t876gh4cefpuvddde?amount=0.001">₿ Pay $25 with Bitcoin</a>
 </div>
 
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 // Scroll fade animation
 const cards = document.querySelectorAll('.card');
@@ -112,6 +117,17 @@ function animateCards(){
 window.addEventListener('scroll', animateCards);
 window.addEventListener('load', animateCards);
 
+// Generate Bitcoin QR code
+var btcAddress = "bc1qnhqdezdg80sjn28chhrj3t876gh4cefpuvddde?amount=0.001";
+var qrcode = new QRCode(document.getElementById("btcQR"), {
+    text: "bitcoin:" + btcAddress,
+    width: 160,
+    height: 160,
+    colorDark : "#0073e6",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+});
+
 // Google Sheets tracking for all CTAs
 const trackingEndpoint = "YOUR_WEB_APP_URL"; // Replace with your Apps Script URL
 document.querySelectorAll('a.cta, .sticky-cta a').forEach(link=>{
@@ -121,7 +137,7 @@ document.querySelectorAll('a.cta, .sticky-cta a').forEach(link=>{
     else if(href.includes("14A28k3mz4mw93Vanm2ZO07")) trackEvent("$40 Plan");
     else if(href.includes("nordvpn")) trackEvent("NordVPN");
     else if(href.includes("nordpass")) trackEvent("NordPass");
-    else if(href.includes("bc1q")) trackEvent("Bitcoin Payment");
+    else if(href.includes("bc1qnhqdezdg80sjn28chhrj3t876gh4cefpuvddde")) trackEvent("Bitcoin Payment");
   });
 });
 
