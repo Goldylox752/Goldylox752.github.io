@@ -1,0 +1,90 @@
+/* ========== Global Styles ========== */
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+h1 { font-size: 32px; margin-bottom: 20px; }
+h2 { font-size: 24px; margin: 15px 0; }
+h3 { font-size: 20px; margin: 12px 0; }
+
+a {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+}
+a:hover { text-decoration: underline; }
+
+/* ========== Card Component ========== */
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 15px auto;
+  max-width: 600px;
+}
+
+/* ========== CTA Buttons ========== */
+.cta {
+  display: block;
+  margin: 12px 0;
+  padding: 12px;
+  background: #22c55e;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background 0.3s;
+}
+.cta:hover {
+  background: #16a34a;
+}
+
+/* ========== Sticky Footer CTA ========== */
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #22c55e;
+  padding: 12px;
+  text-align: center;
+  z-index: 999;
+}
+.sticky-cta a {
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* ========== Text Highlights ========== */
+.highlight {
+  color: #facc15;
+  font-weight: bold;
+}
+
+.success {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+  color: #94a3b8;
+}
+
+/* ========== Responsive Design ========== */
+@media screen and (max-width: 768px) {
+  body { padding: 10px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 22px; }
+  .card { padding: 15px; margin: 12px; }
+  .cta { padding: 10px; font-size: 16px; max-width: 90%; }
+}
