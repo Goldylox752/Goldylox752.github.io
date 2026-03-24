@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Mobile Online Store Canada</title>
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-528699336');
+</script>
+
+<!-- EmailJS -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+emailjs.init("user_ABC123XYZ"); // Your actual EmailJS User ID
+</script>
+
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; }
+header, footer { background:#0073e6; color:#fff; padding:20px; text-align:center; }
+.container { max-width:1000px; margin:auto; padding:20px; }
+button { padding:12px 20px; margin:5px 0; border:none; border-radius:6px; cursor:pointer; font-size:16px; }
+input[type="email"], input[type="text"] { width:100%; padding:10px; margin:5px 0; border-radius:6px; border:1px solid #ccc; }
+.affiliate-banner { background:#f0f8ff; padding:15px; border-radius:10px; margin:10px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Lucky Mobile Online Store Canada</h1>
+  <p>Buy prepaid SIM plans, pay with Bitcoin or Stripe, and get exclusive VPN deals!</p>
+</header>
+
+<div class="container">
+
+  <!-- SIM Plans -->
+  <h2>Available SIM Plans</h2>
+  <div id="product-list"></div>
+
+  <!-- Referral -->
+  <h2>Referral Program</h2>
+  <p>Share your referral link and earn $5 CAD credit for every friend who buys a SIM:</p>
+  <input type="text" id="ref-link" value="https://goldylox752.github.io?ref=BYRON123" readonly onclick="this.select(); document.execCommand('copy'); alert('Referral link copied!');">
+
+  <!-- Affiliate Banners -->
+  <h2>Upsells</h2>
+  <div class="affiliate-banner">
+    <p>Bundle Deal: Buy a SIM + NordVPN and save 10% today!</p>
+    <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=12345" target="_blank"><button>Buy NordVPN</button></a>
+    <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=67890" target="_blank"><button>Buy NordPass</button></a>
+  </div>
+
+  <!-- Payment Options -->
+  <h2>Checkout</h2>
+  <p>Select payment method:</p>
+  <button id="stripe-btn">Pay with Stripe</button>
+  <button id="btc-btn">Pay with Bitcoin / Crypto</button>
+
+  <!-- BTC Payment & Email -->
+  <div id="btc-email-container" style="display:none;">
+    <p>Send Bitcoin to:</p>
+    <p><strong>bc1qegcga7mxckqh69jr7wwfvy4e3w554ycceeur3w</strong></p>
+    <p>Enter your email to receive SIM activation:</p>
+    <input type="email" id="btc-email" placeholder="you@example.com" required>
+    <button id="confirm-btc-btn">Confirm Payment</button>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2026 Lucky Mobile Online Store Canada</p>
+</footer>
+
+<script>
+// ---------- Products ----------
+const products = [
+  {id:1,name:"$25 Plan",price:25,stripeUrl:"https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06"},
+  {id:2,name:"$40 Plan",price:40,stripeUrl:"https://buy.stripe.com/14A28k3mz4mw93Vanm2ZO07"}
+];
+
+let referralCode = new URLSearchParams(window.location.search).get('ref') || "BYRON123";
+let cart = [];
+
+// Render Products
+const productList = document.getElementById('product-list');
+products.forEach(p=>{
+  const div = document.createElement('div');
+  div.innerHTML = `<strong>${p.name}</strong> - $${p.price} 
+                   <button onclick="addToCart(${p.id})">Add to Cart</button>`;
+  productList.appendChild(div);
+});
+
+// Add to cart
+function addToCart(productId){
+  const product = products.find(p=>p.id===productId);
+  const item = cart.find(i=>i.id===productId);
+  if(item) item.qty++; else cart.push({...product,qty:1});
+  alert(`${product.name} added to cart`);
+}
+
+// Stripe Payment
+document.getElementById('stripe-btn').addEventListener('click', ()=>{
+  if(cart.length===0) return alert("Add a SIM plan to cart first!");
+  window.open(cart[0].stripeUrl,'_blank'); // Opens first item Stripe link
+});
+
+// BTC Payment
+document.getElementById('btc-btn').addEventListener('click', ()=>{
+  if(cart.length===0) return alert("Add a SIM plan to cart first!");
+  document.getElementById('btc-email-container').style.display='block';
+});
+
+// Confirm BTC Payment & send EmailJS activation
+document.getElementById('confirm-btc-btn').addEventListener('click', ()=>{
+  const email = document.getElementById('btc-email').value;
+  if(!email) return alert("Enter your email");
+
+  const simCode = `SIM-${Math.floor(Math.random()*1000000)}`;
+  emailjs.send("service_ABC123","template_DEF456",{
+    to_email: email,
+    sim_plan: cart.map(c=>c.name).join(', '),
+    sim_code: simCode
+  }).then(()=>alert(`Activation email sent! Your SIM code: ${simCode}`))
+    .catch(err=>console.error("EmailJS error:",err));
+});
+</script>
+
+</body>
+</html>
