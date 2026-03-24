@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog 2: Top Canadian SIM Plans 2026 | SIM2Door</title>
+<meta name="description" content="Explore the top prepaid SIM plans in Canada 2026. Affordable, no-contract, fast activation options for everyone.">
+<meta name="keywords" content="SIM cards Canada, prepaid SIM, cheap mobile plans, VPN Canada">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','G-528699336');
+</script>
+<style>
+/* Same styles as index.html */
+body {margin:0;font-family:Arial,sans-serif;background: linear-gradient(to bottom,#cce0ff,#ffffff);color:#333;overflow-x:hidden;}
+header{position:fixed;top:0;width:100%;background:#0073e6;color:#fff;padding:20px;text-align:center;z-index:1000;box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+header h1{margin:0;font-size:1.8rem;}
+main{max-width:900px;margin:120px auto 60px auto;padding:0 20px;}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:25px;box-shadow:0 6px 20px rgba(0,0,0,0.08);opacity:0;transform:translateY(30px);transition: all 0.6s ease;}
+.card.visible{opacity:1;transform:translateY(0);}
+.card h2{margin-top:0;}
+.cta{display:inline-block;background:#0073e6;color:#fff;padding:12px 20px;margin:10px 5px 0 0;border-radius:6px;font-weight:bold;text-decoration:none;}
+.cta:hover{background:#005bb5;}
+.sticky-cta{position:fixed;bottom:0;width:100%;background:#fff;border-top:1px solid #ddd;text-align:center;padding:12px 0;box-shadow:0 -3px 15px rgba(0,0,0,0.08);z-index:999;}
+.sticky-cta a{margin:0 8px;color:#0073e6;font-weight:bold;text-decoration:none;}
+.sticky-cta a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<header>
+<h1>Blog 2: Top Canadian SIM Plans 2026</h1>
+</header>
+<main>
+<div class="card">
+<p>Discover the top prepaid SIM plans across Canada for 2026. No contracts, fast activation, and reliable coverage for every region.</p>
+</div>
+<div class="card">
+<h2>🏆 $25 Budget Plan</h2>
+<p>Affordable prepaid mobile plan with reliable coverage.</p>
+<a href="https://buy.stripe.com/8x26oAf5h7yIfsjanm2ZO09" class="cta">💰 $25 Plan</a>
+</div>
+<div class="card">
+<h2>🚀 $40 Unlimited Style Plan</h2>
+<p>More data for streaming, gaming, and heavy users.</p>
+<a href="https://buy.stripe.com/14A28k3mz4mw93Vanm2ZO07" class="cta">🔥 $40 Plan</a>
+</div>
+<div class="card">
+<h2>💼 Complete Protection Bundle</h2>
+<p>SIM plan + NordVPN + NordPass for total security & convenience.</p>
+<a href="https://buy.stripe.com/8x26oAf5h7yIfsjanm2ZO09" class="cta">✅ $25 SIM Plan</a>
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=" class="cta">🔒 NordVPN</a>
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=" class="cta">🔑 NordPass</a>
+</div>
+<div class="card">
+<h2>₿ Pay with Bitcoin</h2>
+<p>Click the button below to pay $25 with Bitcoin. Your wallet will open with the payment ready.</p>
+<a href="bitcoin:bc1qegcga7mxckqh69jrwwfvy4e3w554ycceeur3w?amount=0.001" class="cta" target="_blank">💰 Pay $25 with Bitcoin</a>
+</div>
+</main>
+<div class="sticky-cta">
+<a href="https://buy.stripe.com/8x26oAf5h7yIfsjanm2ZO09">💰 $25 Plan</a> |
+<a href="https://buy.stripe.com/14A28k3mz4mw93Vanm2ZO07">🔥 $40 Plan</a> |
+<a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=">🔒 NordVPN</a> |
+<a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=">🔑 NordPass</a>
+</div>
+<script>
+const cards=document.querySelectorAll('.card');
+function animateCards(){const scrollY=window.scrollY+window.innerHeight;cards.forEach(card=>{if(card.offsetTop<scrollY-50)card.classList.add('visible');});}
+window.addEventListener('scroll',animateCards);
+window.addEventListener('load',animateCards);
+const trackingEndpoint="YOUR_WEB_APP_URL";
+document.querySelectorAll('a.cta, .sticky-cta a').forEach(link=>{link.addEventListener('click',()=>{const href=link.href;if(href.includes("8x26oAf5h7yIfsjanm2ZO09"))trackEvent("$25 Plan");else if(href.includes("14A28k3mz4mw93Vanm2ZO07"))trackEvent("$40 Plan");else if(href.includes("nordvpn"))trackEvent("NordVPN");else if(href.includes("nordpass"))trackEvent("NordPass");else if(href.includes("bc1q"))trackEvent("Bitcoin Payment");});});
+function trackEvent(planService){fetch(trackingEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'click',planService,pageURL:window.location.href,user:'visitor'})});}
+</script>
+</body>
+</html>
