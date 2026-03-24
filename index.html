@@ -40,10 +40,98 @@
 </script>
 
 <link rel="stylesheet" href="assets/css/styles.css">
+
+<style>
+  /* Scroll Fix & Layout */
+  html, body {
+    height: auto !important;
+    overflow: auto !important;
+    margin: 0;
+    padding: 0 0 50px 0; /* extra bottom padding */
+    font-family: Arial, sans-serif;
+  }
+
+  main, .container {
+    min-height: 100vh;
+    overflow: visible !important;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  body > *:not(header) {
+    margin-top: 80px; /* adjust for header height */
+  }
+
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background: #fefefe;
+  }
+
+  h1, h2 {
+    margin-top: 0;
+  }
+
+  .cta {
+    display: inline-block;
+    background: #0073e6;
+    color: #fff;
+    padding: 10px 15px;
+    margin: 10px 5px 0 0;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .cta:hover {
+    background: #005bb5;
+  }
+
+  .sticky-cta {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    z-index: 1000;
+  }
+
+  .sticky-cta a {
+    margin: 0 5px;
+    color: #0073e6;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .sticky-cta a:hover {
+    text-decoration: underline;
+  }
+</style>
+
 </head>
 <body>
 
-<h1>🔥 Cheap Prepaid SIM Plans in Canada 2026</h1>
+<header>
+  <h1>🔥 Cheap Prepaid SIM Plans in Canada 2026</h1>
+</header>
+
+<main class="container">
+
 <p>No contract SIM cards. Fast activation. Works across Canada. Serving <strong>Leduc & Edmonton</strong>.</p>
 <p class="highlight">⚠️ Limited-time deals – plans and discounts change frequently!</p>
 <p class="italic">Join 10,000+ Canadians already using these plans & VPNs!</p>
@@ -82,8 +170,10 @@
 </p>
 </div>
 
-<!-- Internal Links -->
+<!-- Internal Blog Link -->
 <p>Read our <a href="blog1.html">Best Prepaid SIM Plans in Canada 2026</a> blog for top deals.</p>
+
+</main>
 
 <!-- Sticky CTA -->
 <div class="sticky-cta">
