@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM2Door – Web3 SIM NFT</title>
+<meta name="description" content="Buy prepaid SIM cards online in Canada using Ethereum and get a SIM NFT as proof of purchase.">
+
+<!-- GA4 Tracking -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-528699336');
+</script>
+
+<style>
+body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:0; }
+header { background:#0073e6; color:white; text-align:center; padding:20px; }
+main { max-width:900px; margin:20px auto; padding:20px; background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+h1,h2 { color:#0073e6; }
+.link-btn { display:block; margin:15px 0; padding:15px; background:#0073e6; color:white; text-decoration:none; border-radius:5px; text-align:center;}
+.link-btn:hover { background:#005bb5; }
+#walletAddress { font-weight:bold; margin-top:10px; }
+footer { text-align:center; padding:20px; background:#eee; margin-top:20px; font-size:14px; }
+
+/* Hover animation for affiliate buttons */
+.animated-btn { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.animated-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+
+/* Subtle pulse animation */
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+.pulse-btn { animation: pulse 3s ease-in-out infinite; }
+
+/* Affiliate popup */
+#affiliatePopup {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: #fff; border: 2px solid #0073e6; border-radius:10px;
+  padding: 20px; max-width:300px; text-align:center;
+  display:none; z-index:1000;
+}
+#affiliatePopup.show { display:block; }
+#affiliatePopup a { display:block; margin:10px 0; text-decoration:none; color:white; padding:10px; border-radius:5px; }
+#affiliatePopup .saily { background: linear-gradient(90deg,#ff7e5f,#feb47b); }
+#affiliatePopup .nordvpn { background: linear-gradient(90deg,#1e3c72,#2a5298); }
+#affiliatePopup .nordpass { background: linear-gradient(90deg,#00c6ff,#0072ff); }
+</style>
+</head>
+<body>
+
+<header>
+<h1>SIM2Door – Web3 SIM NFT</h1>
+<p>Buy prepaid SIM cards using Ethereum and receive a SIM NFT instantly!</p>
+</header>
+
+<!-- Top Saily eSIM link -->
+<a class="link-btn animated-btn pulse-btn" href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(90deg,#ff7e5f,#feb47b); color: #fff;">
+  🌍 Get eSIM for Travel
+</a>
+<p style="text-align:center; font-size:14px; color:#555; max-width:260px; margin:5px auto 15px;">Instantly get a prepaid SIM card for your travels — no contracts, no roaming fees.</p>
+
+<main>
+<section>
+<h2>Connect Your Ethereum Wallet</h2>
+<button id="connectWallet" class="link-btn">Connect Wallet</button>
+<p id="walletAddress"></p>
+</section>
+
+<section>
+<h2>Purchase Your SIM NFT</h2>
+<p>Current Mint Price: <span id="mintPrice">Loading...</span> ETH</p>
+<button id="buySim" class="link-btn">Buy SIM NFT</button>
+<p id="purchaseStatus"></p>
+</section>
+
+<section>
+<h2>Alternative Payments</h2>
+<p>Bitcoin:</p>
+<a class="link-btn" href="bitcoin:bc1qegcga7mxckqh69jr7wwfvy4e3w554ycceeur3w">Pay with BTC</a>
+
+<p>Stripe (Fiat):</p>
+<a class="link-btn" href="https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06" target="_blank">$25 Plan</a>
+<a class="link-btn" href="https://buy.stripe.com/14A28k3mz4mw93Vanm2ZO07" target="_blank">$40 Plan</a>
+</section>
+
+<section>
+<h2>🌍 Travel & Privacy Tools</h2>
+<p>Stay secure, connected, and worry-free wherever you go:</p>
+
+<a class="link-btn animated-btn pulse-btn" href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(90deg,#ff7e5f,#feb47b); color: #fff;">🌍 Get eSIM for Travel</a>
+<a class="link-btn animated-btn pulse-btn" href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143955" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(90deg,#1e3c72,#2a5298); color: #fff;">🔒 Protect Your Internet (VPN)</a>
+<a class="link-btn animated-btn pulse-btn" href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=143955" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(90deg,#00c6ff,#0072ff); color: #fff;">🔑 Secure Your Passwords</a>
+</section>
+
+<footer>
+&copy; 2026 SIM2Door – Web3 NFT Enabled
+</footer>
+
+<!-- Affiliate Popup -->
+<div id="affiliatePopup">
+<p>Special Offers for Travelers:</p>
+<a class="saily" href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">🌍 Saily eSIM</a>
+<a class="nordvpn" href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143955" target="_blank">🔒 NordVPN</a>
+<a class="nordpass" href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=143955" target="_blank">🔑 NordPass</a>
+</div>
+
+<!-- Ethers.js -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.min.js"></script>
+<script>
+let provider, signer, contract;
+const CONTRACT_ADDRESS = "YOUR_SMART_CONTRACT_ADDRESS_HERE";
+const CONTRACT_ABI = [ /* YOUR_CONTRACT_ABI_JSON_HERE */ ];
+
+const connectBtn = document.getElementById('connectWallet');
+const walletAddressEl = document.getElementById('walletAddress');
+const buyBtn = document.getElementById('buySim');
+const purchaseStatus = document.getElementById('purchaseStatus');
+const mintPriceEl = document.getElementById('mintPrice');
+const affiliatePopup = document.getElementById('affiliatePopup');
+
+async function updateMintPrice() {
+    if(contract){
+        try {
+            const price = await contract.getMintPrice();
+            mintPriceEl.textContent = ethers.formatEther(price);
+        } catch(err){
+            console.error('Error fetching price:', err);
+            mintPriceEl.textContent = 'Error';
+        }
+    }
+}
+
+connectBtn.addEventListener('click', async () => {
+    if(window.ethereum){
+        provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        walletAddressEl.textContent = 'Connected Wallet: ' + address;
+
+        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+        updateMintPrice();
+    } else {
+        walletAddressEl.textContent = 'No Web3 wallet detected. Install MetaMask.';
+    }
+});
+
+setInterval(() => { if(contract) updateMintPrice(); }, 10000);
+
+buyBtn.addEventListener('click', async () => {
+    if(!signer || !contract){ purchaseStatus.textContent = 'Connect your wallet first!'; return; }
+    try {
+        const price = await contract.getMintPrice();
+        purchaseStatus.textContent = 'Sending transaction...';
+        const tx = await contract.mint({ value: price });
+        purchaseStatus.textContent = 'Transaction sent. Waiting for confirmation...';
+        await tx.wait();
+        purchaseStatus.textContent = '✅ SIM NFT minted successfully!';
+
+        // Affiliate popup once per wallet
+        const walletAddr = await signer.getAddress();
+        const popupKey = 'affiliateShown_' + walletAddr;
+        if(!localStorage.getItem(popupKey)){
+            affiliatePopup.classList.add('show');
+            localStorage.setItem(popupKey, 'true');
+            setTimeout(() => { affiliatePopup.classList.remove('show'); }, 20000);
+        }
+
+        updateMintPrice();
+    } catch(err){
+        console.error(err);
+        purchaseStatus.textContent = 'Transaction failed: ' + err.message;
+    }
+});
+</script>
+</body>
+</html>
