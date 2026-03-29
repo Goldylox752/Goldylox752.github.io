@@ -190,11 +190,134 @@ footer { text-align:center; padding:20px; background:#eee; margin-top:20px; font
 <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.min.js"></script>
 <script>
 let provider, signer, contract;
+
 const CONTRACT_ADDRESS = "YOUR_SMART_CONTRACT_ADDRESS_HERE";
 const CONTRACT_ABI = [
   "function getMintPrice() view returns (uint256)",
   "function mint() payable"
 ];
+
+const connectBtn = document.getElementById('connectWallet');
+const walletAddressEl = document.getElementById('walletAddress');
+const buyBtn = document.getElementById('buySim');
+const purchaseStatus = document.getElementById('purchaseStatus');
+const mintPriceEl = document.getElementById('mintPrice');
+const affiliatePopup = document.getElementById('affiliatePopup');
+
+// 🔄 Update price
+async function updateMintPrice() {
+    if(contract){
+        try {
+            const price = await contract.getMintPrice();
+            mintPriceEl.textContent = ethers.formatEther(price);
+        } catch(err){
+            console.error(err);
+            mintPriceEl.textContent = 'Error';
+        }
+    }
+}
+
+// 🔗 Connect wallet
+connectBtn.addEventListener('click', async () => {
+    if(window.ethereum){
+        provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = await provider.getSigner();
+
+        const address = await signer.getAddress();
+        walletAddressEl.textContent = 'Connected Wallet: ' + address;
+
+        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+        updateMintPrice();
+    } else {
+        walletAddressEl.textContent = 'Install MetaMask';
+    }
+});
+
+// 🔄 Auto refresh price
+setInterval(() => { if(contract) updateMintPrice(); }, 10000);
+
+// 🚀 BUY BUTTON (FINAL VERSION)
+buyBtn.addEventListener('click', async () => {
+    if(!signer || !contract){
+        purchaseStatus.textContent = 'Connect wallet first!';
+        return;
+    }
+
+    if(buyBtn.disabled) return;
+
+    try {
+        const price = await contract.getMintPrice();
+
+        buyBtn.disabled = true;
+        buyBtn.textContent = "Processing...";
+
+        purchaseStatus.textContent = 'Confirm in wallet...';
+
+        const tx = await contract.mint({ value: price });
+
+        purchaseStatus.textContent = '⏳ Waiting for confirmation...';
+
+        const receipt = await tx.wait();
+
+        purchaseStatus.textContent = '✅ NFT minted! Assigning SIM...';
+
+        // 🔥 CALL BACKEND
+        try {
+            const res = await fetch("https://YOUR-RAILWAY-URL.up.railway.app/api/mint", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    wallet: await signer.getAddress(),
+                    txHash: receipt.hash
+                })
+            });
+
+            const data = await res.json();
+
+            if(res.ok){
+                purchaseStatus.textContent = `✅ SIM assigned! Token #${data.tokenId}`;
+            } else {
+                purchaseStatus.textContent = "⚠️ NFT minted, SIM pending.";
+                console.warn(data);
+            }
+
+        } catch (e) {
+            console.warn(e);
+            purchaseStatus.textContent = "⚠️ Backend not reachable.";
+        }
+
+        // 🎯 Affiliate popup
+        const walletAddr = await signer.getAddress();
+        const popupKey = 'affiliateShown_' + walletAddr;
+
+        if(!localStorage.getItem(popupKey)){
+            affiliatePopup.classList.add('show');
+            localStorage.setItem(popupKey, 'true');
+
+            setTimeout(() => {
+                affiliatePopup.classList.remove('show');
+            }, 30000);
+        }
+
+        updateMintPrice();
+
+    } catch(err){
+        console.error(err);
+
+        if(err.code === 4001){
+            purchaseStatus.textContent = '❌ Transaction cancelled.';
+        } else {
+            purchaseStatus.textContent = '❌ Transaction failed.';
+        }
+    }
+
+    buyBtn.disabled = false;
+    buyBtn.textContent = "Buy SIM NFT";
+});
+</script>
 
 const connectBtn = document.getElementById('connectWallet');
 const walletAddressEl = document.getElementById('walletAddress');
