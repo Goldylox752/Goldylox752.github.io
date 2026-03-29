@@ -14,7 +14,87 @@
   gtag('js', new Date());
   gtag('config', 'G-528699336');
 </script>
+buyBtn.addEventListener('click', async () => {
+    if(!signer || !contract){
+        purchaseStatus.textContent = 'Connect your wallet first!';
+        return;
+    }
 
+    if(buyBtn.disabled) return;
+
+    try {
+        const price = await contract.getMintPrice();
+
+        // 🔒 Lock button
+        buyBtn.disabled = true;
+        buyBtn.textContent = "Processing...";
+
+        purchaseStatus.textContent = 'Confirm transaction in wallet...';
+
+        const tx = await contract.mint({ value: price });
+
+        purchaseStatus.textContent = '⏳ Waiting for confirmation...';
+
+        const receipt = await tx.wait();
+
+        purchaseStatus.textContent = '✅ NFT minted! Assigning SIM...';
+
+        // 🔥 CALL BACKEND (WITH RESPONSE CHECK)
+        try {
+            const res = await fetch("https://YOUR-RAILWAY-URL.up.railway.app/api/mint", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    wallet: await signer.getAddress(),
+                    txHash: receipt.hash
+                })
+            });
+
+            const data = await res.json();
+
+            if(res.ok){
+                purchaseStatus.textContent = `✅ SIM assigned successfully! (Token #${data.tokenId})`;
+            } else {
+                purchaseStatus.textContent = "⚠️ NFT minted, but SIM assignment pending.";
+                console.warn("Backend error:", data);
+            }
+
+        } catch (e) {
+            console.warn("Backend connection failed:", e);
+            purchaseStatus.textContent = "⚠️ NFT minted, backend not reachable.";
+        }
+
+        // 🎯 Affiliate popup
+        const walletAddr = await signer.getAddress();
+        const popupKey = 'affiliateShown_' + walletAddr;
+
+        if(!localStorage.getItem(popupKey)){
+            affiliatePopup.classList.add('show');
+            localStorage.setItem(popupKey, 'true');
+
+            setTimeout(() => {
+                affiliatePopup.classList.remove('show');
+            }, 30000);
+        }
+
+        updateMintPrice();
+
+    } catch(err){
+        console.error(err);
+
+        if(err.code === 4001){
+            purchaseStatus.textContent = '❌ Transaction cancelled.';
+        } else {
+            purchaseStatus.textContent = '❌ Transaction failed.';
+        }
+    }
+
+    // 🔓 Unlock button
+    buyBtn.disabled = false;
+    buyBtn.textContent = "Buy SIM NFT";
+});
 <style>
 body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:0; }
 header { background:#0073e6; color:white; text-align:center; padding:20px; }
