@@ -111,7 +111,10 @@ footer { text-align:center; padding:20px; background:#eee; margin-top:20px; font
 <script>
 let provider, signer, contract;
 const CONTRACT_ADDRESS = "YOUR_SMART_CONTRACT_ADDRESS_HERE";
-const CONTRACT_ABI = [ /* YOUR_CONTRACT_ABI_JSON_HERE */ ];
+const CONTRACT_ABI = [
+  "function getMintPrice() view returns (uint256)",
+  "function mint() payable"
+];
 
 const connectBtn = document.getElementById('connectWallet');
 const walletAddressEl = document.getElementById('walletAddress');
