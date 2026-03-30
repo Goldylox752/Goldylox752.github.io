@@ -1,10 +1,11 @@
 STRIPE_SECRET_KEY=
-STRIPE_PUBLISHABLE_KEY=
 
+STRIPE_PUBLISHABLE_KEY=
 
 DOMAIN_URL=http://localhost:3000
 
 SUPABASE_URL=https://ipumbyywyzrbinwtejri.supabase.co
+
 SUPABASE_SERVICE_KEY= ipumbyywyzrbinwtejri
 
 CONTRACT_ADDRESS= contracts/sim2door.sol
