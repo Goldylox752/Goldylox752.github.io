@@ -18,3 +18,19 @@ export default async function handler(req, res) {
   });
   res.status(200).json({ id: session.id });
 }
+
+
+async function payForSIM() {
+  const SIM_PRICE = "10"; // 10 MTK
+
+  const tx = await contract.transfer(
+    "YOUR_WALLET_ADDRESS",
+    ethers.parseEther(SIM_PRICE)
+  );
+
+  document.getElementById("status").innerText = "Processing payment...";
+
+  await tx.wait();
+
+  document.getElementById("status").innerText = "✅ Payment received!";
+}
