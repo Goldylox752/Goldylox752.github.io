@@ -5,7 +5,7 @@ STRIPE_PUBLISHABLE_KEY=
 DOMAIN_URL=http://localhost:3000
 
 SUPABASE_URL=https://ipumbyywyzrbinwtejri.supabase.co
-SUPABASE_SERVICE_KEY=
+SUPABASE_SERVICE_KEY= ipumbyywyzrbinwtejri
 
 CONTRACT_ADDRESS=
 
