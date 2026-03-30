@@ -1,5 +1,6 @@
 STRIPE_SECRET_KEY=sk_test_YourSecretKeyHere
 STRIPE_PUBLISHABLE_KEY=pk_test_YourPublishableKeyHere
 DOMAIN_URL=http://localhost:3000
-SUPABASE_URL=your_url
-SUPABASE_KEY=your_key
+SUPABASE_URL=https://ipumbyywyzrbinwtejri.supabase.co
+SUPABASE_SERVICE_KEY=your_service_role_key
+CONTRACT_ADDRESS=0xYourContract
