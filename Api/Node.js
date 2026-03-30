@@ -28,3 +28,19 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server error: " + error.message });
   }
 }
+import { supabase } from './supabase.js'
+
+// Insert data
+export async function saveSim(data) {
+  const { data: result, error } = await supabase
+    .from('sims')
+    .insert([data])
+
+  if (error) {
+    console.error(error)
+    return null
+  }
+
+  return result
+}
+
