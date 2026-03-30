@@ -3,7 +3,7 @@ let signer;
 let contract;
 
 // Replace with your deployed contract info
-const CONTRACT_ADDRESS = "YOUR_DEPLOYED_CONTRACT_ADDRESS_HERE";
+const CONTRACT_ADDRESS = sim2door.sol
 const CONTRACT_ABI = [
   /* Paste ABI JSON from Remix here */
 ];
