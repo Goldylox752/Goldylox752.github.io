@@ -1,3 +1,32 @@
+async function payForData(amount) {
+  const tx = await tokenContract.transfer(
+    "YOUR_WALLET_ADDRESS",
+    ethers.parseEther(amount)
+  );
+
+  await tx.wait();
+
+  // Notify backend to credit user data
+  await fetch("/api/data-payment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ wallet: await signer.getAddress(), amount })
+  });
+}
+async function getSIM() {
+  const user = await signer.getAddress();
+
+  // Fetch SIM from backend
+  const res = await fetch(`/api/sim/${user}`);
+  const data = await res.json();
+
+  if (data.simCode) {
+    alert("Your SIM code: " + data.simCode);
+  } else {
+    alert("No SIM activated yet.");
+  }
+}
+
 import express from 'express';
 import { ethers } from 'ethers';
 
