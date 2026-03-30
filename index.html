@@ -9,11 +9,15 @@ export default function Header() {
    </div>
   );
 }
-<!-- 💰 Mint -->
-<p>Price: <span id="mintPrice">Loading...</span> ETH</p>
-<button id="buySim" class="link-btn">Buy SIM NFT</button>
-<p id="purchaseStatus"></p>
+{!address && <ConnectButton />}
 
+{address && !hasNFT && (
+  <button onClick={mintNFT}>Buy SIM NFT</button>
+)}
+
+{address && hasNFT && (
+  <button>Activate SIM</button>
+)}
 <hr>
 
 <!-- 💳 STRIPE (FAST CONVERSION) -->
