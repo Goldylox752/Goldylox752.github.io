@@ -1,9 +1,14 @@
 <main>
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-<!-- 🔗 Wallet -->
-<button id="connectWallet" class="link-btn">Connect Wallet</button>
-<p id="walletAddress"></p>
-
+export default function Header() {
+  return (
+    <div className="header">
+      <h1>SIM2Door</h1>
+      <ConnectButton />
+    </div>
+  );
+}
 <!-- 💰 Mint -->
 <p>Price: <span id="mintPrice">Loading...</span> ETH</p>
 <button id="buySim" class="link-btn">Buy SIM NFT</button>
