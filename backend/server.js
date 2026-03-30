@@ -1,3 +1,8 @@
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+)
+
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
