@@ -19,3 +19,23 @@ export default function useNFTCheck() {
 
   return { checkNFT };
 }
+const { checkNFT } = useNFTCheck();
+const [hasNFT, setHasNFT] = useState(false);
+
+useEffect(() => {
+  async function run() {
+    const result = await checkNFT();
+    setHasNFT(result);
+  }
+  run();
+}, []);
+
+return (
+  <>
+    {hasNFT ? (
+      <button className="btn">Activate SIM</button>
+    ) : (
+      <button className="btn">Buy SIM NFT</button>
+    )}
+  </>
+);
