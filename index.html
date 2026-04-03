@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM2Door | Skip SIM Scams</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #38bdf8;
+}
+
+.container {
+  padding: 40px 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 350px;
+  margin: 20px auto;
+  box-shadow: 0 0 20px rgba(56,189,248,0.2);
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #38bdf8;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #0ea5e9;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+.badge {
+  background: #22c55e;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+.timer {
+  color: #f87171;
+  font-weight: bold;
+  margin-top: 10px;
+}
+</style>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+  // REPLACE with your actual Supabase project info
+  const supabaseUrl = 'YOUR_SUPABASE_URL';
+  const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Async email capture function
+  async function mint() {
+    const email = document.getElementById("email").value;
+
+    if (!email) {
+      alert("Enter email");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('emails') // Make sure your table is called 'emails'
+      .insert([{ email }]);
+
+    const status = document.getElementById("status");
+
+    if (error) {
+      console.error(error);
+      status.innerHTML = "❌ Something went wrong. Try again.";
+    } else {
+      status.innerHTML =
+        "✅ You're in!<br><br><a href='https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08' target='_blank' style='color:#38bdf8;'>👉 Secure your SIM now</a>";
+      document.getElementById("email").value = '';
+    }
+  }
+</script>
+
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Skip airport SIM scams.</h1>
+  <p><strong>No roaming. No airport lines. No stress.</strong></p>
+  <p>Get connected before you land.</p>
+
+  <span class="badge">⚡ Early Access</span>
+  <p style="color:#facc15;"><strong>⚡ Only <span id="spots">17</span> spots left</strong></p>
+
+  <!-- COUNTDOWN -->
+  <div class="timer">
+    ⏳ Offer ends in: <span id="countdown">10:00</span>
+  </div>
+
+  <!-- EMAIL CAPTURE -->
+  <div class="card">
+    <h2>Get Early Access</h2>
+
+    <input id="email" placeholder="Enter your email" />
+    <button class="btn" onclick="mint()">Unlock Access</button>
+
+    <p id="status"></p>
+  </div>
+
+  <!-- BUY OPTIONS -->
+  <div class="section">
+    <div class="card">
+      <h3>$25 SIM Plan</h3>
+      <div class="card">
+        <h2>₿ Pay with Bitcoin</h2>
+        <p>Click the button below to pay $25 with Bitcoin. Your wallet will open with the payment ready.</p>
+        <a href="bitcoin:bc1qegcga7mxckqh69jr7wwfvy4e3w554ycceeur3w?amount=0.001" class="cta" target="_blank">💰 Pay $25 with Bitcoin</a>
+      </div>
+
+      <p style="text-decoration:line-through; opacity:0.5;">Airport price: $40+</p>
+      <p style="color:#22c55e;">Save instantly by ordering before travel</p>
+
+      <a href="https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08" target="_blank">
+        <button class="btn">Get Connected Before You Land - $25</button>
+      </a>
+
+      <p style="color:#facc15; font-size:12px;">⚡ Most travelers regret waiting until the airport</p>
+    </div>
+  </div>
+
+  <!-- SAILY AFFILIATE -->
+  <div class="section">
+    <div class="card">
+      <h3>⚡ Instant eSIM (Recommended)</h3>
+      <p><strong>Get connected in under 5 minutes</strong></p>
+      <p style="color:#22c55e;">No shipping. No waiting. Works instantly.</p>
+
+      <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
+        <button class="btn">Get eSIM Instantly</button>
+      </a>
+    </div>
+  </div>
+
+  <!-- TRUST -->
+  <div class="section">
+    <div class="card">
+      <p>✔ Secure checkout via Stripe</p>
+      <p>✔ One-time payment (no subscription)</p>
+      <p>✔ Works worldwide</p>
+    </div>
+  </div>
+
+  <!-- AFFILIATES -->
+  <div class="section">
+    <h2>Travel Essentials</h2>
+    <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143955">🔒 NordVPN</a>
+    <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=143955">🔑 NordPass</a>
+  </div>
+
+</div>
+
+<script>
+// COUNTDOWN TIMER
+let time = 600;
+setInterval(() => {
+  let min = Math.floor(time / 60);
+  let sec = time % 60;
+  document.getElementById("countdown").innerText =
+    min + ":" + (sec < 10 ? "0" : "") + sec;
+  if (time > 0) time--;
+}, 1000);
+
+// FAKE SPOTS (DECREASE)
+setInterval(() => {
+  let spots = document.getElementById("spots");
+  let current = parseInt(spots.innerText);
+  if (current > 5) {
+    spots.innerText = current - 1;
+  }
+}, 15000);
+</script>
+
+</body>
+</html>
