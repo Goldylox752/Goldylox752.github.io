@@ -74,14 +74,17 @@ input {
 <div class="container">
 
   <h1>Skip airport SIM scams.</h1>
-  <p>Get connected before you land. Order your SIM online and avoid overpriced kiosks.</p>
+  <p><strong>No roaming. No airport lines. No stress.</strong></p>
+  <p>Get connected before you land.</p>
 
   <span class="badge">⚡ Early Access</span>
+
+  <p style="color:#facc15;"><strong>⚡ Limited early access — first 50 users only</strong></p>
 
   <!-- EMAIL CAPTURE -->
   <div class="card">
     <h2>Get Early Access</h2>
-    <p>Be first to access SIM delivery + crypto payments</p>
+    <p>Be first to access SIM delivery</p>
 
     <input id="email" placeholder="Enter your email" />
     <button class="btn" onclick="mint()">Get Early Access</button>
@@ -97,11 +100,45 @@ input {
   <div class="section">
     <div class="card">
       <h3>$25 SIM Plan</h3>
-      <p>Get physical SIM shipped + activation</p>
+      <p>We ship your SIM before your trip so you land connected instantly.</p>
+
+      <p style="font-size:14px; opacity:0.8;">
+        Used by travelers to avoid airport SIM scams ✈️
+      </p>
 
       <a href="https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08" target="_blank">
-        <button class="btn">Buy SIM - $25</button>
+        <button class="btn">Get SIM Before Your Trip - $25</button>
       </a>
+
+      <p style="font-size:12px; opacity:0.7;">
+        No complicated setup. Simple delivery before your trip.
+      </p>
+    </div>
+  </div>
+
+  <!-- WHY BUY NOW -->
+  <div class="section">
+    <div class="card">
+      <p>✈️ Traveling soon?</p>
+      <p>Avoid airport SIM lines and overpriced plans.</p>
+      <p><strong>Order now and land connected instantly.</strong></p>
+    </div>
+  </div>
+
+  <!-- TRUST -->
+  <div class="section">
+    <div class="card">
+      <p>🌍 Works in multiple countries</p>
+      <p>📦 Fast delivery before travel</p>
+      <p>🔒 Secure checkout via Stripe</p>
+    </div>
+  </div>
+
+  <!-- SOCIAL PROOF -->
+  <div class="section">
+    <div class="card">
+      <p>🔥 Early users are joining daily</p>
+      <p>📦 First batch shipping soon</p>
     </div>
   </div>
 
@@ -125,26 +162,6 @@ input {
     </div>
   </div>
 
-  <!-- AFFILIATES -->
-  <div class="section">
-    <h2>Recommended Tools</h2>
-
-    <div class="card">
-      <h3>VPN for Travel</h3>
-      <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143955" target="_blank">
-        <button class="btn">Get VPN</button>
-      </a>
-    </div>
-
-    <div class="card">
-      <h3>Password Security</h3>
-      <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=143955" target="_blank">
-        <button class="btn">Secure Passwords</button>
-      </a>
-    </div>
-
-  </div>
-
 </div>
 
 <script>
@@ -158,7 +175,6 @@ async function mint() {
 
   const id = Math.floor(Math.random() * 100000);
 
-  // TEMP: replace later with Supabase
   console.log("Captured:", email, id);
 
   document.getElementById("status").innerText =
