@@ -125,12 +125,13 @@ input {
     </div>
   </div>
 
-  <!-- TRUST -->
+  <!-- TRUST (UPGRADED) -->
   <div class="section">
     <div class="card">
-      <p>🌍 Works in multiple countries</p>
-      <p>📦 Fast delivery before travel</p>
-      <p>🔒 Secure checkout via Stripe</p>
+      <p>✔ Secure checkout powered by Stripe</p>
+      <p>✔ Real SIM card shipped to your door</p>
+      <p>✔ Built for travelers avoiding roaming fees</p>
+      <p>✔ Simple setup — works right after landing</p>
     </div>
   </div>
 
@@ -150,6 +151,15 @@ input {
       <p>1. Order your SIM before travel</p>
       <p>2. Get it delivered</p>
       <p>3. Land already connected</p>
+    </div>
+  </div>
+
+  <!-- FOUNDER TRUST BLOCK -->
+  <div class="section">
+    <div class="card">
+      <p><strong>Why I built this</strong></p>
+      <p>I kept overpaying for SIM cards at airports and landing with no connection.</p>
+      <p>This is a simple way to fix that for travelers.</p>
     </div>
   </div>
 
@@ -177,8 +187,8 @@ async function mint() {
 
   console.log("Captured:", email, id);
 
-  document.getElementById("status").innerText =
-    "✅ You're on the early access list!";
+  document.getElementById("status").innerHTML =
+    "✅ You're on the early access list!<br><br><a href='https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08' target='_blank' style='color:#38bdf8;'>👉 Want to secure your SIM now?</a>";
 }
 </script>
 
