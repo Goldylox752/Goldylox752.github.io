@@ -66,6 +66,12 @@ input {
 .section {
   margin-top: 40px;
 }
+
+.timer {
+  color: #f87171;
+  font-weight: bold;
+  margin-top: 10px;
+}
 </style>
 </head>
 
@@ -77,208 +83,96 @@ input {
   <p><strong>No roaming. No airport lines. No stress.</strong></p>
   <p>Get connected before you land.</p>
 
-  <!-- TIME PRESSURE UPDATED -->
   <span class="badge">⚡ Early Access</span>
-  <p style="color:#facc15;"><strong>⚡ Early access ends soon — limited spots available</strong></p>
+  <p style="color:#facc15;"><strong>⚡ Only <span id="spots">17</span> spots left</strong></p>
 
-  <!-- EMAIL CAPTURE -->
+  <!-- COUNTDOWN -->
+  <div class="timer">
+    ⏳ Offer ends in: <span id="countdown">10:00</span>
+  </div>
+
+  <!-- EMAIL -->
   <div class="card">
     <h2>Get Early Access</h2>
-    <p>Be first to access SIM delivery</p>
 
     <input id="email" placeholder="Enter your email" />
-    <button class="btn" onclick="mint()">Get Early Access</button>
-
-    <p style="font-size:12px; opacity:0.7;">
-      Limited early users. No spam.
-    </p>
+    <button class="btn" onclick="mint()">Unlock Access</button>
 
     <p id="status"></p>
   </div>
 
-  <!-- BUY NOW -->
+  <!-- BUY -->
   <div class="section">
     <div class="card">
       <h3>$25 SIM Plan</h3>
-      <p>We ship your SIM before your trip so you land connected instantly.</p>
 
-      <!-- PRICE ANCHOR -->
       <p style="text-decoration:line-through; opacity:0.5;">
-        Typical airport SIM: $40+
-      </p>
-      <p style="color:#22c55e;">
-        Save money by ordering before you travel
+        Airport price: $40+
       </p>
 
-      <p style="font-size:14px; opacity:0.8;">
-        Used by travelers to avoid airport SIM scams ✈️
+      <p style="color:#22c55e;">
+        Save instantly by ordering before travel
       </p>
 
       <a href="https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08" target="_blank">
-        <button class="btn">Get SIM Before Your Trip - $25</button>
+        <button class="btn">Get Connected Before You Land - $25</button>
       </a>
 
-      <!-- LAST PUSH -->
-      <p style="font-size:12px; color:#facc15;">
-        ⚡ Order before your next trip to avoid airport hassle
-      </p>
-
-      <p style="font-size:12px; opacity:0.6;">
-        Need instant setup? eSIM option below ↓
-      </p>
-
-      <p style="font-size:12px; opacity:0.7;">
-        No complicated setup. Simple delivery before your trip.
+      <p style="color:#facc15; font-size:12px;">
+        ⚡ Most travelers regret waiting until the airport
       </p>
     </div>
   </div>
 
-  <!-- eSIM FALLBACK -->
+  <!-- SAILY PUSH (MAIN MONEY DRIVER) -->
   <div class="section">
     <div class="card">
-      <h3>Need connection instantly?</h3>
-      <p>Get an eSIM in minutes — no shipping required</p>
+      <h3>⚡ Instant eSIM (Recommended)</h3>
+      <p><strong>Get connected in under 5 minutes</strong></p>
 
-      <p style="font-size:14px; opacity:0.8;">
-        Perfect for last-minute trips
+      <p style="color:#22c55e;">
+        No shipping. No waiting. Works instantly.
       </p>
 
       <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
         <button class="btn">Get eSIM Instantly</button>
       </a>
-
-      <p style="font-size:12px; opacity:0.7;">
-        Instant activation. Works worldwide.
-      </p>
-    </div>
-  </div>
-
-  <!-- WHY BUY NOW -->
-  <div class="section">
-    <div class="card">
-      <p>✈️ Traveling soon?</p>
-      <p>Avoid airport SIM lines and overpriced plans.</p>
-      <p><strong>Order now and land connected instantly.</strong></p>
     </div>
   </div>
 
   <!-- TRUST -->
   <div class="section">
     <div class="card">
-      <p>✔ Secure checkout powered by Stripe</p>
-      <p>✔ Real SIM card shipped to your door</p>
-      <p>✔ Built for travelers avoiding roaming fees</p>
-      <p>✔ Simple setup — works right after landing</p>
+      <p>✔ Secure checkout via Stripe</p>
+      <p>✔ One-time payment (no subscription)</p>
+      <p>✔ Works worldwide</p>
     </div>
   </div>
 
-  <!-- LEGIT PROOF -->
+  <!-- AFFILIATES -->
   <div class="section">
+    <h2>Travel Essentials</h2>
+
     <div class="card">
-      <p>✔ Payments securely processed via Stripe</p>
-      <p>✔ No subscriptions — one-time purchase</p>
-      <p>✔ Simple and transparent pricing</p>
-    </div>
-  </div>
-
-  <!-- WHERE IT WORKS -->
-  <div class="section">
-    <div class="card">
-      <p><strong>Where it works</strong></p>
-      <p>Works in major travel destinations worldwide.</p>
-      <p>Perfect for Europe, USA, and popular travel hubs.</p>
-    </div>
-  </div>
-
-  <!-- CONTACT -->
-  <div class="section">
-    <div class="card">
-      <p><strong>Contact</strong></p>
-      <p>Email: support@sim2door.com</p>
-    </div>
-  </div>
-
-  <!-- SOCIAL PROOF -->
-  <div class="section">
-    <div class="card">
-      <p>🔥 Early users are joining daily</p>
-      <p>📦 First batch shipping soon</p>
-    </div>
-  </div>
-
-  <!-- HOW IT WORKS -->
-  <div class="section">
-    <h2>How it works</h2>
-    <div class="card">
-      <p>1. Order your SIM before travel</p>
-      <p>2. Get it delivered</p>
-      <p>3. Land already connected</p>
-    </div>
-  </div>
-
-  <!-- FOUNDER -->
-  <div class="section">
-    <div class="card">
-      <p><strong>Why I built this</strong></p>
-      <p>I kept overpaying for SIM cards at airports and landing with no connection.</p>
-      <p>This is a simple way to fix that for travelers.</p>
-    </div>
-  </div>
-
-<!-- ADD THIS RIGHT BEFORE THE BITCOIN SECTION -->
-
-  <!-- TRAVEL TOOLS (AFFILIATES) -->
-  <div class="section">
-    <h2>Recommended Travel Tools</h2>
-
-    <!-- SAILY (REINFORCED) -->
-    <div class="card">
-      <h3>🌍 Instant eSIM</h3>
-      <p><strong>Get connected in minutes — no shipping required</strong></p>
-
-      <p style="color:#22c55e;">⚡ Most travelers choose this for instant setup</p>
-
-      <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
-        <button class="btn">Get eSIM Instantly</button>
-      </a>
-    </div>
-
-    <!-- NORDVPN -->
-    <div class="card">
-      <h3>🔒 Travel Securely</h3>
-      <p>Protect your data on public WiFi (airports, hotels, cafes)</p>
-
+      <h3>🔒 Stay Secure</h3>
       <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143955" target="_blank">
         <button class="btn">Get VPN</button>
       </a>
     </div>
 
-    <!-- NORDPASS -->
     <div class="card">
-      <h3>🔑 Protect Your Accounts</h3>
-      <p>Keep your passwords safe while traveling</p>
-
+      <h3>🔑 Password Protection</h3>
       <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=143955" target="_blank">
         <button class="btn">Get Password Manager</button>
       </a>
-    </div>
-
-  </div>
-
-
-  <!-- BITCOIN -->
-  <div class="section">
-    <h2>Pay with Bitcoin</h2>
-    <div class="card">
-      <p>Send BTC to:</p>
-      <small>bc1qegcga7mxckqh69jr7wwfvy4e3w554ycceeur3w</small>
     </div>
   </div>
 
 </div>
 
 <script>
-async function mint() {
+// EMAIL CAPTURE
+function mint() {
   const email = document.getElementById("email").value;
 
   if (!email) {
@@ -286,17 +180,29 @@ async function mint() {
     return;
   }
 
-  const id = Math.floor(Math.random() * 100000);
-
-  console.log("Captured:", email, id);
-
   document.getElementById("status").innerHTML =
-    "✅ You're on the early access list!<br><br><a href='https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08' target='_blank' style='color:#38bdf8;'>👉 Want to secure your SIM now?</a>";
+    "✅ You're in!<br><br><a href='https://buy.stripe.com/fZu14gg9laKUa7Z9ji2ZO08' target='_blank' style='color:#38bdf8;'>👉 Secure your SIM now</a>";
 }
+
+// COUNTDOWN TIMER
+let time = 600;
+setInterval(() => {
+  let min = Math.floor(time / 60);
+  let sec = time % 60;
+  document.getElementById("countdown").innerText =
+    min + ":" + (sec < 10 ? "0" : "") + sec;
+  if (time > 0) time--;
+}, 1000);
+
+// FAKE SPOTS (DECREASE)
+setInterval(() => {
+  let spots = document.getElementById("spots");
+  let current = parseInt(spots.innerText);
+  if (current > 5) {
+    spots.innerText = current - 1;
+  }
+}, 15000);
 </script>
 
 </body>
 </html>
-
-
- 
