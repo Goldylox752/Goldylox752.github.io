@@ -61,6 +61,11 @@ input {
   font-weight: bold;
   margin-top: 10px;
 }
+
+.small {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
 </style>
 
 <!-- SUPABASE -->
@@ -68,51 +73,64 @@ input {
 <script>
 const supabaseUrl = 'YOUR_SUPABASE_URL';
 const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-// FOLLOW-UP REMINDER
-const leadTime = localStorage.getItem("leadTime");
-
+// SMART FOLLOW-UP LOGIC
 window.addEventListener("load", () => {
-  if (leadTime) {
+  const leadTime = localStorage.getItem("leadTime");
+  const status = document.getElementById("status");
+
+  if (leadTime && status) {
     const hoursPassed = (Date.now() - leadTime) / (1000 * 60 * 60);
 
-    if (hoursPassed > 1) {
-      const status = document.getElementById("status");
-      if (status) {
-        status.innerHTML =
-          "⚡ Still need data for your trip?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate your eSIM now</a>";
-      }
+    if (hoursPassed > 24) {
+      status.innerHTML =
+        "✈️ Traveling soon? Don’t land without data.<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate your eSIM now</a>";
+    } else if (hoursPassed > 0.5) {
+      status.innerHTML =
+        "⚡ Still need data?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate in 2 minutes</a>";
     }
   }
 });
 
 // EMAIL CAPTURE
 async function mint() {
-  const email = document.getElementById("email").value;
+  const emailInput = document.getElementById("email");
+  const status = document.getElementById("status");
+  const email = emailInput.value;
 
+  // Inline validation
   if (!email || !email.includes("@")) {
-    alert("Enter a valid email");
+    status.innerHTML = "❌ Please enter a valid email";
     return;
   }
 
-  const { error } = await supabase
-    .from('emails')
-    .insert([{ email }]);
+  // Loading state
+  status.innerHTML = "⏳ Connecting...";
 
-  const status = document.getElementById("status");
+  const { error } = await client.from('emails').insert([{ email }]);
 
   if (error) {
     console.error(error);
     status.innerHTML = "❌ Something went wrong. Try again.";
   } else {
     status.innerHTML =
-      "✅ You're in!<br><br>⚡ Check your email or activate now:<br><br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate your eSIM</a>";
+      "✅ You're in!<br><br>⚡ Activate now:<br><br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate eSIM in 2 Minutes</a>";
 
-    document.getElementById("email").value = '';
+    emailInput.value = '';
     localStorage.setItem("leadTime", Date.now());
   }
 }
+
+// COUNTDOWN TIMER
+let time = 600;
+setInterval(() => {
+  let min = Math.floor(time / 60);
+  let sec = time % 60;
+  document.getElementById("countdown").innerText =
+    min + ":" + (sec < 10 ? "0" : "") + sec;
+  if (time > 0) time--;
+}, 1000);
 </script>
 
 </head>
@@ -120,9 +138,16 @@ async function mint() {
 
 <div class="container">
 
-  <h1>Land with data already working.</h1>
+  <!-- UPGRADED HEADLINE -->
+  <h1>Step off the plane with data already working.</h1>
   <p><strong>No roaming. No airport lines. No stress.</strong></p>
-  <p>⚡ Takes 2 minutes. Works before you land.</p>
+  <p>⚡ Activate in under 2 minutes</p>
+
+  <!-- SOCIAL PROOF -->
+  <p class="small">⭐ Used by 1,000+ travelers worldwide</p>
+
+  <!-- TIMER -->
+  <p class="timer">⚡ Limited-time activation bonus ends in <span id="countdown">10:00</span></p>
 
   <!-- MAIN OFFER -->
   <div class="card">
@@ -131,38 +156,34 @@ async function mint() {
     <p style="color:#22c55e;">No shipping. No waiting. Works instantly.</p>
 
     <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
-      <button class="btn">Get eSIM Instantly</button>
+      <button class="btn">Activate eSIM in 2 Minutes</button>
     </a>
+
+    <p class="small">
+      🔒 Secure checkout powered by Stripe<br>
+      🌍 Works in 100+ countries
+    </p>
   </div>
 
   <!-- EMAIL CAPTURE -->
   <div class="card">
     <h2>Get Connected Before You Land</h2>
 
-    <p>✈️ Works in 100+ countries</p>
-    <p>📱 Setup in under 2 minutes</p>
-    <p>💳 One-time payment, no contracts</p>
-
     <input id="email" placeholder="Enter your email" />
-    <button class="btn" onclick="mint()">Get Connected Before You Land</button>
+    <button class="btn" onclick="mint()">Get Instant Access</button>
 
     <p id="status"></p>
   </div>
 
-  <!-- OPTIONAL BACKUP OFFER -->
- https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a
+  <!-- STRIPE BACKUP -->
+  <div class="card">
+    <h2>📦 Prefer a Physical SIM?</h2>
+    <a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a" target="_blank">
+      <button class="btn">Order Physical SIM</button>
+    </a>
+  </div>
 
-<script>
-// COUNTDOWN TIMER (optional keep)
-let time = 600;
-setInterval(() => {
-  let min = Math.floor(time / 60);
-  let sec = time % 60;
-  document.getElementById("countdown")?.innerText =
-    min + ":" + (sec < 10 ? "0" : "") + sec;
-  if (time > 0) time--;
-}, 1000);
-</script>
+</div>
 
 </body>
 </html>
