@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIM2Door | Skip SIM Scams</title>
 
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-528699336', { anonymize_ip: true });
+</script>
+
 <style>
 body {
   margin: 0;
@@ -13,16 +22,8 @@ body {
   color: white;
   text-align: center;
 }
-
-h1 {
-  font-size: 2.5rem;
-  color: #38bdf8;
-}
-
-.container {
-  padding: 40px 20px;
-}
-
+h1 { font-size: 2.5rem; color: #38bdf8; }
+.container { padding: 40px 20px; }
 .card {
   background: #1e293b;
   padding: 25px;
@@ -31,7 +32,6 @@ h1 {
   margin: 20px auto;
   box-shadow: 0 0 20px rgba(56,189,248,0.2);
 }
-
 .btn {
   display: block;
   width: 100%;
@@ -43,11 +43,7 @@ h1 {
   font-weight: bold;
   cursor: pointer;
 }
-
-.btn:hover {
-  background: #0ea5e9;
-}
-
+.btn:hover { background: #0ea5e9; }
 input {
   width: 90%;
   padding: 10px;
@@ -55,133 +51,153 @@ input {
   border-radius: 6px;
   border: none;
 }
-
-.timer {
-  color: #f87171;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.small {
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
+.timer { color: #f87171; font-weight: bold; margin-top: 10px; }
+.small { font-size: 0.9rem; opacity: 0.7; }
 </style>
 
 <!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supabaseUrl = 'YOUR_SUPABASE_URL';
 const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const client = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// SMART FOLLOW-UP LOGIC
+// TRACKING
+function trackClick(type) {
+  gtag('event', type, { event_category: 'engagement', event_label: type, value: 1 });
+}
+
+function trackAndRedirect(e, type, url) {
+  e.preventDefault();
+  trackClick(type);
+  setTimeout(() => window.open(url, '_blank'), 150);
+}
+
+function convertAndRedirect(url) {
+  gtag('event', 'redirect_to_offer', {
+    event_category: 'conversion',
+    event_label: 'auto_redirect',
+    value: 1
+  });
+
+  document.getElementById("status").innerHTML = "🚀 Taking you to activate your data...";
+  setTimeout(() => { window.location.href = url; }, 1200);
+}
+
+// FOLLOW-UP LOGIC
 window.addEventListener("load", () => {
   const leadTime = localStorage.getItem("leadTime");
   const status = document.getElementById("status");
 
   if (leadTime && status) {
-    const hoursPassed = (Date.now() - leadTime) / (1000 * 60 * 60);
+    const hours = (Date.now() - leadTime) / 3600000;
 
-    if (hoursPassed > 24) {
-      status.innerHTML =
-        "✈️ Traveling soon? Don’t land without data.<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate your eSIM now</a>";
-    } else if (hoursPassed > 0.5) {
-      status.innerHTML =
-        "⚡ Still need data?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate in 2 minutes</a>";
+    if (hours > 24) {
+      status.innerHTML = "✈️ Traveling soon?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank'>👉 Activate now</a>";
+    } else if (hours > 0.5) {
+      status.innerHTML = "⚡ Still need data?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank'>👉 Activate in 2 minutes</a>";
     }
   }
 });
 
-// EMAIL CAPTURE
+// EMAIL FLOW
 async function mint() {
   const emailInput = document.getElementById("email");
   const status = document.getElementById("status");
   const email = emailInput.value;
 
-  // Inline validation
-  if (!email || !email.includes("@")) {
-    status.innerHTML = "❌ Please enter a valid email";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.innerHTML = "❌ Enter a valid email";
     return;
   }
 
-  // Loading state
   status.innerHTML = "⏳ Connecting...";
 
-  const { error } = await client.from('emails').insert([{ email }]);
+  try {
+    const { error } = await supabase.from('emails').insert([{ email }]);
 
-  if (error) {
-    console.error(error);
-    status.innerHTML = "❌ Something went wrong. Try again.";
-  } else {
-    status.innerHTML =
-      "✅ You're in!<br><br>⚡ Activate now:<br><br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank' style='color:#38bdf8;'>👉 Activate eSIM in 2 Minutes</a>";
+    if (error) throw error;
 
-    emailInput.value = '';
+    // TRACK
+    gtag('event', 'email_capture', {
+      event_category: 'lead',
+      event_label: 'email_submit',
+      value: 1
+    });
+
+    // BACKEND EMAIL
+    await fetch("https://YOUR_PROJECT.functions.supabase.co/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+
     localStorage.setItem("leadTime", Date.now());
+    emailInput.value = '';
+
+    status.innerHTML = "✅ Success! Redirecting you...";
+
+    setTimeout(() => {
+      convertAndRedirect("https://go.saily.site/aff_c?offer_id=101&aff_id=13276");
+    }, 1200);
+
+  } catch (err) {
+    console.error(err);
+    status.innerHTML = "❌ Something went wrong";
   }
 }
 
-// COUNTDOWN TIMER
+// TIMER
 let time = 600;
 setInterval(() => {
   let min = Math.floor(time / 60);
   let sec = time % 60;
-  document.getElementById("countdown").innerText =
-    min + ":" + (sec < 10 ? "0" : "") + sec;
+  const el = document.getElementById("countdown");
+  if (el) el.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
   if (time > 0) time--;
 }, 1000);
 </script>
-
 </head>
+
 <body>
 
 <div class="container">
 
-  <!-- UPGRADED HEADLINE -->
-  <h1>Step off the plane with data already working.</h1>
-  <p><strong>No roaming. No airport lines. No stress.</strong></p>
-  <p>⚡ Activate in under 2 minutes</p>
+<h1>Step off the plane with data already working.</h1>
+<p><strong>No roaming. No airport lines. No stress.</strong></p>
+<p>⚡ Activate in under 2 minutes</p>
 
-  <!-- SOCIAL PROOF -->
-  <p class="small">⭐ Used by 1,000+ travelers worldwide</p>
+<p class="small">⭐ Trusted by 1,000+ travelers worldwide</p>
 
-  <!-- TIMER -->
-  <p class="timer">⚡ Limited-time activation bonus ends in <span id="countdown">10:00</span></p>
+<p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
-  <!-- MAIN OFFER -->
-  <div class="card">
-    <h2>⚡ Instant eSIM (Recommended)</h2>
-    <p><strong>Activate before you land</strong></p>
-    <p style="color:#22c55e;">No shipping. No waiting. Works instantly.</p>
+<div class="card">
+  <h2>⚡ Instant eSIM</h2>
+  <p>Activate before you land</p>
+  <p style="color:#22c55e;">No shipping. Works instantly.</p>
 
-    <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
-      <button class="btn">Activate eSIM in 2 Minutes</button>
-    </a>
+  <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276"
+     onclick="trackAndRedirect(event,'esim_click',this.href)">
+    <button class="btn">Activate eSIM in 2 Minutes</button>
+  </a>
 
-    <p class="small">
-      🔒 Secure checkout powered by Stripe<br>
-      🌍 Works in 100+ countries
-    </p>
-  </div>
+  <p class="small">🔒 Secure checkout • 🌍 Works worldwide</p>
+</div>
 
-  <!-- EMAIL CAPTURE -->
-  <div class="card">
-    <h2>Get Connected Before You Land</h2>
+<div class="card">
+  <h2>Get Data Before You Land</h2>
+  <input id="email" placeholder="Enter your email" />
+  <button class="btn" onclick="mint()">Get Instant Access</button>
+  <p id="status"></p>
+</div>
 
-    <input id="email" placeholder="Enter your email" />
-    <button class="btn" onclick="mint()">Get Instant Access</button>
-
-    <p id="status"></p>
-  </div>
-
-  <!-- STRIPE BACKUP -->
-  <div class="card">
-    <h2>📦 Prefer a Physical SIM?</h2>
-    <a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a" target="_blank">
-      <button class="btn">Order Physical SIM</button>
-    </a>
-  </div>
+<div class="card">
+  <h2>📦 Prefer a Physical SIM?</h2>
+  <a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a"
+     onclick="trackAndRedirect(event,'stripe_click',this.href)">
+    <button class="btn">Order Physical SIM</button>
+  </a>
+</div>
 
 </div>
 
