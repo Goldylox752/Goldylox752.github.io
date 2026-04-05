@@ -57,6 +57,7 @@ input {
 
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const supabaseUrl = 'YOUR_SUPABASE_URL';
 const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
@@ -115,27 +116,29 @@ async function mint() {
 
   try {
     const { error } = await supabase.from('emails').insert([{ email }]);
-
     if (error) throw error;
 
-    // TRACK
     gtag('event', 'email_capture', {
       event_category: 'lead',
       event_label: 'email_submit',
       value: 1
     });
 
-    // BACKEND EMAIL
     await fetch("https://YOUR_PROJECT.functions.supabase.co/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
     });
 
+    // SAVE LEAD
     localStorage.setItem("leadTime", Date.now());
+
+    // 🔥 RESET TIMER TO 2 MINUTES
+    localStorage.setItem("countdownTime", 120);
+
     emailInput.value = '';
 
-    status.innerHTML = "✅ Success! Redirecting you...";
+    status.innerHTML = "⚡ Offer reserved! Complete activation before timer expires...";
 
     setTimeout(() => {
       convertAndRedirect("https://go.saily.site/aff_c?offer_id=101&aff_id=13276");
@@ -147,15 +150,40 @@ async function mint() {
   }
 }
 
-// TIMER
-let time = 600;
-setInterval(() => {
-  let min = Math.floor(time / 60);
-  let sec = time % 60;
+// ✅ FIXED TIMER
+window.addEventListener("DOMContentLoaded", () => {
+  let savedTime = parseInt(localStorage.getItem("countdownTime"));
+
+  if (isNaN(savedTime) || savedTime <= 0) {
+    savedTime = 600;
+  }
+
+  let time = savedTime;
   const el = document.getElementById("countdown");
-  if (el) el.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
-  if (time > 0) time--;
-}, 1000);
+  const timerWrap = document.querySelector(".timer");
+
+  const interval = setInterval(() => {
+    if (!el) return;
+
+    let min = Math.floor(time / 60);
+    let sec = time % 60;
+
+    el.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
+
+    if (time > 0) {
+      time--;
+      localStorage.setItem("countdownTime", time);
+    } else {
+      el.innerText = "00:00";
+
+      if (timerWrap) {
+        timerWrap.innerHTML = "🔥 Bonus expired — last chance!";
+      }
+
+      clearInterval(interval);
+    }
+  }, 1000);
+});
 </script>
 </head>
 
