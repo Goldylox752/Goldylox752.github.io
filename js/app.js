@@ -4,46 +4,80 @@ const supabase = window.supabase.createClient(
 );
 
 let offers = [];
+let loaded = false;
 
+// 🔄 LOAD OFFERS
 async function loadOffers() {
-  const { data, error } = await supabase
-    .from('offers')
-    .select('*')
-    .eq('site', 'sim2door')
-    .eq('active', true);
+  try {
+    const { data, error } = await supabase
+      .from('offers')
+      .select('*')
+      .eq('site', 'sim2door')
+      .eq('active', true);
 
-  if (data) {
-    offers = data;
-    console.log("Offers loaded:", offers.length);
-  } else {
-    console.error(error);
+    if (error) {
+      console.error("❌ Supabase error:", error);
+      return;
+    }
+
+    offers = data || [];
+    loaded = true;
+
+    console.log("✅ Offers loaded:", offers);
+
+  } catch (err) {
+    console.error("❌ Load failed:", err);
   }
 }
 
+// 🎯 PICK RANDOM OFFER
 function pickOffer() {
   if (!offers.length) return null;
   return offers[Math.floor(Math.random() * offers.length)];
 }
 
+// 📊 TRACK CLICK (safe)
 async function trackClick(button, offerName) {
-  await supabase.from('clicks').insert([{
-    site: "sim2door",
-    button: button,
-    offer: offerName
-  }]);
+  try {
+    await supabase.from('clicks').insert([{
+      site: "sim2door",
+      button: button,
+      offer: offerName
+    }]);
+  } catch (err) {
+    console.warn("Tracking failed:", err);
+  }
 }
 
+// 🚀 MAIN CLICK FUNCTION (FIXED)
 function goToOffer(button = "default") {
-  const offer = pickOffer();
 
-  if (!offer) {
-    alert("Loading deal... try again");
+  const fallback = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
+
+  // ⏳ If not loaded yet
+  if (!loaded) {
+    console.warn("⚠️ Offers still loading, using fallback");
+    window.open(fallback, '_blank');
     return;
   }
 
+  const offer = pickOffer();
+
+  // ❌ No offers found
+  if (!offer) {
+    console.warn("⚠️ No offers found, using fallback");
+    window.open(fallback, '_blank');
+    return;
+  }
+
+  console.log("🎯 Selected offer:", offer.name);
+
+  // Track (don’t block redirect)
   trackClick(button, offer.name);
 
+  // Redirect
   window.open(offer.link, '_blank');
 }
 
+// 🚀 LOAD ON PAGE START
 loadOffers();
