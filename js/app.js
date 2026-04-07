@@ -1,3 +1,31 @@
+function goToOffer(button = "default") {
+
+  console.log("🔥 BUTTON CLICKED:", button);
+
+  const fallback = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
+
+  if (!loaded) {
+    console.warn("⏳ Not loaded yet");
+    window.open(fallback, '_blank');
+    return;
+  }
+
+  const offer = pickOffer();
+
+  if (!offer) {
+    console.warn("⚠️ No offer");
+    window.open(fallback, '_blank');
+    return;
+  }
+
+  console.log("🎯 Redirecting to:", offer.link);
+
+  trackClick(button, offer.name);
+
+  window.open(offer.link, '_blank');
+}
+
+
 const supabase = window.supabase.createClient(
   'https://YOUR_PROJECT.supabase.co',
   'YOUR_PUBLIC_ANON_KEY'
