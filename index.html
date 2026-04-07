@@ -56,12 +56,19 @@ input {
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+/* ------------------------------
+   SUPABASE SETUP
+   ------------------------------ */
+const supabaseUrl = 'https://ipumbyywyzrbinwtejri.supabase.co';
+const supabaseKey = 'YOUR_ANON_KEY'; // Replace with your anon key
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+let selectedPlan = null;
+
+/* ------------------------------
+   TRACKING & REDIRECTS
+   ------------------------------ */
 function trackClick(type) {
   gtag('event', type, { event_category: 'engagement' });
 }
@@ -78,51 +85,73 @@ function convertAndRedirect(url) {
   setTimeout(() => { window.location.href = url; }, 1200);
 }
 
+/* ------------------------------
+   PLAN SELECTION
+   ------------------------------ */
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.getElementById("selectedPlan").innerHTML = "Selected plan: " + plan;
+}
+
+/* ------------------------------
+   EMAIL CAPTURE & FUNNEL
+   ------------------------------ */
 async function mint() {
-  const email = document.getElementById("email").value;
+  const email = document.getElementById("email").value.trim();
   const status = document.getElementById("status");
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     status.innerHTML = "❌ Enter a valid email";
+    return;
+  }
+  if(!selectedPlan) {
+    status.innerHTML = "⚠️ Please select a plan";
     return;
   }
 
   status.innerHTML = "⏳ Connecting...";
 
   try {
-    await supabase.from('emails').insert([{ email }]);
-    localStorage.setItem("countdownTime", 120);
+    await supabase.from('emails').insert([{
+      email,
+      plan: selectedPlan,
+      source: "sim-landing",
+      status: "checkout_started",
+      created_at: new Date()
+    }]);
 
+    localStorage.setItem("countdownTime", 120);
     status.innerHTML = "⚡ Offer reserved! Redirecting...";
 
-    setTimeout(() => {
-      convertAndRedirect("https://go.saily.site/aff_c?offer_id=101&aff_id=13276");
-    }, 1200);
+    const checkoutLink = selectedPlan === 'basic'
+      ? "YOUR_BASIC_CHECKOUT_LINK"
+      : "YOUR_PREMIUM_CHECKOUT_LINK";
 
-  } catch {
+    convertAndRedirect(checkoutLink);
+  } catch(err) {
+    console.error(err);
     status.innerHTML = "❌ Something went wrong";
   }
 }
 
+/* ------------------------------
+   COUNTDOWN TIMER
+   ------------------------------ */
 window.addEventListener("DOMContentLoaded", () => {
   let time = parseInt(localStorage.getItem("countdownTime")) || 600;
   const el = document.getElementById("countdown");
-
   setInterval(() => {
     let min = Math.floor(time / 60);
     let sec = time % 60;
     el.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
-    if (time > 0) {
-      time--;
-      localStorage.setItem("countdownTime", time);
-    }
+    if(time>0) time--;
+    localStorage.setItem("countdownTime", time);
   }, 1000);
 });
 </script>
 </head>
 
 <body>
-
 <div class="container">
 
 <!-- BRAND -->
@@ -136,17 +165,17 @@ window.addEventListener("DOMContentLoaded", () => {
 <p class="small">🌍 Works in 100+ countries • Used by Canadian travelers</p>
 <p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
+<!-- PLAN + EMAIL CAPTURE -->
 <div class="card">
   <h2>⚡ Instant eSIM</h2>
-  <p>Activate before you land</p>
-  <p style="color:#22c55e;">No shipping. Works instantly.</p>
-
-  <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276"
-     onclick="trackAndRedirect(event,'esim_click',this.href)">
-    <button class="btn">Get Data Before You Land</button>
-  </a>
-
-  <p class="small">🔒 Secure checkout • No contracts • Works on iPhone & Android</p>
+  <div id="plans">
+    <button class="btn" onclick="selectPlan('basic')">Basic eSIM</button>
+    <button class="btn" onclick="selectPlan('premium')">Premium eSIM</button>
+  </div>
+  <p id="selectedPlan">No plan selected</p>
+  <input id="email" placeholder="Enter your email" />
+  <button class="btn" onclick="mint()">Get Instant Access</button>
+  <p id="status"></p>
 </div>
 
 <div class="card">
@@ -156,23 +185,7 @@ window.addEventListener("DOMContentLoaded", () => {
   <p>✔ No SIM swapping or store visits</p>
 </div>
 
-<div class="card">
-  <h2>Get Data Before You Land</h2>
-  <input id="email" placeholder="Enter your email" />
-  <button class="btn" onclick="mint()">Get Instant Access</button>
-  <p id="status"></p>
-</div>
-
-<div class="card">
-  <h2>Why I built this</h2>
-  <p>I got tired of paying $15/day roaming fees traveling from Canada. This site helps others avoid the same mistake.</p>
-</div>
-
-<p class="small">Privacy Policy • Terms • Contact</p>
-
-</div>
-
-<!-- 🤖 CHATBOT -->
+<!-- CHATBOT -->
 <div id="chatbot" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1e293b;border-radius:12px;padding:12px;color:white;z-index:9999;">
   <div id="chatlog">
     <p><b>SIM2Door Assistant:</b> 🇨🇦 Traveling from Canada? I’ll help you avoid roaming fees.</p>
@@ -206,18 +219,14 @@ function nextStep(answer) {
       addMessage("SIM2Door Assistant", "How long is your trip?");
       showOptions(["1-7 days","1-2 weeks","2+ weeks"]);
     }, 400);
-  }
-
-  else if (step === 1) {
+  } else if (step === 1) {
     user.duration = answer;
     step++;
     setTimeout(() => {
       addMessage("SIM2Door Assistant", "Save money or unlimited data?");
       showOptions(["Save money","Unlimited"]);
     }, 400);
-  }
-
-  else if (step === 2) {
+  } else if (step === 2) {
     user.plan = answer;
     step++;
     setTimeout(() => recommend(), 400);
@@ -227,13 +236,9 @@ function nextStep(answer) {
 function recommend() {
   let msg = "";
 
-  if (user.location === "Cruise") {
-    msg = "🚢 Global eSIM is best (works in ports)";
-  } else if (user.location === "Europe") {
-    msg = "🌍 Best: Europe/Global eSIM";
-  } else {
-    msg = "📶 Fast global eSIM recommended";
-  }
+  if (user.location === "Cruise") msg = "🚢 Global eSIM is best (works in ports)";
+  else if (user.location === "Europe") msg = "🌍 Best: Europe/Global eSIM";
+  else msg = "📶 Fast global eSIM recommended";
 
   addMessage("SIM2Door Assistant", msg);
   addMessage("SIM2Door Assistant", "💸 Way cheaper than roaming with Rogers, Bell, or Telus.");
@@ -242,7 +247,7 @@ function recommend() {
 
   document.getElementById("options").innerHTML = `
     <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank"
-    onclick="trackClick('bot_click')">
+       onclick="trackClick('bot_click')">
       <button style="width:100%;padding:10px;background:#38bdf8;border-radius:8px;">
         👉 Get My eSIM
       </button>
