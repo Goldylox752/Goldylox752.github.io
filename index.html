@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SIM2Door | Skip SIM Scams</title>
+<title>SIM2Door | Avoid Roaming Fees</title>
 
 <!-- GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
@@ -22,7 +22,7 @@ body {
   color: white;
   text-align: center;
 }
-h1 { font-size: 2.5rem; color: #38bdf8; }
+h1 { font-size: 2.3rem; color: #38bdf8; }
 .container { padding: 40px 20px; }
 .card {
   background: #1e293b;
@@ -75,21 +75,15 @@ function trackAndRedirect(e, type, url) {
 }
 
 function convertAndRedirect(url) {
-  gtag('event', 'redirect_to_offer', {
-    event_category: 'conversion',
-    event_label: 'auto_redirect',
-    value: 1
-  });
-
-  document.getElementById("status").innerHTML = "🚀 Taking you to activate your data...";
+  gtag('event', 'redirect_to_offer', { event_category: 'conversion' });
+  document.getElementById("status").innerHTML = "🚀 Redirecting you now...";
   setTimeout(() => { window.location.href = url; }, 1200);
 }
 
 // EMAIL FLOW
 async function mint() {
-  const emailInput = document.getElementById("email");
+  const email = document.getElementById("email").value;
   const status = document.getElementById("status");
-  const email = emailInput.value;
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     status.innerHTML = "❌ Enter a valid email";
@@ -104,24 +98,20 @@ async function mint() {
     localStorage.setItem("leadTime", Date.now());
     localStorage.setItem("countdownTime", 120);
 
-    emailInput.value = '';
     status.innerHTML = "⚡ Offer reserved! Redirecting...";
 
     setTimeout(() => {
       convertAndRedirect("https://go.saily.site/aff_c?offer_id=101&aff_id=13276");
     }, 1200);
 
-  } catch (err) {
+  } catch {
     status.innerHTML = "❌ Something went wrong";
   }
 }
 
 // TIMER
 window.addEventListener("DOMContentLoaded", () => {
-  let savedTime = parseInt(localStorage.getItem("countdownTime"));
-  if (isNaN(savedTime) || savedTime <= 0) savedTime = 600;
-
-  let time = savedTime;
+  let time = parseInt(localStorage.getItem("countdownTime")) || 600;
   const el = document.getElementById("countdown");
 
   setInterval(() => {
@@ -141,11 +131,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
 <div class="container">
 
-<h1>Step off the plane with data already working.</h1>
+<h1>🇨🇦 Avoid $15/day roaming fees from Canadian carriers</h1>
 <p><strong>No roaming. No airport lines. No stress.</strong></p>
 <p>⚡ Activate in under 2 minutes</p>
 
-<p class="small">⭐ Trusted by 1,000+ travelers worldwide</p>
+<p class="small">⭐ Canadians pay some of the highest roaming fees — avoid it now</p>
 <p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
 <div class="card">
@@ -168,20 +158,12 @@ window.addEventListener("DOMContentLoaded", () => {
   <p id="status"></p>
 </div>
 
-<div class="card">
-  <h2>📦 Prefer a Physical SIM?</h2>
-  <a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a"
-     onclick="trackAndRedirect(event,'stripe_click',this.href)">
-    <button class="btn">Order Physical SIM</button>
-  </a>
 </div>
 
-</div>
-
-<!-- 🤖 SALES CHATBOT -->
-<div id="chatbot" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1e293b;border-radius:12px;padding:12px;color:white;box-shadow:0 0 15px rgba(0,0,0,0.5);z-index:9999;">
+<!-- 🤖 SALES BOT -->
+<div id="chatbot" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1e293b;border-radius:12px;padding:12px;color:white;z-index:9999;">
   <div id="chatlog">
-    <p><b>SIM Assistant:</b> Traveling soon? 🌍</p>
+    <p><b>SIM Assistant:</b> 🇨🇦 Traveling from Canada? I’ll help you avoid roaming fees.</p>
   </div>
   <div id="options"></div>
 </div>
@@ -191,16 +173,15 @@ let step = 0;
 let user = {};
 
 function showOptions(options) {
-  const optDiv = document.getElementById("options");
-  optDiv.innerHTML = "";
-  options.forEach(opt => {
-    optDiv.innerHTML += `<button onclick="nextStep('${opt}')" style="margin:4px;padding:6px;border:none;border-radius:6px;">${opt}</button>`;
+  const opt = document.getElementById("options");
+  opt.innerHTML = "";
+  options.forEach(o => {
+    opt.innerHTML += `<button onclick="nextStep('${o}')" style="margin:4px;padding:6px;border-radius:6px;">${o}</button>`;
   });
 }
 
 function addMessage(sender, text) {
-  const chat = document.getElementById("chatlog");
-  chat.innerHTML += `<p><b>${sender}:</b> ${text}</p>`;
+  document.getElementById("chatlog").innerHTML += `<p><b>${sender}:</b> ${text}</p>`;
 }
 
 function nextStep(answer) {
@@ -211,55 +192,55 @@ function nextStep(answer) {
     step++;
     setTimeout(() => {
       addMessage("SIM Assistant", "How long is your trip?");
-      showOptions(["1-7 days", "1-2 weeks", "2+ weeks"]);
-    }, 500);
+      showOptions(["1-7 days","1-2 weeks","2+ weeks"]);
+    }, 400);
   }
 
   else if (step === 1) {
     user.duration = answer;
     step++;
     setTimeout(() => {
-      addMessage("SIM Assistant", "How much data do you use?");
-      showOptions(["Light", "Medium", "Heavy"]);
-    }, 500);
+      addMessage("SIM Assistant", "Save money or unlimited data?");
+      showOptions(["Save money","Unlimited"]);
+    }, 400);
   }
 
   else if (step === 2) {
-    user.usage = answer;
+    user.plan = answer;
     step++;
-    setTimeout(() => recommendPlan(), 500);
+    setTimeout(() => recommend(), 400);
   }
 }
 
-function recommendPlan() {
-  let message = "";
+function recommend() {
+  let msg = "";
 
   if (user.location === "Cruise") {
-    message = "🚢 Best: Global eSIM (works in ports)";
+    msg = "🚢 Global eSIM is best (works in ports)";
   } else if (user.location === "Europe") {
-    message = "🌍 Best: Europe/Global eSIM";
+    msg = "🌍 Best: Europe/Global eSIM";
   } else {
-    message = "📶 Best: Fast local/global eSIM";
+    msg = "📶 Fast global eSIM recommended";
   }
 
-  addMessage("SIM Assistant", message);
+  addMessage("SIM Assistant", msg);
+  addMessage("SIM Assistant", "💸 Way cheaper than roaming with Rogers, Bell, or Telus.");
+  addMessage("SIM Assistant", "⚡ Most travelers activate before landing.");
 
-  setTimeout(() => {
-    addMessage("SIM Assistant", "🚀 Activate now:");
-    document.getElementById("options").innerHTML = `
-      <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
-        <button style="width:100%;padding:10px;background:#38bdf8;border:none;border-radius:8px;font-weight:bold;">
-          👉 Get My eSIM
-        </button>
-      </a>
-    `;
-  }, 800);
+  document.getElementById("options").innerHTML = `
+    <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank"
+    onclick="trackClick('bot_click')">
+      <button style="width:100%;padding:10px;background:#38bdf8;border-radius:8px;">
+        👉 Get My eSIM
+      </button>
+    </a>
+  `;
 }
 
-// Start bot
+// Start
 setTimeout(() => {
   addMessage("SIM Assistant", "Where are you going?");
-  showOptions(["Europe", "USA", "Cruise", "Worldwide"]);
+  showOptions(["Europe","USA","Cruise","Worldwide"]);
 }, 1200);
 </script>
 
