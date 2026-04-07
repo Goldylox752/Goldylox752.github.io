@@ -91,7 +91,6 @@ async function mint() {
 
   try {
     await supabase.from('emails').insert([{ email }]);
-
     localStorage.setItem("countdownTime", 120);
 
     status.innerHTML = "⚡ Offer reserved! Redirecting...";
@@ -126,11 +125,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 <div class="container">
 
-<h1>🇨🇦 Avoid $15/day roaming fees from Canadian carriers</h1>
+<!-- BRAND -->
+<div style="font-size:1.5rem;font-weight:bold;color:#38bdf8;">SIM2Door 🇨🇦</div>
+<p class="small">Travel data made simple for Canadians</p>
+
+<h1>🇨🇦 Stop paying $15/day roaming — get data before you land</h1>
 <p><strong>No roaming. No airport lines. No stress.</strong></p>
 <p>Most Canadians don’t realize roaming costs $15/day until it’s too late.</p>
 
-<p class="small">⭐ Used by travelers across Europe, USA & cruises</p>
+<p class="small">🌍 Works in 100+ countries • Used by Canadian travelers</p>
 <p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
 <div class="card">
@@ -140,13 +143,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
   <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276"
      onclick="trackAndRedirect(event,'esim_click',this.href)">
-    <button class="btn">Activate eSIM in 2 Minutes</button>
+    <button class="btn">Get Data Before You Land</button>
   </a>
 
-  <p class="small">🔒 Secure checkout • No contracts • Instant activation</p>
+  <p class="small">🔒 Secure checkout • No contracts • Works on iPhone & Android</p>
 </div>
 
-<!-- TRUST BLOCK -->
 <div class="card">
   <h2>Why Canadians use SIM2Door</h2>
   <p>✔ Avoid expensive roaming charges</p>
@@ -161,12 +163,19 @@ window.addEventListener("DOMContentLoaded", () => {
   <p id="status"></p>
 </div>
 
+<div class="card">
+  <h2>Why I built this</h2>
+  <p>I got tired of paying $15/day roaming fees traveling from Canada. This site helps others avoid the same mistake.</p>
 </div>
 
-<!-- 🤖 SALES BOT -->
+<p class="small">Privacy Policy • Terms • Contact</p>
+
+</div>
+
+<!-- 🤖 CHATBOT -->
 <div id="chatbot" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1e293b;border-radius:12px;padding:12px;color:white;z-index:9999;">
   <div id="chatlog">
-    <p><b>SIM Assistant:</b> 🇨🇦 Traveling from Canada? I’ll help you avoid roaming fees.</p>
+    <p><b>SIM2Door Assistant:</b> 🇨🇦 Traveling from Canada? I’ll help you avoid roaming fees.</p>
   </div>
   <div id="options"></div>
 </div>
@@ -194,7 +203,7 @@ function nextStep(answer) {
     user.location = answer;
     step++;
     setTimeout(() => {
-      addMessage("SIM Assistant", "How long is your trip?");
+      addMessage("SIM2Door Assistant", "How long is your trip?");
       showOptions(["1-7 days","1-2 weeks","2+ weeks"]);
     }, 400);
   }
@@ -203,7 +212,7 @@ function nextStep(answer) {
     user.duration = answer;
     step++;
     setTimeout(() => {
-      addMessage("SIM Assistant", "Save money or unlimited data?");
+      addMessage("SIM2Door Assistant", "Save money or unlimited data?");
       showOptions(["Save money","Unlimited"]);
     }, 400);
   }
@@ -226,10 +235,10 @@ function recommend() {
     msg = "📶 Fast global eSIM recommended";
   }
 
-  addMessage("SIM Assistant", msg);
-  addMessage("SIM Assistant", "💸 Way cheaper than roaming with Rogers, Bell, or Telus.");
-  addMessage("SIM Assistant", "👍 Takes 2 minutes. No app, no contract, no risk.");
-  addMessage("SIM Assistant", "⚡ Most travelers activate before landing.");
+  addMessage("SIM2Door Assistant", msg);
+  addMessage("SIM2Door Assistant", "💸 Way cheaper than roaming with Rogers, Bell, or Telus.");
+  addMessage("SIM2Door Assistant", "✈️ You’ll have data the moment your plane lands.");
+  addMessage("SIM2Door Assistant", "👍 Takes 2 minutes. No app, no contract, no risk.");
 
   document.getElementById("options").innerHTML = `
     <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank"
@@ -242,7 +251,7 @@ function recommend() {
 }
 
 setTimeout(() => {
-  addMessage("SIM Assistant", "Where are you going?");
+  addMessage("SIM2Door Assistant", "Where are you going?");
   showOptions(["Europe","USA","Cruise","Worldwide"]);
 }, 1200);
 </script>
