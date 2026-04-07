@@ -4,7 +4,7 @@ DOMAIN_URL=http://localhost:3000
 
 SUPABASE_URL=https://ipumbyywyzrbinwtejri.supabase.co
 
-SUPABASE_SERVICE_KEY=ipumbyywyzrbinwtejri
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwdW1ieXl3eXpyYmlud3RlanJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MDQwMDQsImV4cCI6MjA5MDM4MDAwNH0.07ySXV9X8k2kvb5VG6-mjJIqUuMGj4MRfKp1wR5MMxA
 
 CONTRACT_ADDRESS=contracts/sim2door.sol
 
