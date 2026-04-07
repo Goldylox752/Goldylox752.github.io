@@ -85,22 +85,6 @@ function convertAndRedirect(url) {
   setTimeout(() => { window.location.href = url; }, 1200);
 }
 
-// FOLLOW-UP LOGIC
-window.addEventListener("load", () => {
-  const leadTime = localStorage.getItem("leadTime");
-  const status = document.getElementById("status");
-
-  if (leadTime && status) {
-    const hours = (Date.now() - leadTime) / 3600000;
-
-    if (hours > 24) {
-      status.innerHTML = "✈️ Traveling soon?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank'>👉 Activate now</a>";
-    } else if (hours > 0.5) {
-      status.innerHTML = "⚡ Still need data?<br><a href='https://go.saily.site/aff_c?offer_id=101&aff_id=13276' target='_blank'>👉 Activate in 2 minutes</a>";
-    }
-  }
-});
-
 // EMAIL FLOW
 async function mint() {
   const emailInput = document.getElementById("email");
@@ -115,72 +99,38 @@ async function mint() {
   status.innerHTML = "⏳ Connecting...";
 
   try {
-    const { error } = await supabase.from('emails').insert([{ email }]);
-    if (error) throw error;
+    await supabase.from('emails').insert([{ email }]);
 
-    gtag('event', 'email_capture', {
-      event_category: 'lead',
-      event_label: 'email_submit',
-      value: 1
-    });
-
-    await fetch("https://YOUR_PROJECT.functions.supabase.co/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-
-    // SAVE LEAD
     localStorage.setItem("leadTime", Date.now());
-
-    // 🔥 RESET TIMER TO 2 MINUTES
     localStorage.setItem("countdownTime", 120);
 
     emailInput.value = '';
-
-    status.innerHTML = "⚡ Offer reserved! Complete activation before timer expires...";
+    status.innerHTML = "⚡ Offer reserved! Redirecting...";
 
     setTimeout(() => {
       convertAndRedirect("https://go.saily.site/aff_c?offer_id=101&aff_id=13276");
     }, 1200);
 
   } catch (err) {
-    console.error(err);
     status.innerHTML = "❌ Something went wrong";
   }
 }
 
-// ✅ FIXED TIMER
+// TIMER
 window.addEventListener("DOMContentLoaded", () => {
   let savedTime = parseInt(localStorage.getItem("countdownTime"));
-
-  if (isNaN(savedTime) || savedTime <= 0) {
-    savedTime = 600;
-  }
+  if (isNaN(savedTime) || savedTime <= 0) savedTime = 600;
 
   let time = savedTime;
   const el = document.getElementById("countdown");
-  const timerWrap = document.querySelector(".timer");
 
-  const interval = setInterval(() => {
-    if (!el) return;
-
+  setInterval(() => {
     let min = Math.floor(time / 60);
     let sec = time % 60;
-
     el.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
-
     if (time > 0) {
       time--;
       localStorage.setItem("countdownTime", time);
-    } else {
-      el.innerText = "00:00";
-
-      if (timerWrap) {
-        timerWrap.innerHTML = "🔥 Bonus expired — last chance!";
-      }
-
-      clearInterval(interval);
     }
   }, 1000);
 });
@@ -196,7 +146,6 @@ window.addEventListener("DOMContentLoaded", () => {
 <p>⚡ Activate in under 2 minutes</p>
 
 <p class="small">⭐ Trusted by 1,000+ travelers worldwide</p>
-
 <p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
 <div class="card">
@@ -228,6 +177,91 @@ window.addEventListener("DOMContentLoaded", () => {
 </div>
 
 </div>
+
+<!-- 🤖 SALES CHATBOT -->
+<div id="chatbot" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1e293b;border-radius:12px;padding:12px;color:white;box-shadow:0 0 15px rgba(0,0,0,0.5);z-index:9999;">
+  <div id="chatlog">
+    <p><b>SIM Assistant:</b> Traveling soon? 🌍</p>
+  </div>
+  <div id="options"></div>
+</div>
+
+<script>
+let step = 0;
+let user = {};
+
+function showOptions(options) {
+  const optDiv = document.getElementById("options");
+  optDiv.innerHTML = "";
+  options.forEach(opt => {
+    optDiv.innerHTML += `<button onclick="nextStep('${opt}')" style="margin:4px;padding:6px;border:none;border-radius:6px;">${opt}</button>`;
+  });
+}
+
+function addMessage(sender, text) {
+  const chat = document.getElementById("chatlog");
+  chat.innerHTML += `<p><b>${sender}:</b> ${text}</p>`;
+}
+
+function nextStep(answer) {
+  addMessage("You", answer);
+
+  if (step === 0) {
+    user.location = answer;
+    step++;
+    setTimeout(() => {
+      addMessage("SIM Assistant", "How long is your trip?");
+      showOptions(["1-7 days", "1-2 weeks", "2+ weeks"]);
+    }, 500);
+  }
+
+  else if (step === 1) {
+    user.duration = answer;
+    step++;
+    setTimeout(() => {
+      addMessage("SIM Assistant", "How much data do you use?");
+      showOptions(["Light", "Medium", "Heavy"]);
+    }, 500);
+  }
+
+  else if (step === 2) {
+    user.usage = answer;
+    step++;
+    setTimeout(() => recommendPlan(), 500);
+  }
+}
+
+function recommendPlan() {
+  let message = "";
+
+  if (user.location === "Cruise") {
+    message = "🚢 Best: Global eSIM (works in ports)";
+  } else if (user.location === "Europe") {
+    message = "🌍 Best: Europe/Global eSIM";
+  } else {
+    message = "📶 Best: Fast local/global eSIM";
+  }
+
+  addMessage("SIM Assistant", message);
+
+  setTimeout(() => {
+    addMessage("SIM Assistant", "🚀 Activate now:");
+    document.getElementById("options").innerHTML = `
+      <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" target="_blank">
+        <button style="width:100%;padding:10px;background:#38bdf8;border:none;border-radius:8px;font-weight:bold;">
+          👉 Get My eSIM
+        </button>
+      </a>
+    `;
+  }, 800);
+}
+
+// Start bot
+setTimeout(() => {
+  addMessage("SIM Assistant", "Where are you going?");
+  showOptions(["Europe", "USA", "Cruise", "Worldwide"]);
+}, 1200);
+</script>
 
 </body>
 </html>
