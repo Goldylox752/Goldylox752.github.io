@@ -1,3 +1,7 @@
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+
+
 function goToOffer(button = "default") {
 
   console.log("🔥 BUTTON CLICKED:", button);
