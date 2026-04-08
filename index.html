@@ -48,6 +48,11 @@ transition:0.2s;
 }
 .btn:hover{transform:scale(1.03);}
 
+.btn.selected{
+outline:2px solid #38bdf8;
+background:#0ea5e9;
+}
+
 input{
 width:90%;
 padding:12px;
@@ -92,11 +97,16 @@ transition:0.3s;
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* ✅ SUPABASE (FIXED) */
-const supabase = window.supabase.createClient(
-"https://ipumbyywyzrbinwtejri.supabase.co",
-"YOUR_REAL_ANON_KEY"
-);
+/* ✅ SUPABASE SAFE INIT */
+let supabase = null;
+try {
+  supabase = window.supabase.createClient(
+    "https://ipumbyywyzrbinwtejri.supabase.co",
+    "YOUR_REAL_ANON_KEY"
+  );
+} catch(e){
+  console.log("Supabase not loaded");
+}
 
 let selectedPlan = null;
 
@@ -105,23 +115,19 @@ function track(event){
   gtag('event', event, {event_category:"funnel"});
 }
 
-/* 🚀 CONVERT */
+/* 🚀 INSTANT REDIRECT (FIXED) */
 function convert(url){
   track("conversion_click");
-
-  const status = document.getElementById("status");
-  status.innerHTML = "🔐 Securing your plan...";
-  
-  setTimeout(()=>status.innerHTML="📡 Activating eSIM...",500);
-  setTimeout(()=>status.innerHTML="🚀 Redirecting...",1000);
-
-  setTimeout(()=>window.location.href=url,1500);
+  window.location.href = url;
 }
 
 /* PLAN SELECT */
 function selectPlan(plan){
   selectedPlan = plan;
   track("plan_select_"+plan);
+
+  document.querySelectorAll(".btn-plan").forEach(b=>b.classList.remove("selected"));
+  event.target.classList.add("selected");
 
   document.getElementById("selectedPlan").innerHTML =
   plan==="basic"
@@ -147,16 +153,16 @@ async function mint(){
   track("lead_capture");
 
   try{
-    await supabase.from("emails").insert([{
-      email:email,
-      plan:selectedPlan,
-      source:"sim2door"
-    }]);
-  }catch(e){console.log("Supabase skip");}
+    if(supabase){
+      await supabase.from("emails").insert([{
+        email,
+        plan:selectedPlan,
+        source:"sim2door"
+      }]);
+    }
+  }catch(e){console.log("Supabase skipped");}
 
-  const link = selectedPlan==="basic"
-  ? "YOUR_BASIC_AFF_LINK"
-  : "YOUR_PREMIUM_AFF_LINK";
+  const link = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
 
   convert(link);
 }
@@ -215,17 +221,16 @@ SIM2Door 🇨🇦
 
 <p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
 
-<!-- PLANS -->
 <div class="card">
 
 <h2>Choose Your Plan</h2>
 
-<button class="btn" onclick="selectPlan('basic')">
+<button class="btn btn-plan" onclick="selectPlan('basic')">
 🇺🇸 USA Plan — $19<br>
 <span class="small">5GB • 7 Days</span>
 </button>
 
-<button class="btn" onclick="selectPlan('premium')">
+<button class="btn btn-plan" onclick="selectPlan('premium')">
 🌍 Global Unlimited — $39<br>
 <span class="small">Unlimited • 15 Days</span>
 </button>
@@ -234,7 +239,7 @@ SIM2Door 🇨🇦
 
 <input id="email" placeholder="Enter your email">
 
-<button class="btn" onclick="mint()">
+<button class="btn" onclick="mint(); track('cta_click');">
 🚀 Get My eSIM Now
 </button>
 
@@ -248,7 +253,6 @@ SIM2Door 🇨🇦
 
 </div>
 
-<!-- PAIN / VALUE -->
 <div class="card">
 <h3>❌ Without this</h3>
 <p>$15/day roaming<br>Slow airport SIM lines<br>No data on landing</p>
@@ -257,7 +261,6 @@ SIM2Door 🇨🇦
 <p>Instant connection<br>No roaming fees<br>Works immediately</p>
 </div>
 
-<!-- REVIEWS -->
 <div class="card">
 <h3>⭐ Real Reviews</h3>
 
