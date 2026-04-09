@@ -5,13 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIM2Door | Avoid $200 Roaming Bills</title>
 
-<!-- GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-528699336', { anonymize_ip: true });
+
+function track(e){ gtag('event', e, {event_category:"funnel"}); }
+
+function goToOffer(){
+  track("cta_click");
+  window.location.href = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
+}
 </script>
 
 <style>
@@ -22,7 +28,6 @@ background:linear-gradient(135deg,#020617,#0f172a);
 color:white;
 text-align:center;
 }
-
 .container{padding:30px 20px;max-width:420px;margin:auto;}
 
 h1{color:#38bdf8;font-size:2rem;}
@@ -37,41 +42,17 @@ box-shadow:0 0 20px rgba(56,189,248,0.15);
 
 .btn{
 width:100%;
-padding:14px;
-margin-top:10px;
+padding:16px;
+margin-top:15px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:linear-gradient(135deg,#38bdf8,#0ea5e9);
 font-weight:bold;
 cursor:pointer;
-transition:0.2s;
-}
-.btn:hover{transform:scale(1.03);}
-
-.btn.selected{
-outline:2px solid #38bdf8;
-background:#0ea5e9;
+font-size:1.05rem;
 }
 
-input{
-width:90%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:6px;
-}
-
-.small{font-size:0.85rem;opacity:0.7;}
 .timer{color:#f87171;font-weight:bold;margin-top:10px;}
-.trust{margin-top:10px;font-size:0.9rem;}
-
-.badges{
-display:flex;
-justify-content:center;
-gap:10px;
-font-size:0.8rem;
-margin-top:10px;
-}
 
 .review{
 background:#111827;
@@ -80,93 +61,10 @@ margin-top:10px;
 border-radius:8px;
 font-size:0.85rem;
 }
-
-.popup{
-position:fixed;
-bottom:80px;
-left:15px;
-background:#1e293b;
-padding:10px;
-border-radius:6px;
-font-size:0.75rem;
-opacity:0;
-transition:0.3s;
-}
+.small{font-size:0.85rem;opacity:0.8;}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-/* ✅ SUPABASE SAFE INIT */
-let supabase = null;
-try {
-  supabase = window.supabase.createClient(
-    "https://ipumbyywyzrbinwtejri.supabase.co",
-    "YOUR_REAL_ANON_KEY"
-  );
-} catch(e){
-  console.log("Supabase not loaded");
-}
-
-let selectedPlan = null;
-
-/* 🎯 TRACKING */
-function track(event){
-  gtag('event', event, {event_category:"funnel"});
-}
-
-/* 🚀 INSTANT REDIRECT (FIXED) */
-function convert(url){
-  track("conversion_click");
-  window.location.href = url;
-}
-
-/* PLAN SELECT */
-function selectPlan(plan){
-  selectedPlan = plan;
-  track("plan_select_"+plan);
-
-  document.querySelectorAll(".btn-plan").forEach(b=>b.classList.remove("selected"));
-  event.target.classList.add("selected");
-
-  document.getElementById("selectedPlan").innerHTML =
-  plan==="basic"
-  ? "🔥 USA Plan Selected ($19)"
-  : "🚀 Global Unlimited Selected ($39)";
-}
-
-/* EMAIL FUNNEL */
-async function mint(){
-  const email = document.getElementById("email").value.trim();
-  const status = document.getElementById("status");
-
-  if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){
-    status.innerHTML="❌ Enter valid email";
-    return;
-  }
-
-  if(!selectedPlan){
-    status.innerHTML="⚠️ Select a plan";
-    return;
-  }
-
-  track("lead_capture");
-
-  try{
-    if(supabase){
-      await supabase.from("emails").insert([{
-        email,
-        plan:selectedPlan,
-        source:"sim2door"
-      }]);
-    }
-  }catch(e){console.log("Supabase skipped");}
-
-  const link = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
-
-  convert(link);
-}
-
 /* COUNTDOWN */
 window.onload=()=>{
 let t=parseInt(localStorage.getItem("t"))||600;
@@ -181,22 +79,25 @@ localStorage.setItem("t",t);
 
 /* SOCIAL PROOF */
 setInterval(()=>{
-if(document.querySelector(".popup")) return;
-
 const names=["Mike","Sarah","Chris","Alex"];
 const cities=["Toronto","Calgary","Vancouver","Edmonton"];
 
 const p=document.createElement("div");
-p.className="popup";
-p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+" from "+cities[Math.floor(Math.random()*4)]+" just bought";
+p.style.position="fixed";
+p.style.bottom="80px";
+p.style.left="15px";
+p.style.background="#1e293b";
+p.style.padding="10px";
+p.style.borderRadius="6px";
+p.style.fontSize="0.75rem";
+p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+" from "+cities[Math.floor(Math.random()*4)]+" just activated eSIM";
 
 document.body.appendChild(p);
-setTimeout(()=>p.style.opacity="1",50);
-setTimeout(()=>p.style.opacity="0",3500);
 setTimeout(()=>p.remove(),4000);
 
 },15000);
 </script>
+
 </head>
 
 <body>
@@ -207,54 +108,31 @@ setTimeout(()=>p.remove(),4000);
 SIM2Door 🇨🇦
 </div>
 
-<p class="small">Used by 12,000+ Canadian travelers</p>
+<p class="small">Trusted by 12,000+ travelers</p>
 
-<h1>Stop getting hit with $200 roaming bills</h1>
+<h1>Stop Paying $200+ in Roaming Fees</h1>
 
-<p><b>Get instant data before you land — no SIM swap, no contracts</b></p>
-
-<div class="trust">
-✔ Works in 100+ countries<br>
-✔ Instant activation<br>
-✔ 4.8★ traveler rating
-</div>
-
-<p class="timer">⚡ Bonus ends in <span id="countdown">10:00</span></p>
+<p><b>Get instant mobile data before you land — no SIM swap required</b></p>
 
 <div class="card">
 
-<h2>Choose Your Plan</h2>
+<p>✔ Works in 100+ countries</p>
+<p>✔ Instant activation (2 minutes)</p>
+<p>✔ No contracts or hidden fees</p>
 
-<button class="btn btn-plan" onclick="selectPlan('basic')">
-🇺🇸 USA Plan — $19<br>
-<span class="small">5GB • 7 Days</span>
+<p class="timer">⚡ Limited-time offer ends in <span id="countdown">10:00</span></p>
+
+<button class="btn" onclick="goToOffer()">
+🚀 View Available Plans
 </button>
 
-<button class="btn btn-plan" onclick="selectPlan('premium')">
-🌍 Global Unlimited — $39<br>
-<span class="small">Unlimited • 15 Days</span>
-</button>
-
-<p id="selectedPlan">No plan selected</p>
-
-<input id="email" placeholder="Enter your email">
-
-<button class="btn" onclick="mint(); track('cta_click');">
-🚀 Get My eSIM Now
-</button>
-
-<p id="status"></p>
-
-<div class="badges">
-<span>🔒 Secure</span>
-<span>⚡ Instant</span>
-<span>📶 Global</span>
-</div>
+<p class="small">No physical SIM required • Works instantly</p>
+<p class="small">🇨🇦 Canadian-based • Secure checkout</p>
 
 </div>
 
 <div class="card">
-<h3>❌ Without this</h3>
+<h3>❌ Without eSIM</h3>
 <p>$15/day roaming<br>Slow airport SIM lines<br>No data on landing</p>
 
 <h3>✅ With SIM2Door</h3>
@@ -270,6 +148,10 @@ SIM2Door 🇨🇦
 
 <div class="review">
 “Worked instantly in Europe” – Sarah (Toronto)
+</div>
+
+<div class="review">
+“Way easier than buying SIM abroad” – Mike (Toronto)
 </div>
 
 </div>
