@@ -9,30 +9,11 @@
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-// Analytics
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-528699336', { anonymize_ip: true });
-
-// Supabase
-const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
-const SUPABASE_KEY = "YOUR_PUBLIC_ANON_KEY";
-let supabase;
-try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e){}
-
-// Tracking
-function track(eventName){
-  if(typeof gtag !== "undefined"){
-    gtag('event', eventName);
-  }
-}
 
 // Countdown
 window.onload = () => {
@@ -119,6 +100,12 @@ h1{
   border-radius:8px;
   font-size:0.85rem;
 }
+
+.hero-img{
+  width:100%;
+  border-radius:12px;
+  margin-top:15px;
+}
 </style>
 </head>
 
@@ -126,7 +113,7 @@ h1{
 
 <div class="container">
 
-<!-- 🔥 FOUNDER SECTION -->
+<!-- 🔥 FOUNDER -->
 <div class="brand">NorthSky Founder 🚀</div>
 
 <p class="small">I build travel & drone tech brands 🌍</p>
@@ -135,9 +122,40 @@ h1{
 
 <p class="small">Built by a real operator — not a big corporation.</p>
 
-<!-- 🔗 BRAND LINKS -->
+<!-- 💰 MAIN OFFER (MOVED UP) -->
 <div class="card">
-  <h3>🌍 Explore NorthSky Brands</h3>
+
+<h3>Stay Connected Anywhere — Without $200 Roaming Bills</h3>
+
+<p class="small">Instant data. No SIM swaps. No contracts.</p>
+
+<p class="timer">⚡ Offer ends in <span id="countdown">10:00</span></p>
+
+<a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a">
+  <button class="btn">⚡ Get Connected – $25 Plan</button>
+</a>
+
+<p class="small">✔ Works in 100+ countries</p>
+<p class="small">✔ Delivered instantly</p>
+<p class="small" style="color:#f87171;">⚠️ Limited availability</p>
+
+<a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276">
+  <button class="btn alt">🌍 Activate eSIM</button>
+</a>
+
+</div>
+
+<!-- 🖼 IMAGE -->
+<img src="https://images.unsplash.com/photo-1603791440384-56cd371ee9a7" class="hero-img">
+
+<!-- ⭐ AUTHORITY -->
+<p class="small">⭐ 4.8/5 average rating</p>
+<p class="small">🌍 Used in 100+ countries</p>
+
+<!-- 🚀 BRANDS -->
+<div class="card">
+  <h3>🚀 My Brands</h3>
+  <p class="small">Shop the products I’ve built for travelers</p>
 
   <a href="https://north-sky-travel.vercel.app" target="_blank">
     <button class="btn">🔋 NorthSky Travel</button>
@@ -159,29 +177,6 @@ h1{
   <p class="small">
   Now thousands of travelers use NorthSky to stay connected and powered anywhere.
   </p>
-</div>
-
-<!-- 💰 MAIN OFFER -->
-<div class="card">
-
-<h3>Stay Connected Anywhere — Without $200 Roaming Bills</h3>
-
-<p class="small">Instant data. No SIM swaps. No contracts.</p>
-
-<p class="timer">⚡ Offer ends in <span id="countdown">10:00</span></p>
-
-<a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a" onclick="track('stripe_click')">
-  <button class="btn">⚡ Get Connected – $25 Plan</button>
-</a>
-
-<p class="small">✔ Works in 100+ countries</p>
-<p class="small">✔ Delivered instantly</p>
-<p class="small" style="color:#f87171;">⚠️ Limited availability</p>
-
-<a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276">
-  <button class="btn alt">🌍 Activate eSIM</button>
-</a>
-
 </div>
 
 <!-- TRUST -->
