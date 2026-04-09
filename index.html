@@ -13,7 +13,7 @@
 
 <script>
 // =======================
-// 🔥 ANALYTICS SETUP
+// 🔥 ANALYTICS
 // =======================
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
@@ -21,7 +21,7 @@ gtag('js', new Date());
 gtag('config', 'G-528699336', { anonymize_ip: true });
 
 // =======================
-// 🔥 SUPABASE CONFIG
+// 🔥 SUPABASE
 // =======================
 const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
 const SUPABASE_KEY = "YOUR_PUBLIC_ANON_KEY";
@@ -30,20 +30,17 @@ let supabase;
 try {
   supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 } catch (e) {
-  console.warn("Supabase failed to load");
+  console.warn("Supabase failed");
 }
 
 // =======================
-// 📊 TRACKING FUNCTION
+// 📊 TRACKING
 // =======================
 function track(eventName){
-
-  // Google Analytics
   if (typeof gtag !== "undefined") {
     gtag('event', eventName, { event_category: "funnel" });
   }
 
-  // Supabase (non-blocking)
   try {
     if (supabase) {
       supabase.from('events').insert([{
@@ -53,34 +50,122 @@ function track(eventName){
         page: window.location.pathname
       }]);
     }
-  } catch (err) {
-    console.warn("Tracking failed:", err);
-  }
+  } catch(e){}
 }
 
 // =======================
 // 💰 ACTIONS
 // =======================
-function goToOffer(){
-  track("esim_click");
-
-  setTimeout(()=>{
-    window.location.href = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
-  },150);
-}
-
 function buySim(){
   track("stripe_click");
-
   setTimeout(()=>{
-    window.location.href = "https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a";
+    window.location.href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a";
+  },150);
+}
+
+function goToOffer(){
+  track("esim_click");
+  setTimeout(()=>{
+    window.location.href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
   },150);
 }
 
 // =======================
-// 👀 PAGE VIEW
+// 📧 EMAIL SYSTEM
 // =======================
-track("page_view");
+function showPopup(){
+  if(localStorage.getItem("emailCaptured")) return;
+
+  setTimeout(()=>{
+    document.getElementById("emailPopup").style.display="block";
+  },5000);
+}
+
+function closePopup(){
+  document.getElementById("emailPopup").style.display="none";
+}
+
+function submitEmail(){
+  const email = document.getElementById("emailInput").value;
+
+  if(!email || !email.includes("@")){
+    alert("Enter a valid email");
+    return;
+  }
+
+  localStorage.setItem("emailCaptured","true");
+
+  track("email_capture");
+
+  try {
+    if (supabase) {
+      supabase.from('leads').insert([{ email }]);
+    }
+  } catch(e){}
+
+  // Update main CTA
+  const btn = document.querySelector(".card .btn");
+  if(btn){
+    btn.innerText = "🔥 Get SIM – $20 Today";
+  }
+
+  alert("✅ Discount unlocked!");
+
+  closePopup();
+}
+
+// =======================
+// ⏱️ COUNTDOWN + INIT
+// =======================
+window.onload = () => {
+
+  // countdown
+  let t = parseInt(localStorage.getItem("t")) || 600;
+  setInterval(()=>{
+    let m = Math.floor(t/60);
+    let s = t%60;
+    document.getElementById("countdown").innerText =
+    m + ":" + (s<10?"0":"") + s;
+
+    if(t>0) t--;
+    localStorage.setItem("t",t);
+  },1000);
+
+  // apply discount if already captured
+  if(localStorage.getItem("emailCaptured")){
+    const btn = document.querySelector(".card .btn");
+    if(btn){
+      btn.innerText = "🔥 Get SIM – $20 Today";
+    }
+  }
+
+  showPopup();
+
+  track("page_view");
+};
+
+// =======================
+// SOCIAL PROOF
+// =======================
+setInterval(()=>{
+const names=["Mike","Sarah","Chris","Alex"];
+const cities=["Toronto","Calgary","Vancouver","Edmonton"];
+
+const p=document.createElement("div");
+p.style.position="fixed";
+p.style.bottom="80px";
+p.style.left="15px";
+p.style.background="#1e293b";
+p.style.padding="10px";
+p.style.borderRadius="6px";
+p.style.fontSize="0.75rem";
+p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+" from "+
+cities[Math.floor(Math.random()*4)]+" just activated a SIM";
+
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),4000);
+},15000);
+
 </script>
 
 <style>
@@ -115,9 +200,7 @@ cursor:pointer;
 font-size:1.05rem;
 }
 
-.btn.alt{
-background:#111827;
-}
+.btn.alt{background:#111827;}
 
 .timer{color:#f87171;font-weight:bold;margin-top:10px;}
 
@@ -131,43 +214,6 @@ font-size:0.85rem;
 
 .small{font-size:0.85rem;opacity:0.8;}
 </style>
-
-<script>
-// Countdown
-window.onload = () => {
-let t = parseInt(localStorage.getItem("t")) || 600;
-
-setInterval(()=>{
-let m = Math.floor(t/60);
-let s = t%60;
-document.getElementById("countdown").innerText =
-m + ":" + (s<10?"0":"") + s;
-
-if(t > 0) t--;
-localStorage.setItem("t", t);
-},1000);
-};
-
-// Social proof
-setInterval(()=>{
-const names=["Mike","Sarah","Chris","Alex"];
-const cities=["Toronto","Calgary","Vancouver","Edmonton"];
-
-const p=document.createElement("div");
-p.style.position="fixed";
-p.style.bottom="80px";
-p.style.left="15px";
-p.style.background="#1e293b";
-p.style.padding="10px";
-p.style.borderRadius="6px";
-p.style.fontSize="0.75rem";
-p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+" from "+
-cities[Math.floor(Math.random()*4)]+" just activated a SIM";
-
-document.body.appendChild(p);
-setTimeout(()=>p.remove(),4000);
-},15000);
-</script>
 
 </head>
 
@@ -189,52 +235,47 @@ SIM2Door 🇨🇦
 
 <p>✔ Works in 100+ countries (eSIM)</p>
 <p>✔ Or get a SIM shipped to your door 🇨🇦</p>
-<p>✔ No contracts or hidden fees</p>
 
-<p class="timer">
-⚡ Offer ends in <span id="countdown">10:00</span>
-</p>
+<p class="timer">⚡ Offer ends in <span id="countdown">10:00</span></p>
 
-<button class="btn" onclick="buySim()">
-📦 Get Lucky Mobile SIM – $25 Plan
-</button>
+<button class="btn" onclick="buySim()">📦 Get Lucky Mobile SIM – $25 Plan</button>
 
-<p class="small">✔ Talk, Text & Data • Delivered to your door</p>
-<p class="small" style="color:#f87171;">⚠️ Only 12 SIM cards left in stock</p>
+<p class="small">✔ Talk, Text & Data • Delivered</p>
+<p class="small" style="color:#f87171;">⚠️ Only 12 left in stock</p>
 
-<button class="btn alt" onclick="goToOffer()">
-🌍 Or Get Instant eSIM (Travel)
-</button>
-
-<p class="small">No physical SIM required • Instant activation</p>
-<p class="small">🔒 Secure checkout powered by Stripe</p>
+<button class="btn alt" onclick="goToOffer()">🌍 Get Instant eSIM</button>
 
 </div>
 
 <div class="card">
-<h3>❌ Without SIM2Door</h3>
-<p>$15/day roaming<br>Airport SIM lines<br>No data on landing</p>
-
-<h3>✅ With SIM2Door</h3>
-<p>Instant connection<br>No roaming fees<br>Works immediately</p>
-</div>
-
-<div class="card">
-<h3>⭐ Real Reviews</h3>
-
-<div class="review">
-“Saved me $180 in Mexico” – Jason (Calgary)
-</div>
-
-<div class="review">
-“Worked instantly in Europe” – Sarah (Toronto)
-</div>
-
-<div class="review">
-“Way easier than buying SIM abroad” – Mike (Toronto)
+<h3>⭐ Reviews</h3>
+<div class="review">“Saved me $180 in Mexico”</div>
+<div class="review">“Worked instantly in Europe”</div>
 </div>
 
 </div>
+
+<!-- EMAIL POPUP -->
+<div id="emailPopup" style="
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+background:#111827;
+padding:20px;
+border-radius:12px;
+width:90%;
+max-width:360px;
+display:none;
+z-index:999;
+">
+
+<h3>💸 Get $5 Off</h3>
+<input id="emailInput" type="email" placeholder="Enter email"
+style="width:100%;padding:12px;margin-top:10px;border-radius:8px;border:none;">
+
+<button onclick="submitEmail()" class="btn">Unlock Discount</button>
+<p class="small" onclick="closePopup()" style="cursor:pointer;">No thanks</p>
 
 </div>
 
