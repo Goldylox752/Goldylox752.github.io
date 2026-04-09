@@ -7,28 +7,80 @@
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+// =======================
+// 🔥 ANALYTICS SETUP
+// =======================
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-528699336', { anonymize_ip: true });
 
-// Tracking
-function track(e){
-  gtag('event', e, {event_category:"funnel"});
+// =======================
+// 🔥 SUPABASE CONFIG
+// =======================
+const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+const SUPABASE_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+let supabase;
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (e) {
+  console.warn("Supabase failed to load");
 }
 
-// eSIM affiliate
+// =======================
+// 📊 TRACKING FUNCTION
+// =======================
+function track(eventName){
+
+  // Google Analytics
+  if (typeof gtag !== "undefined") {
+    gtag('event', eventName, { event_category: "funnel" });
+  }
+
+  // Supabase (non-blocking)
+  try {
+    if (supabase) {
+      supabase.from('events').insert([{
+        event: eventName,
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || "direct",
+        page: window.location.pathname
+      }]);
+    }
+  } catch (err) {
+    console.warn("Tracking failed:", err);
+  }
+}
+
+// =======================
+// 💰 ACTIONS
+// =======================
 function goToOffer(){
   track("esim_click");
-  window.location.href = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
+
+  setTimeout(()=>{
+    window.location.href = "https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
+  },150);
 }
 
-// Stripe product
 function buySim(){
   track("stripe_click");
-  window.location.href = "https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a";
+
+  setTimeout(()=>{
+    window.location.href = "https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a";
+  },150);
 }
+
+// =======================
+// 👀 PAGE VIEW
+// =======================
+track("page_view");
 </script>
 
 <style>
@@ -96,7 +148,7 @@ localStorage.setItem("t", t);
 },1000);
 };
 
-// Social proof popup
+// Social proof
 setInterval(()=>{
 const names=["Mike","Sarah","Chris","Alex"];
 const cities=["Toronto","Calgary","Vancouver","Edmonton"];
@@ -109,9 +161,8 @@ p.style.background="#1e293b";
 p.style.padding="10px";
 p.style.borderRadius="6px";
 p.style.fontSize="0.75rem";
-p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+
-" from "+cities[Math.floor(Math.random()*4)]+
-" just activated a SIM";
+p.innerHTML="🛒 "+names[Math.floor(Math.random()*4)]+" from "+
+cities[Math.floor(Math.random()*4)]+" just activated a SIM";
 
 document.body.appendChild(p);
 setTimeout(()=>p.remove(),4000);
@@ -134,7 +185,6 @@ SIM2Door 🇨🇦
 
 <p><b>Get data before you land — no stress, no contracts</b></p>
 
-<!-- MAIN OFFER -->
 <div class="card">
 
 <p>✔ Works in 100+ countries (eSIM)</p>
@@ -145,15 +195,13 @@ SIM2Door 🇨🇦
 ⚡ Offer ends in <span id="countdown">10:00</span>
 </p>
 
-<!-- STRIPE -->
 <button class="btn" onclick="buySim()">
 📦 Get Lucky Mobile SIM – $25 Plan
 </button>
 
 <p class="small">✔ Talk, Text & Data • Delivered to your door</p>
-<p class="small">⚠️ Only 17 SIM cards left in stock</p>
+<p class="small" style="color:#f87171;">⚠️ Only 12 SIM cards left in stock</p>
 
-<!-- ESIM -->
 <button class="btn alt" onclick="goToOffer()">
 🌍 Or Get Instant eSIM (Travel)
 </button>
@@ -163,7 +211,6 @@ SIM2Door 🇨🇦
 
 </div>
 
-<!-- COMPARISON -->
 <div class="card">
 <h3>❌ Without SIM2Door</h3>
 <p>$15/day roaming<br>Airport SIM lines<br>No data on landing</p>
@@ -172,7 +219,6 @@ SIM2Door 🇨🇦
 <p>Instant connection<br>No roaming fees<br>Works immediately</p>
 </div>
 
-<!-- REVIEWS -->
 <div class="card">
 <h3>⭐ Real Reviews</h3>
 
