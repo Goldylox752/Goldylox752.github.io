@@ -54,23 +54,6 @@ function track(eventName){
 }
 
 // =======================
-// 💰 ACTIONS
-// =======================
-function buySim(){
-  track("stripe_click");
-  setTimeout(()=>{
-    window.location.href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a";
-  },150);
-}
-
-function goToOffer(){
-  track("esim_click");
-  setTimeout(()=>{
-    window.location.href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276";
-  },150);
-}
-
-// =======================
 // 📧 EMAIL SYSTEM
 // =======================
 function showPopup(){
@@ -94,7 +77,6 @@ function submitEmail(){
   }
 
   localStorage.setItem("emailCaptured","true");
-
   track("email_capture");
 
   try {
@@ -103,19 +85,18 @@ function submitEmail(){
     }
   } catch(e){}
 
-  // Update main CTA
-  const btn = document.querySelector(".card .btn");
+  // Update main CTA text
+  const btn = document.querySelector(".main-cta");
   if(btn){
     btn.innerText = "🔥 Get SIM – $20 Today";
   }
 
   alert("✅ Discount unlocked!");
-
   closePopup();
 }
 
 // =======================
-// ⏱️ COUNTDOWN + INIT
+// ⏱️ INIT
 // =======================
 window.onload = () => {
 
@@ -133,14 +114,13 @@ window.onload = () => {
 
   // apply discount if already captured
   if(localStorage.getItem("emailCaptured")){
-    const btn = document.querySelector(".card .btn");
+    const btn = document.querySelector(".main-cta");
     if(btn){
       btn.innerText = "🔥 Get SIM – $20 Today";
     }
   }
 
   showPopup();
-
   track("page_view");
 };
 
@@ -238,12 +218,18 @@ SIM2Door 🇨🇦
 
 <p class="timer">⚡ Offer ends in <span id="countdown">10:00</span></p>
 
-<button class="btn" onclick="buySim()">📦 Get Lucky Mobile SIM – $25 Plan</button>
+<!-- ✅ STRIPE FIXED -->
+<a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a" onclick="track('stripe_click')">
+  <button class="btn main-cta">📦 Get Lucky Mobile SIM – $25 Plan</button>
+</a>
 
 <p class="small">✔ Talk, Text & Data • Delivered</p>
 <p class="small" style="color:#f87171;">⚠️ Only 12 left in stock</p>
 
-<button class="btn alt" onclick="goToOffer()">🌍 Get Instant eSIM</button>
+<!-- ✅ ESIM FIXED -->
+<a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276" onclick="track('esim_click')">
+  <button class="btn alt">🌍 Get Instant eSIM</button>
+</a>
 
 </div>
 
