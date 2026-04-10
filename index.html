@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NorthSky Founder | Travel & Drone Tech</title>
+<title>NorthSky Founder | Travel & Tech</title>
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
@@ -14,67 +14,85 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-528699336', { anonymize_ip: true });
-
-// Countdown Timer
-window.onload = () => {
-  let t = parseInt(localStorage.getItem("t")) || 600;
-
-  setInterval(()=>{
-    let m = Math.floor(t/60);
-    let s = t%60;
-    document.getElementById("countdown").innerText =
-      m + ":" + (s<10?"0":"") + s;
-
-    if(t>0) t--;
-    localStorage.setItem("t",t);
-  },1000);
-};
 </script>
 
 <style>
+:root{
+  --bg:#020617;
+  --card:#1e293b;
+  --accent:#38bdf8;
+  --highlight:#22c55e;
+  --text:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
 body{
-  margin:0;
-  font-family:Arial;
+  font-family:-apple-system,BlinkMacSystemFont,Arial;
   background:linear-gradient(135deg,#020617,#0f172a);
-  color:white;
+  color:var(--text);
   text-align:center;
 }
 
 .container{
   padding:30px 20px;
-  max-width:420px;
+  max-width:500px;
   margin:auto;
 }
 
+/* 🌐 NETWORK */
+.network{
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.network a{
+  color:var(--accent);
+  text-decoration:none;
+  margin:0 6px;
+}
+
+/* BRAND */
 .brand{
   font-size:1.4rem;
   font-weight:bold;
-  color:#38bdf8;
+  color:var(--accent);
 }
 
+/* HEADLINE */
 h1{
-  color:#38bdf8;
+  color:var(--accent);
   font-size:2rem;
+  margin-top:10px;
 }
 
+/* CARD */
 .card{
-  background:#1e293b;
+  background:var(--card);
   padding:20px;
   border-radius:14px;
   margin-top:20px;
   box-shadow:0 0 20px rgba(56,189,248,0.15);
 }
 
+/* BUTTON */
 .btn{
   width:100%;
   padding:16px;
-  margin-top:15px;
+  margin-top:12px;
   border:none;
   border-radius:10px;
-  background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+  background:var(--accent);
+  color:#000;
   font-weight:bold;
   cursor:pointer;
   font-size:1.05rem;
+  transition:0.2s;
+}
+
+.btn:hover{
+  transform:scale(1.03);
+  opacity:0.9;
 }
 
 .btn.alt{
@@ -82,9 +100,10 @@ h1{
   color:#fff;
 }
 
+/* TEXT */
 .small{
   font-size:0.85rem;
-  opacity:0.8;
+  opacity:0.85;
 }
 
 .timer{
@@ -93,6 +112,12 @@ h1{
   margin-top:10px;
 }
 
+.highlight{
+  color:var(--highlight);
+  font-weight:bold;
+}
+
+/* REVIEWS */
 .review{
   background:#111827;
   padding:10px;
@@ -107,23 +132,38 @@ h1{
 
 <div class="container">
 
+<!-- 🌐 NETWORK -->
+<div class="network">
+  🌐 NorthSky Network:
+  <a href="https://north-sky-ai.vercel.app">AI</a> |
+  <a href="https://north-sky-utilities.vercel.app">Tools</a> |
+  <a href="https://northsky-drones.vercel.app">Drones</a> |
+  <a href="https://goldylox752.github.io/NorthSky-Travel-/">Travel</a>
+</div>
+
 <!-- 🔥 FOUNDER -->
 <div class="brand">NorthSky Founder 🚀</div>
 
-<p class="small">I build travel & drone tech brands 🌍</p>
+<p class="small">Building tools & products for modern travelers</p>
 
-<h1>Helping Travelers Stay Connected & Powered Anywhere</h1>
+<h1>Helping You Travel Smarter — Without Getting Ripped Off</h1>
 
-<p class="small">Built by a real operator — not a big corporation.</p>
+<p class="small">
+Built by a real operator solving real travel problems.
+</p>
 
 <!-- 💰 MAIN OFFER -->
 <div class="card">
 
 <h3>Stay Connected Anywhere — Without $200 Roaming Bills</h3>
 
-<p class="small">Instant data. No SIM swaps. No contracts.</p>
+<p class="small">
+Instant mobile data. No SIM swaps. No contracts.
+</p>
 
-<p class="timer">⚡ Offer ends in <span id="countdown">10:00</span></p>
+<p class="timer">
+⚡ Offer ends in <span id="countdown">10:00</span>
+</p>
 
 <a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a">
   <button class="btn">⚡ Get Data Before You Land – $25</button>
@@ -131,15 +171,10 @@ h1{
 
 <p class="small">✔ Works in 100+ countries</p>
 <p class="small">✔ Delivered instantly</p>
-<p class="small">✔ No contracts or hidden fees</p>
+<p class="small">✔ No hidden fees</p>
 
-<p class="small" style="color:#22c55e;">
-✅ 30-day money-back guarantee
-</p>
-
-<p class="small" style="color:#f87171;">
-⚠️ Limited availability
-</p>
+<p class="highlight">✅ 30-day money-back guarantee</p>
+<p class="small" style="color:#f87171;">⚠️ Limited availability</p>
 
 <a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276">
   <button class="btn alt">🌍 Activate eSIM in 2 Minutes</button>
@@ -151,18 +186,21 @@ h1{
 <p class="small">⭐ 4.8/5 average rating</p>
 <p class="small">🌍 Used in 100+ countries</p>
 
-<!-- 🚀 BRANDS -->
+<!-- 🚀 PRODUCTS -->
 <div class="card">
-  <h3>🚀 My Brands</h3>
-  <p class="small">Shop the products I’ve built for travelers</p>
+  <h3>🚀 Explore My Products</h3>
 
-  <a href="https://north-sky-travel.vercel.app" target="_blank">
-    <button class="btn">🔋 NorthSky Travel</button>
-  </a>
+  <button class="btn" onclick="window.open('https://north-sky-travel.vercel.app')">
+    🔋 Travel Gear
+  </button>
 
-  <a href="https://northsky-drones.vercel.app" target="_blank">
-    <button class="btn alt">🚁 NorthSky Drones</button>
-  </a>
+  <button class="btn alt" onclick="window.open('https://northsky-drones.vercel.app')">
+    🚁 Drone Store
+  </button>
+
+  <button class="btn alt" onclick="window.open('https://north-sky-ai.vercel.app')">
+    🤖 AI Tools
+  </button>
 </div>
 
 <!-- 👋 STORY -->
@@ -170,17 +208,23 @@ h1{
   <h3>👋 Why I Built NorthSky</h3>
 
   <p class="small">
-  After getting hit with insane roaming fees while traveling, I started building tools and products to make travel simpler, cheaper, and smarter.
+  After getting hit with massive roaming fees while traveling,
+  I realized how broken the system is.
   </p>
 
   <p class="small">
-  Now thousands of travelers use NorthSky to stay connected and powered anywhere.
+  So I started building tools and products to fix it —
+  making travel simpler, cheaper, and smarter.
+  </p>
+
+  <p class="highlight">
+  Now thousands of travelers use NorthSky worldwide.
   </p>
 </div>
 
 <!-- TRUST -->
 <div class="card">
-  <h3>Why Travelers Choose NorthSky</h3>
+  <h3>Why People Trust NorthSky</h3>
 
   <p>✔ 12,000+ travelers</p>
   <p>✔ No roaming fees</p>
@@ -189,16 +233,34 @@ h1{
 
 <!-- REVIEWS -->
 <div class="card">
-  <h3>⭐ Reviews</h3>
+  <h3>⭐ Real Reviews</h3>
+
   <div class="review">“Saved me $180 in Mexico”</div>
   <div class="review">“Worked instantly in Europe”</div>
+  <div class="review">“Way better than roaming”</div>
 </div>
 
 <div class="small" style="margin-top:20px;">
-© 2026 NorthSky
+© 2026 NorthSky Network
 </div>
 
 </div>
+
+<!-- ⏳ TIMER -->
+<script>
+let t = parseInt(localStorage.getItem("t")) || 600;
+
+setInterval(()=>{
+  let m = Math.floor(t/60);
+  let s = t%60;
+
+  document.getElementById("countdown").innerText =
+    m + ":" + (s<10?"0":"") + s;
+
+  if(t>0) t--;
+  localStorage.setItem("t",t);
+},1000);
+</script>
 
 </body>
 </html>
