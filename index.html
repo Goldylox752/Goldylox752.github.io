@@ -7,12 +7,6 @@
 <title>Avoid Roaming Fees | NorthSky</title>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-528699336"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-528699336', { anonymize_ip: true });
-</script>
 
 <style>
 :root{
@@ -36,16 +30,6 @@ body{
   padding:30px 20px;
   max-width:500px;
   margin:auto;
-}
-
-.network{
-  font-size:13px;
-  margin-bottom:15px;
-}
-.network a{
-  color:var(--accent);
-  text-decoration:none;
-  margin:0 6px;
 }
 
 h1{
@@ -72,7 +56,6 @@ h1{
   color:#000;
   font-weight:bold;
   cursor:pointer;
-  font-size:1.05rem;
 }
 
 .btn.alt{
@@ -80,29 +63,11 @@ h1{
   color:#fff;
 }
 
-.small{
-  font-size:0.85rem;
-  opacity:0.85;
-}
-
-.highlight{
-  color:var(--highlight);
-  font-weight:bold;
-}
-
-.timer{
-  color:#f87171;
-  font-weight:bold;
-  margin-top:10px;
-}
-
-.review{
-  background:#111827;
-  padding:10px;
-  margin-top:10px;
-  border-radius:8px;
-  font-size:0.85rem;
-}
+.small{font-size:0.85rem;opacity:0.85;}
+.highlight{color:var(--highlight);font-weight:bold;}
+.timer{color:#f87171;font-weight:bold;margin-top:10px;}
+.review{background:#111827;padding:10px;margin-top:10px;border-radius:8px;font-size:0.85rem;}
+input{width:100%;padding:14px;border-radius:10px;border:none;margin-top:10px;}
 </style>
 </head>
 
@@ -110,17 +75,8 @@ h1{
 
 <div class="container">
 
-<!-- 🌐 NETWORK -->
-<div class="network">
-  🌐 Network:
-  <a href="https://north-sky-ai.vercel.app">AI</a> |
-  <a href="https://north-sky-utilities.vercel.app">Tools</a> |
-  <a href="https://northsky-drones.vercel.app">Drones</a> |
-  <a href="https://goldylox752.github.io/NorthSky-Travel-/">Travel</a>
-</div>
-
 <!-- 🔥 HERO -->
-<h1>Avoid $200+ Roaming Fees — Instantly 🌍</h1>
+<h1 id="headline"></h1>
 <p class="small">Get mobile data anywhere in the world in under 2 minutes.</p>
 
 <p class="small">
@@ -131,104 +87,130 @@ h1{
 
 <p class="highlight">⚡ Takes 2 minutes. Works before you land.</p>
 
-<!-- 💰 OFFER -->
+<!-- 📧 EMAIL CAPTURE -->
 <div class="card">
+  <h3>🎁 Get 10% Off + Free Travel Guide</h3>
+  <p class="small">Avoid roaming fees worldwide</p>
 
-<h3>Stay Connected Anywhere</h3>
+  <input type="email" id="email" placeholder="Enter your email">
+  <button class="btn" onclick="captureEmail()">Get Access</button>
 
-<p class="timer">
-⚡ Offer ends in <span id="countdown">10:00</span>
-</p>
-
-<a href="https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a">
-  <button class="btn">🔥 Get Instant Data Now – $25</button>
-</a>
-
-<p class="small">Trusted by 12,000+ travelers 🌍</p>
-
-<p class="small">✔ Works in 100+ countries</p>
-<p class="small">✔ Delivered instantly</p>
-<p class="small">✔ No hidden fees</p>
-
-<p class="highlight">✅ 30-day money-back guarantee</p>
-
-<a href="https://go.saily.site/aff_c?offer_id=101&aff_id=13276">
-  <button class="btn alt">🌍 Activate eSIM in 2 Minutes</button>
-</a>
-
+  <p class="small">No spam. Instant access.</p>
 </div>
 
-<!-- ⭐ SOCIAL PROOF -->
-<p class="small">⭐ 4.8/5 average rating</p>
+<!-- 💰 OFFER -->
+<div class="card">
+  <h3>Stay Connected Anywhere</h3>
+
+  <p class="timer">
+  ⚡ Offer ends in <span id="countdown">10:00</span>
+  </p>
+
+  <button class="btn" onclick="trackClick('buy')">
+    🔥 Get Instant Data Now – $25
+  </button>
+
+  <p class="small">Trusted by 12,000+ travelers 🌍</p>
+
+  <p class="small">✔ Works in 100+ countries</p>
+  <p class="small">✔ Delivered instantly</p>
+  <p class="small">✔ No hidden fees</p>
+
+  <p class="highlight">✅ 30-day money-back guarantee</p>
+
+  <button class="btn alt" onclick="trackClick('esim')">
+    🌍 Activate eSIM in 2 Minutes
+  </button>
+</div>
 
 <!-- 👋 STORY -->
 <div class="card">
   <h3>Why I Built This</h3>
 
-  <p class="small">
-  I got hit with a $200 roaming bill on one trip.
-  </p>
+  <p class="small">I got hit with a $200 roaming bill.</p>
+  <p class="small">That’s when I realized — the system is broken.</p>
+  <p class="small">So I built a better one.</p>
 
-  <p class="small">
-  That’s when I realized — the system is broken.
-  </p>
-
-  <p class="small">
-  So I built a better one.
-  </p>
-
-  <p class="highlight">
-  Now thousands of travelers use it worldwide.
-  </p>
+  <p class="highlight">Now used worldwide 🌍</p>
 </div>
 
 <!-- 🚀 ECOSYSTEM -->
 <div class="card">
-  <h3>⚙️ Explore the NorthSky Ecosystem</h3>
-  <p class="small">Tools, stores, and systems for travel & income</p>
+  <h3>⚙️ Explore NorthSky</h3>
 
-  <button class="btn" onclick="window.open('https://north-sky-travel.vercel.app')">
-    🔋 Travel Gear
-  </button>
-
-  <button class="btn alt" onclick="window.open('https://northsky-drones.vercel.app')">
-    🚁 Drone Store
-  </button>
-
-  <button class="btn alt" onclick="window.open('https://north-sky-ai.vercel.app')">
-    🤖 AI Tools
-  </button>
+  <button class="btn" onclick="trackClick('travel')">🔋 Travel Gear</button>
+  <button class="btn alt" onclick="trackClick('drones')">🚁 Drone Store</button>
+  <button class="btn alt" onclick="trackClick('ai')">🤖 AI Tools</button>
 </div>
 
 <!-- REVIEWS -->
 <div class="card">
-  <h3>⭐ Real Reviews</h3>
-
-  <div class="review">“Saved me $180 in Mexico”</div>
-  <div class="review">“Worked instantly in Europe”</div>
+  <h3>⭐ Reviews</h3>
+  <div class="review">“Saved me $180”</div>
+  <div class="review">“Worked instantly”</div>
   <div class="review">“Way better than roaming”</div>
 </div>
 
-<div class="small" style="margin-top:20px;">
-© 2026 NorthSky Network
 </div>
 
-</div>
-
-<!-- ⏳ TIMER -->
+<!-- 🔥 SCRIPTS -->
 <script>
+// A/B HEADLINE
+const headlines = [
+  "Avoid $200+ Roaming Fees — Instantly 🌍",
+  "Get Data Anywhere in 2 Minutes ⚡",
+  "Stop Paying Roaming Fees Forever 🚀"
+];
+
+let v = localStorage.getItem("hvar");
+if(!v){
+  v = Math.floor(Math.random()*headlines.length);
+  localStorage.setItem("hvar", v);
+}
+document.getElementById("headline").innerText = headlines[v];
+
+// TIMER
 let t = parseInt(localStorage.getItem("t")) || 600;
-
 setInterval(()=>{
-  let m = Math.floor(t/60);
-  let s = t%60;
-
+  let m=Math.floor(t/60), s=t%60;
   document.getElementById("countdown").innerText =
-    m + ":" + (s<10?"0":"") + s;
-
-  if(t>0) t--;
+    m + ":" + (s<10?"0":"")+s;
+  if(t>0)t--;
   localStorage.setItem("t",t);
 },1000);
+
+// TRACKING
+async function trackClick(type){
+  fetch("YOUR_SUPABASE_FUNCTION_URL",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({type})
+  });
+
+  const links={
+    buy:"https://buy.stripe.com/6oU5kw8GTf1a2Fx6762ZO0a",
+    esim:"https://go.saily.site/aff_c?offer_id=101&aff_id=13276",
+    travel:"https://north-sky-travel.vercel.app",
+    drones:"https://northsky-drones.vercel.app",
+    ai:"https://north-sky-ai.vercel.app"
+  };
+
+  setTimeout(()=>window.open(links[type],"_blank"),200);
+}
+
+// EMAIL
+async function captureEmail(){
+  const email=document.getElementById("email").value;
+  if(!email) return alert("Enter email");
+
+  await fetch("YOUR_SUPABASE_FUNCTION_URL",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({email})
+  });
+
+  alert("✅ Check your email!");
+}
 </script>
 
 </body>
