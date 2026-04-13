@@ -10,6 +10,10 @@
   --bg:#05060a;
   --text:#e8e8e8;
   --muted:rgba(232,232,232,0.65);
+  --border:rgba(255,255,255,0.08);
+  --glass:rgba(255,255,255,0.04);
+  --accent:#38bdf8;
+  --green:#22c55e;
 }
 
 *{
@@ -19,11 +23,11 @@
 }
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",Arial;
   background:
-    radial-gradient(circle at 20% 20%, rgba(120,120,255,0.10), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(0,255,180,0.08), transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.05), transparent 40%),
+    radial-gradient(circle at 15% 20%, rgba(56,189,248,0.12), transparent 45%),
+    radial-gradient(circle at 85% 30%, rgba(34,197,94,0.10), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(255,255,255,0.05), transparent 50%),
     var(--bg);
   color:var(--text);
   overflow-x:hidden;
@@ -38,8 +42,8 @@ body{
   opacity:0.25;
   z-index:0;
 }
-.glow.blue{background:#4c7dff; top:-150px; left:-120px;}
-.glow.green{background:#22c55e; bottom:-180px; right:-120px;}
+.glow.blue{background:#38bdf8; top:-160px; left:-120px;}
+.glow.green{background:#22c55e; bottom:-200px; right:-120px;}
 
 /* container */
 .container{
@@ -47,148 +51,218 @@ body{
   z-index:2;
   max-width:1100px;
   margin:auto;
-  padding:90px 24px;
+  padding:80px 24px;
 }
 
-/* nav */
+/* NAV */
 .nav{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:90px;
-  font-size:14px;
-  opacity:0.9;
+  margin-bottom:70px;
 }
 
 .logo{
   font-weight:600;
+  letter-spacing:0.5px;
 }
 
 .nav a{
-  margin-left:24px;
+  margin-left:20px;
   color:var(--muted);
   text-decoration:none;
-  transition:0.3s;
 }
 .nav a:hover{color:white;}
 
-/* hero */
+/* HERO */
 .hero{
   text-align:center;
-  margin-bottom:120px;
+  margin-bottom:80px;
 }
 
 .hero h1{
-  font-size:64px;
-  font-weight:600;
+  font-size:58px;
   letter-spacing:-1px;
 }
 
 .hero p{
-  margin-top:20px;
-  font-size:20px;
-  max-width:750px;
+  margin-top:16px;
+  font-size:18px;
+  color:var(--muted);
+  max-width:800px;
   margin-left:auto;
   margin-right:auto;
-  color:var(--muted);
   line-height:1.6;
 }
 
 /* CTA */
 .cta{
-  margin-top:35px;
+  margin-top:25px;
   display:flex;
   justify-content:center;
-  gap:14px;
+  gap:12px;
 }
 
 .btn{
-  padding:12px 20px;
+  padding:12px 18px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.15);
-  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  background:var(--glass);
   color:white;
-  font-size:14px;
   cursor:pointer;
+  backdrop-filter:blur(12px);
   transition:0.3s;
-  backdrop-filter:blur(10px);
 }
 .btn:hover{
   transform:translateY(-2px);
-  background:rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.08);
 }
 
-/* label */
+/* SECTION LABEL */
 .label{
   text-align:center;
   font-size:12px;
-  letter-spacing:2px;
+  letter-spacing:3px;
   color:var(--muted);
-  margin-bottom:40px;
+  margin:60px 0 20px;
 }
 
-/* blocks */
-.block{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:22px;
-  padding:28px;
-  backdrop-filter:blur(20px);
-  transition:0.4s;
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
 }
-.block:hover{
-  transform:scale(1.01);
+
+/* CARD */
+.card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  backdrop-filter:blur(16px);
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-4px);
   border-color:rgba(255,255,255,0.2);
 }
 
-/* ecosystem */
-.eco{
+.card h3{
+  font-size:16px;
+}
+.card p{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* ECOSYSTEM LINKS */
+.link{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:18px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
+  padding:16px;
+  border-radius:14px;
+  border:1px solid var(--border);
   background:rgba(255,255,255,0.03);
   text-decoration:none;
-  color:var(--text);
+  color:white;
   transition:0.3s;
 }
-.eco:hover{
-  transform:scale(1.01);
+.link:hover{
+  transform:scale(1.02);
   border-color:rgba(255,255,255,0.25);
 }
-.eco span{
+.link span{
   display:block;
-  font-size:13px;
+  font-size:12px;
   color:var(--muted);
   margin-top:4px;
 }
 
-/* contact */
+/* =========================
+   FOUNDER CARD
+========================= */
+
+.founder{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.founder-box{
+  grid-column:span 3;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+}
+
+.avatar{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#38bdf8,#22c55e);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  color:black;
+}
+
+/* verified badge */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  color:#38bdf8;
+  margin-top:6px;
+}
+
+.glow-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#38bdf8;
+  box-shadow:0 0 12px #38bdf8;
+  animation:pulse 1.8s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.6);opacity:0.5;}
+  100%{transform:scale(1);opacity:1;}
+}
+
+/* CONTACT */
 .contact-item{
   display:flex;
   justify-content:space-between;
   padding:16px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,0.08);
+  border:1px solid var(--border);
   background:rgba(255,255,255,0.03);
 }
 .contact-item a{
   color:white;
   text-decoration:none;
 }
-.contact-item a:hover{opacity:0.7;}
 
-/* footer */
+/* FOOTER */
 .footer{
   text-align:center;
-  margin-top:120px;
+  margin-top:100px;
   font-size:13px;
   color:var(--muted);
 }
 </style>
-
 </head>
 
 <body>
@@ -198,6 +272,7 @@ body{
 
 <div class="container">
 
+<!-- NAV -->
 <div class="nav">
   <div class="logo">NorthSky Systems</div>
   <div>
@@ -206,15 +281,16 @@ body{
   </div>
 </div>
 
+<!-- HERO -->
 <section class="hero">
-  <h1>AI Infrastructure for the Modern Web</h1>
+  <h1>NorthSky AI Ecosystem</h1>
   <p>
-    NorthSky Systems builds scalable AI tools, automation engines, and distributed systems designed for real-world deployment.
+    A unified AI infrastructure layer powering automation, analytics, drones, and next-generation web systems.
   </p>
 
   <div class="cta">
     <button class="btn" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
-      Explore Ecosystem
+      Explore Systems
     </button>
     <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
       Contact
@@ -222,46 +298,85 @@ body{
   </div>
 </section>
 
-<h3 class="label">SYSTEMS</h3>
+<!-- FOUNDER -->
+<h3 class="label">FOUNDER</h3>
 
 <section class="grid">
-  <div class="block">
-    <h2>AI Automation Layer</h2>
-    <p style="color:var(--muted);margin-top:10px;">Intelligent scraping and data pipelines.</p>
+
+  <div class="founder-box">
+
+    <div class="founder">
+      <div class="avatar">BS</div>
+
+      <div>
+        <h3>Byron Sanche</h3>
+
+        <div class="badge">
+          <span class="glow-dot"></span>
+          Verified Founder
+        </div>
+
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">
+          Building NorthSky AI systems, automation tools, and scalable infrastructure.
+        </p>
+      </div>
+    </div>
+
+    <a href="https://www.linkedin.com/in/byron-sanche-84230828a"
+       target="_blank"
+       style="text-decoration:none;color:#38bdf8;font-size:13px;">
+      LinkedIn →
+    </a>
+
   </div>
 
-  <div class="block">
-    <h2>Distributed Infrastructure</h2>
-    <p style="color:var(--muted);margin-top:10px;">Scalable systems across environments.</p>
-  </div>
-
-  <div class="block">
-    <h2>Real-Time Systems</h2>
-    <p style="color:var(--muted);margin-top:10px;">APIs and dashboards built for live data.</p>
-  </div>
 </section>
 
+<!-- SYSTEMS -->
+<h3 class="label">CORE SYSTEMS</h3>
+
+<section class="grid">
+
+  <div class="card">
+    <h3>AI Automation</h3>
+    <p>Intelligent workflows and data systems.</p>
+  </div>
+
+  <div class="card">
+    <h3>Infrastructure</h3>
+    <p>Scalable distributed backend systems.</p>
+  </div>
+
+  <div class="card">
+    <h3>Real-Time AI</h3>
+    <p>Live analytics and API intelligence.</p>
+  </div>
+
+</section>
+
+<!-- ECOSYSTEM -->
 <h3 class="label">ECOSYSTEM</h3>
 
 <section id="ecosystem" class="grid">
 
-  <a class="eco" href="https://north-sky-ai.vercel.app/" target="_blank">
+  <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">
     NorthSky AI
     <span>Automation + intelligence platform</span>
   </a>
 
-  <a class="eco" href="https://northsky-drones.vercel.app" target="_blank">
+  <a class="link" href="https://northsky-drones.vercel.app" target="_blank">
     NorthSky Drones
     <span>Autonomous systems & robotics</span>
   </a>
 
-  <a class="eco" href="https://north-sky-utilities.vercel.app/" target="_blank">
+  <a class="link" href="https://north-sky-utilities.vercel.app/" target="_blank">
     NorthSky Utilities
     <span>Developer tooling ecosystem</span>
   </a>
 
 </section>
 
+<!-- CONTACT -->
 <h3 class="label">CONTACT</h3>
 
 <section id="contact">
@@ -273,9 +388,7 @@ body{
 
   <div class="contact-item" style="margin-top:10px;">
     <span>GitHub</span>
-    <a href="https://github.com/goldylox752" target="_blank">
-      github.com/goldylox752
-    </a>
+    <a href="https://github.com/goldylox752" target="_blank">github.com/goldylox752</a>
   </div>
 
   <div class="contact-item" style="margin-top:10px;">
