@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Byron Sanche | NorthSky Portfolio</title>
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --border:#1e293b;
+  --accent:#38bdf8;
+  --text:#e2e8f0;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,Inter,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* CONTAINER */
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:30px 20px;
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:40px;
+  font-size:0.9rem;
+}
+
+.nav a{
+  margin-left:20px;
+  color:#94a3b8;
+  text-decoration:none;
+}
+
+.logo{
+  font-weight:600;
+}
+
+/* HERO */
+.hero{
+  margin-top:40px;
+  margin-bottom:60px;
+}
+
+.hero h1{
+  font-size:2.8rem;
+  line-height:1.2;
+}
+
+.gradient{
+  background:linear-gradient(90deg,#38bdf8,#22c55e);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+  margin-top:15px;
+  color:#94a3b8;
+  max-width:500px;
+}
+
+.hero-buttons{
+  margin-top:25px;
+}
+
+.btn{
+  padding:12px 20px;
+  margin-right:10px;
+  border:none;
+  border-radius:8px;
+  background:var(--accent);
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn.alt{
+  background:transparent;
+  color:#fff;
+  border:1px solid var(--border);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  gap:20px;
+  margin-bottom:40px;
+}
+
+.project{
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:12px;
+  transition:0.2s;
+}
+
+.project:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent);
+}
+
+.project h3{
+  margin-bottom:8px;
+}
+
+.project p{
+  color:#94a3b8;
+}
+
+/* CARDS */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
+/* ECOSYSTEM */
+.eco-grid{
+  display:grid;
+  gap:12px;
+  margin-top:15px;
+}
+
+.eco{
+  display:block;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  text-decoration:none;
+  color:var(--text);
+  background:rgba(15, 23, 42, 0.6);
+  transition:0.2s;
+}
+
+.eco:hover{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+}
+
+.eco span{
+  display:block;
+  font-size:0.85rem;
+  color:#94a3b8;
+  margin-top:4px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- NAV -->
+<div class="nav">
+  <div class="logo">NorthSky</div>
+  <div>
+    <a href="#projects">Projects</a>
+    <a href="#ecosystem">Ecosystem</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>
+    Byron Sanche<br>
+    <span class="gradient">AI Developer & Systems Builder</span>
+  </h1>
+
+  <p class="subtitle">
+    I build high-performance AI tools, scraping systems, and automation pipelines.
+  </p>
+
+  <div class="hero-buttons">
+    <button class="btn" onclick="scrollToProjects()">View Work</button>
+    <button class="btn alt" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
+      Live Ecosystem
+    </button>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="grid">
+
+  <div class="project">
+    <h3>NorthSky AI</h3>
+    <p>AI scraping + metadata extraction platform</p>
+  </div>
+
+  <div class="project">
+    <h3>Video Downloader API</h3>
+    <p>High-speed TikTok & YouTube processing system</p>
+  </div>
+
+  <div class="project">
+    <h3>Automation Pipelines</h3>
+    <p>Custom data scraping & backend automation systems</p>
+  </div>
+
+</section>
+
+<!-- ECOSYSTEM -->
+<section id="ecosystem" class="card">
+  <h3>🌐 NorthSky Ecosystem</h3>
+  <p style="color:#94a3b8;margin-top:5px;">
+    Live tools and systems I’ve built
+  </p>
+
+  <div class="eco-grid">
+
+    <a class="eco" href="https://north-sky-ai.vercel.app/" target="_blank">
+      🤖 NorthSky AI
+      <span>AI tools, scraping & automation platform</span>
+    </a>
+
+    <a class="eco" href="https://northsky-drones.vercel.app" target="_blank">
+      🚁 NorthSky Drones
+      <span>Drone systems and experimental tech</span>
+    </a>
+
+    <a class="eco" href="https://north-sky-utilities.vercel.app/" target="_blank">
+      ⚙️ NorthSky Utilities
+      <span>Developer tools & utilities</span>
+    </a>
+
+    <a class="eco" href="https://goldylox752.github.io/NorthSky-Travel-/" target="_blank">
+      🌍 NorthSky Travel
+      <span>Roaming & travel optimization tools</span>
+    </a>
+
+    <a class="eco" href="https://north-sky-dashboard.vercel.app" target="_blank">
+      📊 NorthSky Dashboard
+      <span>Analytics & system control panel</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="card">
+  <h3>Contact</h3>
+  <p>Email: your@email.com</p>
+  <p>GitHub: github.com/yourname</p>
+</section>
+
+</div>
+
+<script>
+function scrollToProjects(){
+  document.getElementById("projects").scrollIntoView({behavior:"smooth"});
+}
+</script>
+
+</body>
+</html>
