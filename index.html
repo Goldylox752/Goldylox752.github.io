@@ -12,7 +12,6 @@
   --muted:rgba(232,232,232,0.65);
 }
 
-/* RESET */
 *{
   margin:0;
   padding:0;
@@ -21,15 +20,16 @@
 
 body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial;
-  background: radial-gradient(circle at 20% 20%, rgba(120,120,255,0.10), transparent 40%),
-              radial-gradient(circle at 80% 30%, rgba(0,255,180,0.08), transparent 45%),
-              radial-gradient(circle at 50% 80%, rgba(255,255,255,0.05), transparent 40%),
-              var(--bg);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(120,120,255,0.10), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(0,255,180,0.08), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.05), transparent 40%),
+    var(--bg);
   color:var(--text);
   overflow-x:hidden;
 }
 
-/* SOFT BLUR LIGHT LAYERS */
+/* glow */
 .glow{
   position:absolute;
   width:500px;
@@ -38,11 +38,10 @@ body{
   opacity:0.25;
   z-index:0;
 }
-
 .glow.blue{background:#4c7dff; top:-150px; left:-120px;}
 .glow.green{background:#22c55e; bottom:-180px; right:-120px;}
 
-/* CONTAINER */
+/* container */
 .container{
   position:relative;
   z-index:2;
@@ -51,7 +50,7 @@ body{
   padding:90px 24px;
 }
 
-/* NAV */
+/* nav */
 .nav{
   display:flex;
   justify-content:space-between;
@@ -63,7 +62,6 @@ body{
 
 .logo{
   font-weight:600;
-  letter-spacing:0.4px;
 }
 
 .nav a{
@@ -72,16 +70,12 @@ body{
   text-decoration:none;
   transition:0.3s;
 }
+.nav a:hover{color:white;}
 
-.nav a:hover{
-  color:white;
-}
-
-/* HERO (APPLE STYLE) */
+/* hero */
 .hero{
   text-align:center;
   margin-bottom:120px;
-  animation:fade 1.2s ease-out;
 }
 
 .hero h1{
@@ -116,16 +110,15 @@ body{
   color:white;
   font-size:14px;
   cursor:pointer;
-  transition:0.35s;
+  transition:0.3s;
   backdrop-filter:blur(10px);
 }
-
 .btn:hover{
   transform:translateY(-2px);
   background:rgba(255,255,255,0.12);
 }
 
-/* SECTION LABEL */
+/* label */
 .label{
   text-align:center;
   font-size:12px;
@@ -134,13 +127,7 @@ body{
   margin-bottom:40px;
 }
 
-/* GRID */
-.grid{
-  display:grid;
-  gap:16px;
-}
-
-/* FEATURE BLOCKS */
+/* blocks */
 .block{
   background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.08);
@@ -149,13 +136,12 @@ body{
   backdrop-filter:blur(20px);
   transition:0.4s;
 }
-
 .block:hover{
   transform:scale(1.01);
   border-color:rgba(255,255,255,0.2);
 }
 
-/* ECOSYSTEM */
+/* ecosystem */
 .eco{
   display:flex;
   justify-content:space-between;
@@ -168,12 +154,10 @@ body{
   color:var(--text);
   transition:0.3s;
 }
-
 .eco:hover{
   transform:scale(1.01);
   border-color:rgba(255,255,255,0.25);
 }
-
 .eco span{
   display:block;
   font-size:13px;
@@ -181,12 +165,7 @@ body{
   margin-top:4px;
 }
 
-/* CONTACT */
-.contact{
-  display:grid;
-  gap:10px;
-}
-
+/* contact */
 .contact-item{
   display:flex;
   justify-content:space-between;
@@ -195,40 +174,18 @@ body{
   border:1px solid rgba(255,255,255,0.08);
   background:rgba(255,255,255,0.03);
 }
-
 .contact-item a{
   color:white;
   text-decoration:none;
 }
+.contact-item a:hover{opacity:0.7;}
 
-.contact-item a:hover{
-  opacity:0.7;
-}
-
-/* FOOTER */
+/* footer */
 .footer{
   text-align:center;
   margin-top:120px;
   font-size:13px;
   color:var(--muted);
-}
-
-/* ANIMATION */
-@keyframes fade{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
-/* SCROLL REVEAL */
-.reveal{
-  opacity:0;
-  transform:translateY(30px);
-  transition:1s ease;
-}
-
-.reveal.active{
-  opacity:1;
-  transform:translateY(0);
 }
 </style>
 
@@ -236,13 +193,11 @@ body{
 
 <body>
 
-<!-- LIGHT GLOWS -->
 <div class="glow blue"></div>
 <div class="glow green"></div>
 
 <div class="container">
 
-<!-- NAV -->
 <div class="nav">
   <div class="logo">NorthSky Systems</div>
   <div>
@@ -251,11 +206,10 @@ body{
   </div>
 </div>
 
-<!-- HERO -->
-<section class="hero reveal">
+<section class="hero">
   <h1>AI Infrastructure for the Modern Web</h1>
   <p>
-    NorthSky Systems builds quietly powerful AI tools, automation engines, and distributed systems designed for scale, reliability, and real-world deployment.
+    NorthSky Systems builds scalable AI tools, automation engines, and distributed systems designed for real-world deployment.
   </p>
 
   <div class="cta">
@@ -268,38 +222,28 @@ body{
   </div>
 </section>
 
-<!-- VALUE -->
-<h3 class="label reveal">SYSTEMS</h3>
+<h3 class="label">SYSTEMS</h3>
 
-<section class="grid reveal">
-
+<section class="grid">
   <div class="block">
     <h2>AI Automation Layer</h2>
-    <p style="color:var(--muted); margin-top:10px;">
-      Intelligent scraping, processing, and structured data systems.
-    </p>
+    <p style="color:var(--muted);margin-top:10px;">Intelligent scraping and data pipelines.</p>
   </div>
 
   <div class="block">
     <h2>Distributed Infrastructure</h2>
-    <p style="color:var(--muted); margin-top:10px;">
-      Lightweight tools deployed across scalable environments worldwide.
-    </p>
+    <p style="color:var(--muted);margin-top:10px;">Scalable systems across environments.</p>
   </div>
 
   <div class="block">
     <h2>Real-Time Systems</h2>
-    <p style="color:var(--muted); margin-top:10px;">
-      APIs, dashboards, and pipelines built for continuous operation.
-    </p>
+    <p style="color:var(--muted);margin-top:10px;">APIs and dashboards built for live data.</p>
   </div>
-
 </section>
 
-<!-- ECOSYSTEM -->
-<h3 class="label reveal">ECOSYSTEM</h3>
+<h3 class="label">ECOSYSTEM</h3>
 
-<section id="ecosystem" class="grid reveal">
+<section id="ecosystem" class="grid">
 
   <a class="eco" href="https://north-sky-ai.vercel.app/" target="_blank">
     NorthSky AI
@@ -316,57 +260,27 @@ body{
     <span>Developer tooling ecosystem</span>
   </a>
 
-  <a class="eco" href="https://goldylox752.github.io/NorthSky-Travel-/" target="_blank">
-    NorthSky Travel
-    <span>Global connectivity optimization</span>
-  </a>
-
-  <a class="eco" href="https://north-sky-dashboard.vercel.app" target="_blank">
-    NorthSky Dashboard
-    <span>System control & analytics layer</span>
-  </a>
-
 </section>
 
-<!-- CONTACT -->
-<h3 class="label reveal">CONTACT</h3>
+<h3 class="label">CONTACT</h3>
 
-<section id="contact" class="grid reveal">
-
-  <div class="contact">
-    <div class="contact-item">
-      <span>Email</span>
-      <a href="mailto:byronsanche@hotmail.com">byronsanche@hotmail.com</a>
-    </div>
-
-    <div class="contact-item">
-      <span>GitHub</span>
-      <a href="https://github.com/goldylox752" target="_blank">github.com/goldylox752</a>
-    </div>
+<section id="contact">
+  <div class="contact-item">
+    <span>Email</span>
+    <a href="mailto:byronsanche@hotmail.com">byronsanche@hotmail.com</a>
   </div>
 
+  <div class="contact-item" style="margin-top:10px;">
+    <span>GitHub</span>
+    <a href="https://github.com/goldylox752" target="_blank">github.com/goldylox752</a>
+  </div>
 </section>
 
-<!-- FOOTER -->
 <div class="footer">
   © NorthSky Systems — Built by Byron Sanche
 </div>
 
 </div>
-
-<script>
-const elements = document.querySelectorAll(".reveal");
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.classList.add("active");
-    }
-  });
-});
-
-elements.forEach(el => observer.observe(el));
-</script>
 
 </body>
 </html>
