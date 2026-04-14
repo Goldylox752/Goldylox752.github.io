@@ -21,7 +21,6 @@ My work includes:
 A network of AI-powered platforms:
 
 - 🧠 **NorthSky Intelligence** – Website AI audit engine  
-- ⚡ **NorthSky AI** – Automation + intelligence layer  
 - 🔧 **NorthSky Utilities** – Developer tools ecosystem  
 - 🚁 **NorthSky Drones** – Autonomous systems (R&D)  
 - 📊 **NorthSky Systems** – Infrastructure & control layer  
