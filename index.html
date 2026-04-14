@@ -42,6 +42,7 @@ body{
 
 .logo{
   font-weight:700;
+  letter-spacing:0.5px;
 }
 
 .nav a{
@@ -51,39 +52,39 @@ body{
   font-size:14px;
 }
 
-.nav a:hover{
-  color:white;
-}
+.nav a:hover{ color:white; }
 
-/* HERO */
+/* CONTAINER */
 .container{
   max-width:1100px;
   margin:auto;
-  padding:70px 20px;
+  padding:80px 20px;
 }
 
+/* HERO */
 .hero{
   text-align:center;
   margin-bottom:70px;
 }
 
 .hero h1{
-  font-size:52px;
+  font-size:54px;
   letter-spacing:-1px;
 }
 
 .hero p{
-  margin-top:12px;
+  margin-top:14px;
   font-size:16px;
   color:var(--muted);
-  max-width:750px;
-  margin:auto;
+  max-width:800px;
+  margin-left:auto;
+  margin-right:auto;
   line-height:1.6;
 }
 
-/* BUTTONS */
+/* CTA */
 .cta{
-  margin-top:22px;
+  margin-top:24px;
 }
 
 .btn{
@@ -99,16 +100,16 @@ body{
 
 .btn:hover{
   transform:translateY(-2px);
-  border-color:rgba(255,255,255,0.2);
+  border-color:rgba(255,255,255,0.25);
 }
 
-/* SECTION */
+/* SECTION TITLE */
 .section-title{
   text-align:center;
-  font-size:12px;
+  font-size:11px;
   letter-spacing:3px;
   color:var(--muted);
-  margin:60px 0 20px;
+  margin:70px 0 20px;
 }
 
 /* GRID */
@@ -143,12 +144,12 @@ body{
   margin-top:6px;
 }
 
-/* LINK */
+/* ECOSYSTEM LINKS */
 .link{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:16px;
+  padding:18px;
   border-radius:14px;
   border:1px solid var(--border);
   background:rgba(255,255,255,0.03);
@@ -158,7 +159,7 @@ body{
 }
 
 .link:hover{
-  transform:scale(1.02);
+  transform:scale(1.03);
   border-color:rgba(255,255,255,0.25);
 }
 
@@ -175,7 +176,7 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:20px;
+  padding:22px;
   border-radius:18px;
   border:1px solid var(--border);
   background:var(--glass);
@@ -213,7 +214,7 @@ body{
 /* FOOTER */
 .footer{
   text-align:center;
-  margin-top:80px;
+  margin-top:90px;
   color:var(--muted);
   font-size:13px;
 }
@@ -225,7 +226,7 @@ body{
 <div class="nav">
   <div class="logo">NorthSky Systems OS</div>
   <div>
-    <a href="#ecosystem">Ecosystem</a>
+    <a href="#ecosystem">Products</a>
     <a href="#contact">Contact</a>
   </div>
 </div>
@@ -234,18 +235,18 @@ body{
 
 <!-- HERO -->
 <section class="hero">
-  <h1>AI Operating System for Modern Businesses</h1>
+  <h1>AI Infrastructure for Modern SaaS</h1>
   <p>
-    NorthSky Systems OS is a unified SaaS infrastructure layer for AI automation,
-    analytics, APIs, and scalable business intelligence.
+    NorthSky Systems OS is a unified platform layer powering AI automation, APIs,
+    analytics, and production SaaS infrastructure across multiple products.
   </p>
 
   <div class="cta">
     <button class="btn" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
-      Explore Platform
+      Explore Products
     </button>
     <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
-      Contact
+      Contact Founder
     </button>
   </div>
 </section>
@@ -265,11 +266,11 @@ body{
 
         <div class="badge">
           <span class="dot"></span>
-          Founder & Builder
+          Founder • Systems Builder
         </div>
 
         <p style="color:var(--muted);font-size:13px;margin-top:6px;">
-          Building scalable AI infrastructure, automation systems, and SaaS platforms.
+          Building scalable AI infrastructure, SaaS platforms, and automation systems.
         </p>
       </div>
     </div>
@@ -290,40 +291,40 @@ body{
 <div class="grid">
 
   <div class="card">
-    <h3>AI Automation Layer</h3>
-    <p>Intelligent workflows, routing, and execution systems.</p>
+    <h3>AI Automation Engine</h3>
+    <p>Multi-model routing, workflows, and intelligent execution layer.</p>
   </div>
 
   <div class="card">
-    <h3>SaaS Infrastructure</h3>
-    <p>Multi-tenant backend with authentication and billing support.</p>
+    <h3>SaaS Infrastructure Layer</h3>
+    <p>Authentication, billing, API keys, and multi-tenant architecture.</p>
   </div>
 
   <div class="card">
-    <h3>Data Intelligence Engine</h3>
-    <p>Real-time analytics, enrichment, and business insights.</p>
+    <h3>Data Intelligence System</h3>
+    <p>Real-time insights, analytics, and structured data processing.</p>
   </div>
 
 </div>
 
 <!-- ECOSYSTEM -->
-<h3 class="section-title">ECOSYSTEM</h3>
+<h3 class="section-title">ECOSYSTEM PRODUCTS</h3>
 
 <div id="ecosystem" class="grid">
 
   <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">
-    NorthSky AI
-    <span>AI automation platform</span>
+    NorthSky AI Platform
+    <span>AI automation + API routing engine</span>
   </a>
 
-  <a class="link" href="https://northsky-utilities.vercel.app/" target="_blank">
+  <a class="link" href="https://north-sky-utilities.vercel.app/" target="_blank">
     NorthSky Utilities
-    <span>Developer tools suite</span>
+    <span>Developer tools + productivity suite</span>
   </a>
 
   <a class="link" href="https://northsky-saas.vercel.app/" target="_blank">
     NorthSky SaaS Core
-    <span>Billing + API infrastructure</span>
+    <span>Billing, auth, and infrastructure backend</span>
   </a>
 
 </div>
@@ -344,14 +345,14 @@ body{
   </div>
 
   <div class="card">
-    <h3>LinkedIn</h3>
-    <p>Founder Profile</p>
+    <h3>Positioning</h3>
+    <p>AI Infrastructure & SaaS Platform Company</p>
   </div>
 
 </div>
 
 <div class="footer">
-  © NorthSky Systems OS — AI Infrastructure Layer for SaaS
+  © NorthSky Systems OS — AI Infrastructure Layer for SaaS Companies
 </div>
 
 </div>
