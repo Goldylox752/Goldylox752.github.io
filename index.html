@@ -1,316 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NorthSky Systems OS</title>
+<!-- ADD THIS SECTION BELOW CORE SYSTEMS -->
 
-<style>
-:root{
-  --bg:#05060a;
-  --text:#e8e8e8;
-  --muted:rgba(232,232,232,0.6);
-  --border:rgba(255,255,255,0.08);
-  --glass:rgba(255,255,255,0.04);
-  --accent:#38bdf8;
-  --green:#22c55e;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display",Arial;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(56,189,248,0.10), transparent 45%),
-    radial-gradient(circle at 85% 30%, rgba(34,197,94,0.08), transparent 45%),
-    var(--bg);
-  color:var(--text);
-}
-
-/* NAV */
-.nav{
-  display:flex;
-  justify-content:space-between;
-  padding:18px 40px;
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(10px);
-}
-
-.logo{
-  font-weight:700;
-  letter-spacing:0.5px;
-}
-
-.nav a{
-  margin-left:18px;
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-}
-
-.nav a:hover{ color:white; }
-
-/* CONTAINER */
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:80px 20px;
-}
-
-/* HERO */
-.hero{
-  text-align:center;
-  margin-bottom:70px;
-}
-
-.hero h1{
-  font-size:54px;
-  letter-spacing:-1px;
-}
-
-.hero p{
-  margin-top:14px;
-  font-size:16px;
-  color:var(--muted);
-  max-width:800px;
-  margin-left:auto;
-  margin-right:auto;
-  line-height:1.6;
-}
-
-/* CTA */
-.cta{
-  margin-top:24px;
-}
-
-.btn{
-  padding:12px 18px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  color:white;
-  cursor:pointer;
-  margin:6px;
-  transition:0.2s;
-}
-
-.btn:hover{
-  transform:translateY(-2px);
-  border-color:rgba(255,255,255,0.25);
-}
-
-/* SECTION TITLE */
-.section-title{
-  text-align:center;
-  font-size:11px;
-  letter-spacing:3px;
-  color:var(--muted);
-  margin:70px 0 20px;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-
-/* CARD */
-.card{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:18px;
-  backdrop-filter:blur(16px);
-  transition:0.25s;
-}
-
-.card:hover{
-  transform:translateY(-5px);
-  border-color:rgba(255,255,255,0.2);
-}
-
-.card h3{
-  font-size:15px;
-}
-
-.card p{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:6px;
-}
-
-/* ECOSYSTEM LINKS */
-.link{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,0.03);
-  text-decoration:none;
-  color:white;
-  transition:0.2s;
-}
-
-.link:hover{
-  transform:scale(1.03);
-  border-color:rgba(255,255,255,0.25);
-}
-
-.link span{
-  font-size:12px;
-  color:var(--muted);
-  display:block;
-  margin-top:4px;
-}
-
-/* FOUNDER */
-.founder{
-  grid-column:span 3;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:22px;
-  border-radius:18px;
-  border:1px solid var(--border);
-  background:var(--glass);
-}
-
-.avatar{
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#38bdf8,#22c55e);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  color:black;
-}
-
-.badge{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:12px;
-  color:var(--accent);
-  margin-top:6px;
-}
-
-.dot{
-  width:8px;
-  height:8px;
-  background:var(--accent);
-  border-radius:50%;
-  box-shadow:0 0 12px var(--accent);
-}
-
-/* FOOTER */
-.footer{
-  text-align:center;
-  margin-top:90px;
-  color:var(--muted);
-  font-size:13px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="nav">
-  <div class="logo">NorthSky Systems OS</div>
-  <div>
-    <a href="#ecosystem">Products</a>
-    <a href="#contact">Contact</a>
-  </div>
-</div>
-
-<div class="container">
-
-<!-- HERO -->
-<section class="hero">
-  <h1>AI Infrastructure for Modern SaaS</h1>
-  <p>
-    NorthSky Systems OS is a unified platform layer powering AI automation, APIs,
-    analytics, and production SaaS infrastructure across multiple products.
-  </p>
-
-  <div class="cta">
-    <button class="btn" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
-      Explore Products
-    </button>
-    <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
-      Contact Founder
-    </button>
-  </div>
-</section>
-
-<!-- FOUNDER -->
-<h3 class="section-title">FOUNDER</h3>
+<h3 class="section-title">FEATURED PRODUCT</h3>
 
 <div class="grid">
 
-  <div class="founder">
+  <div class="card" style="grid-column:span 3; padding:28px;">
+    <h2 style="font-size:26px;">AI Roofing Leads Engine</h2>
 
-    <div style="display:flex;align-items:center;gap:14px;">
-      <div class="avatar">BS</div>
+    <p style="margin-top:10px; max-width:700px;">
+      A fully automated lead generation system designed specifically for roofing companies.
+      This platform uses AI to identify high-intent homeowners, qualify leads, and deliver
+      booked jobs directly to contractors — without manual prospecting.
+    </p>
 
-      <div>
-        <h3>Byron Sanche</h3>
-
-        <div class="badge">
-          <span class="dot"></span>
-          Founder • Systems Builder
-        </div>
-
-        <p style="color:var(--muted);font-size:13px;margin-top:6px;">
-          Building scalable AI infrastructure, SaaS platforms, and automation systems.
-        </p>
-      </div>
+    <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+      <div class="badge"><span class="dot"></span> AI Lead Qualification</div>
+      <div class="badge"><span class="dot"></span> Local Market Targeting</div>
+      <div class="badge"><span class="dot"></span> Automated Outreach</div>
+      <div class="badge"><span class="dot"></span> High-Intent Data Signals</div>
     </div>
 
-    <a href="https://www.linkedin.com/in/byron-sanche-84230828a"
-       target="_blank"
-       style="color:var(--accent);text-decoration:none;font-size:13px;">
-      LinkedIn →
-    </a>
+    <div class="cta" style="margin-top:20px;">
+      <a href="https://your-roofing-ai-link.com" target="_blank">
+        <button class="btn">View Product</button>
+      </a>
 
+      <a href="#contact">
+        <button class="btn">Request Demo</button>
+      </a>
+    </div>
   </div>
 
 </div>
 
-<!-- CORE -->
-<h3 class="section-title">CORE SYSTEMS</h3>
 
-<div class="grid">
+<!-- UPDATE YOUR ECOSYSTEM SECTION LIKE THIS -->
 
-  <div class="card">
-    <h3>AI Automation Engine</h3>
-    <p>Multi-model routing, workflows, and intelligent execution layer.</p>
-  </div>
-
-  <div class="card">
-    <h3>SaaS Infrastructure Layer</h3>
-    <p>Authentication, billing, API keys, and multi-tenant architecture.</p>
-  </div>
-
-  <div class="card">
-    <h3>Data Intelligence System</h3>
-    <p>Real-time insights, analytics, and structured data processing.</p>
-  </div>
-
-</div>
-
-<!-- ECOSYSTEM -->
 <h3 class="section-title">ECOSYSTEM PRODUCTS</h3>
 
 <div id="ecosystem" class="grid">
+
+  <a class="link" href="https://your-roofing-ai-link.com" target="_blank">
+    AI Roofing Leads
+    <span>Automated lead generation for roofing companies</span>
+  </a>
 
   <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">
     NorthSky AI Platform
@@ -328,34 +61,3 @@ body{
   </a>
 
 </div>
-
-<!-- CONTACT -->
-<h3 class="section-title">CONTACT</h3>
-
-<div id="contact" class="grid">
-
-  <div class="card">
-    <h3>Email</h3>
-    <p>byronsanche@hotmail.com</p>
-  </div>
-
-  <div class="card">
-    <h3>GitHub</h3>
-    <p>github.com/goldylox752</p>
-  </div>
-
-  <div class="card">
-    <h3>Positioning</h3>
-    <p>AI Infrastructure & SaaS Platform Company</p>
-  </div>
-
-</div>
-
-<div class="footer">
-  © NorthSky Systems OS — AI Infrastructure Layer for SaaS Companies
-</div>
-
-</div>
-
-</body>
-</html>
