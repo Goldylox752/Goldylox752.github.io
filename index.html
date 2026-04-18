@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>NorthSky Systems OS</title>
 
 <style>
@@ -13,7 +14,6 @@
   --border:rgba(255,255,255,0.08);
   --glass:rgba(255,255,255,0.04);
   --accent:#38bdf8;
-  --green:#22c55e;
 }
 
 *{
@@ -23,7 +23,7 @@
 }
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display",Arial;
+  font-family:-apple-system,BlinkMacSystemFont,"Inter",Arial;
   background:
     radial-gradient(circle at 15% 20%, rgba(56,189,248,0.10), transparent 45%),
     radial-gradient(circle at 85% 30%, rgba(34,197,94,0.08), transparent 45%),
@@ -37,22 +37,11 @@ body{
   justify-content:space-between;
   padding:18px 40px;
   border-bottom:1px solid var(--border);
-  backdrop-filter:blur(10px);
 }
 
 .logo{
   font-weight:700;
-  letter-spacing:0.5px;
 }
-
-.nav a{
-  margin-left:18px;
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-}
-
-.nav a:hover{ color:white; }
 
 /* CONTAINER */
 .container{
@@ -68,23 +57,16 @@ body{
 }
 
 .hero h1{
-  font-size:54px;
-  letter-spacing:-1px;
+  font-size:52px;
 }
 
 .hero p{
   margin-top:14px;
-  font-size:16px;
   color:var(--muted);
+  line-height:1.6;
   max-width:800px;
   margin-left:auto;
   margin-right:auto;
-  line-height:1.6;
-}
-
-/* CTA */
-.cta{
-  margin-top:24px;
 }
 
 .btn{
@@ -94,22 +76,13 @@ body{
   background:var(--glass);
   color:white;
   cursor:pointer;
-  margin:6px;
+  margin-top:20px;
   transition:0.2s;
 }
 
 .btn:hover{
   transform:translateY(-2px);
   border-color:rgba(255,255,255,0.25);
-}
-
-/* SECTION TITLE */
-.section-title{
-  text-align:center;
-  font-size:11px;
-  letter-spacing:3px;
-  color:var(--muted);
-  margin:70px 0 20px;
 }
 
 /* GRID */
@@ -123,92 +96,41 @@ body{
 .card{
   background:var(--glass);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:16px;
   padding:18px;
-  backdrop-filter:blur(16px);
-  transition:0.25s;
 }
 
-.card:hover{
-  transform:translateY(-5px);
-  border-color:rgba(255,255,255,0.2);
-}
-
-.card h3{
-  font-size:15px;
-}
-
-.card p{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:6px;
-}
-
-/* ECOSYSTEM LINKS */
+/* LINK */
 .link{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  display:block;
   padding:18px;
   border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,0.03);
   text-decoration:none;
   color:white;
+  background:rgba(255,255,255,0.03);
   transition:0.2s;
 }
 
 .link:hover{
-  transform:scale(1.03);
+  transform:scale(1.02);
   border-color:rgba(255,255,255,0.25);
 }
 
 .link span{
+  display:block;
+  margin-top:6px;
   font-size:12px;
   color:var(--muted);
-  display:block;
-  margin-top:4px;
 }
 
-/* FOUNDER */
-.founder{
-  grid-column:span 3;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:22px;
-  border-radius:18px;
-  border:1px solid var(--border);
-  background:var(--glass);
-}
-
-.avatar{
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#38bdf8,#22c55e);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  color:black;
-}
-
-.badge{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:12px;
-  color:var(--accent);
-  margin-top:6px;
-}
-
-.dot{
-  width:8px;
-  height:8px;
-  background:var(--accent);
-  border-radius:50%;
-  box-shadow:0 0 12px var(--accent);
+/* SECTION TITLE */
+.section-title{
+  margin:70px 0 20px;
+  text-align:center;
+  font-size:11px;
+  letter-spacing:3px;
+  color:var(--muted);
 }
 
 /* FOOTER */
@@ -225,137 +147,104 @@ body{
 
 <div class="nav">
   <div class="logo">NorthSky Systems OS</div>
-  <div>
-    <a href="#ecosystem">Products</a>
-    <a href="#contact">Contact</a>
-  </div>
+
+  <button class="btn" onclick="sendToVercelFunnel()">
+    View Drone System
+  </button>
 </div>
 
 <div class="container">
 
 <!-- HERO -->
-<section class="hero">
-  <h1>AI Infrastructure for Modern SaaS</h1>
+<div class="hero">
+  <h1>AI Infrastructure Layer for Real-World Systems</h1>
+
   <p>
-    NorthSky Systems OS is a unified platform layer powering AI automation, APIs,
-    analytics, and production SaaS infrastructure across multiple products.
+    NorthSky Systems OS connects RoofFlow AI lead generation with drone inspection workflows
+    and performance tracking across your funnel ecosystem.
   </p>
 
-  <div class="cta">
-    <button class="btn" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
-      Explore Products
-    </button>
-    <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
-      Contact Founder
-    </button>
-  </div>
-</section>
-
-<!-- FOUNDER -->
-<h3 class="section-title">FOUNDER</h3>
-
-<div class="grid">
-
-  <div class="founder">
-
-    <div style="display:flex;align-items:center;gap:14px;">
-      <div class="avatar">BS</div>
-
-      <div>
-        <h3>Byron Sanche</h3>
-
-        <div class="badge">
-          <span class="dot"></span>
-          Founder • Systems Builder
-        </div>
-
-        <p style="color:var(--muted);font-size:13px;margin-top:6px;">
-          Building scalable AI infrastructure, SaaS platforms, and automation systems.
-        </p>
-      </div>
-    </div>
-
-    <a href="https://www.linkedin.com/in/byron-sanche-84230828a"
-       target="_blank"
-       style="color:var(--accent);text-decoration:none;font-size:13px;">
-      LinkedIn →
-    </a>
-
-  </div>
-
+  <button class="btn" onclick="sendToVercelFunnel()">
+    Enter Drone Funnel
+  </button>
 </div>
 
 <!-- CORE -->
-<h3 class="section-title">CORE SYSTEMS</h3>
+<div class="section-title">CORE SYSTEMS</div>
 
 <div class="grid">
 
   <div class="card">
-    <h3>AI Automation Engine</h3>
-    <p>Multi-model routing, workflows, and intelligent execution layer.</p>
+    <h3>AI Lead Engine</h3>
+    <p>RoofFlow AI captures and qualifies roofing leads.</p>
   </div>
 
   <div class="card">
-    <h3>SaaS Infrastructure Layer</h3>
-    <p>Authentication, billing, API keys, and multi-tenant architecture.</p>
+    <h3>Funnel Tracking Layer</h3>
+    <p>Session-based attribution across all platforms.</p>
   </div>
 
   <div class="card">
-    <h3>Data Intelligence System</h3>
-    <p>Real-time insights, analytics, and structured data processing.</p>
+    <h3>Drone Inspection System</h3>
+    <p>Turns leads into visual inspections and sales.</p>
   </div>
 
 </div>
 
 <!-- ECOSYSTEM -->
-<h3 class="section-title">ECOSYSTEM PRODUCTS</h3>
+<div class="section-title">ECOSYSTEM</div>
 
-<div id="ecosystem" class="grid">
+<div class="grid">
 
   <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">
     NorthSky AI Platform
-    <span>AI automation + API routing engine</span>
-  </a>
-
-  <a class="link" href="https://north-sky-utilities.vercel.app/" target="_blank">
-    NorthSky Utilities
-    <span>Developer tools + productivity suite</span>
+    <span>Automation + lead generation engine</span>
   </a>
 
   <a class="link" href="https://northsky-saas.vercel.app/" target="_blank">
-    NorthSky SaaS Core
-    <span>Billing, auth, and infrastructure backend</span>
+    RoofFlow AI System
+    <span>Roofing lead capture + territory logic</span>
   </a>
 
-</div>
-
-<!-- CONTACT -->
-<h3 class="section-title">CONTACT</h3>
-
-<div id="contact" class="grid">
-
-  <div class="card">
-    <h3>Email</h3>
-    <p>byronsanche@hotmail.com</p>
-  </div>
-
-  <div class="card">
-    <h3>GitHub</h3>
-    <p>github.com/goldylox752</p>
-  </div>
-
-  <div class="card">
-    <h3>Positioning</h3>
-    <p>AI Infrastructure & SaaS Platform Company</p>
-  </div>
+  <a class="link" href="https://northsky-drones.vercel.app/" target="_blank">
+    Drone Inspection System
+    <span>Aerial inspection + quoting workflow</span>
+  </a>
 
 </div>
 
 <div class="footer">
-  © NorthSky Systems OS — AI Infrastructure Layer for SaaS Companies
+  © NorthSky Systems OS — RoofFlow AI Infrastructure
 </div>
 
 </div>
+
+<!-- FUNNEL BRIDGE -->
+<script>
+function sendToVercelFunnel(){
+
+  let session_id = localStorage.getItem("session_id");
+
+  if(!session_id){
+    session_id = crypto.randomUUID();
+    localStorage.setItem("session_id", session_id);
+  }
+
+  const p = new URLSearchParams(window.location.search);
+
+  const utm_source = p.get("utm_source") || "roofflow_ai";
+  const utm_campaign = p.get("utm_campaign") || "organic";
+
+  const url = new URL("https://goldylox752-github-io.vercel.app/");
+
+  url.searchParams.set("session_id", session_id);
+  url.searchParams.set("utm_source", utm_source);
+  url.searchParams.set("utm_campaign", utm_campaign);
+  url.searchParams.set("from", "roofflow_ai");
+
+  window.location.href = url.toString();
+}
+</script>
 
 </body>
 </html>
