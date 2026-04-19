@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NorthSky Command Dashboard</title>
+<title>NorthSky Command OS | Revenue Control Center</title>
 
 <style>
 :root{
@@ -13,9 +13,11 @@
   --muted:rgba(232,232,232,0.6);
   --border:rgba(255,255,255,0.08);
   --glass:rgba(255,255,255,0.04);
+
   --good:#22c55e;
   --warn:#f59e0b;
   --bad:#ef4444;
+  --accent:#38bdf8;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -23,8 +25,8 @@
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Inter",Arial;
   background:
-    radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), transparent 50%),
-    radial-gradient(circle at 80% 30%, rgba(34,197,94,0.10), transparent 50%),
+    radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), transparent 55%),
+    radial-gradient(circle at 80% 30%, rgba(34,197,94,0.10), transparent 55%),
     var(--bg);
   color:var(--text);
 }
@@ -39,30 +41,39 @@ body{
 }
 
 .logo{
-  font-weight:700;
-  letter-spacing:0.5px;
+  font-weight:800;
+  letter-spacing:0.8px;
 }
 
-/* BUTTON */
-.btn{
-  padding:12px 18px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:var(--glass);
-  color:white;
-  cursor:pointer;
-  transition:0.2s;
+.pulse{
+  font-size:11px;
+  color:var(--muted);
 }
 
-.btn:hover{transform:translateY(-2px);}
+/* LAYOUT */
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:50px 20px;
+}
+
+/* HERO STRIP */
+.hero{
+  margin-bottom:20px;
+}
+
+.hero h1{
+  font-size:26px;
+  font-weight:800;
+}
+
+.hero p{
+  color:var(--muted);
+  margin-top:6px;
+  font-size:13px;
+}
 
 /* GRID */
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:60px 20px;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -77,23 +88,24 @@ body{
 }
 
 /* METRICS */
-.metric{
-  font-size:28px;
-  font-weight:700;
-  margin-top:8px;
-}
-
 .label{
   font-size:11px;
   color:var(--muted);
-  letter-spacing:2px;
+  letter-spacing:1.5px;
+}
+
+.metric{
+  font-size:26px;
+  font-weight:800;
+  margin-top:6px;
 }
 
 /* STATUS */
-.status{
+.status-pill{
+  display:inline-block;
+  margin-top:10px;
   padding:6px 10px;
   border-radius:999px;
-  display:inline-block;
   font-size:11px;
 }
 
@@ -101,11 +113,54 @@ body{
 .warn{background:rgba(245,158,11,0.15);color:var(--warn);}
 .bad{background:rgba(239,68,68,0.15);color:var(--bad);}
 
-.footer{
-  text-align:center;
-  margin-top:80px;
+/* CONTROL PANEL */
+.panel{
+  margin-top:16px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+}
+
+.panel h2{
+  font-size:14px;
+  letter-spacing:1px;
+}
+
+.panel p{
+  margin-top:8px;
   color:var(--muted);
   font-size:13px;
+  line-height:1.6;
+}
+
+/* BUTTONS */
+.btn{
+  margin-top:12px;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.primary{
+  background:var(--accent);
+  color:#000;
+}
+
+.primary:hover{
+  transform:translateY(-2px);
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  margin-top:60px;
+  color:var(--muted);
+  font-size:12px;
 }
 </style>
 </head>
@@ -113,17 +168,19 @@ body{
 <body>
 
 <div class="nav">
-  <div class="logo">NorthSky COMMAND DASHBOARD</div>
-
-  <button class="btn"
-    onclick="NorthSky.redirectToFunnel('https://goldylox752.github.io/RoofFlow-AI/')">
-    Open RoofFlow Funnel
-  </button>
+  <div class="logo">NorthSky Command OS</div>
+  <div class="pulse">LIVE REVENUE SYSTEM</div>
 </div>
 
 <div class="container">
 
-<!-- TOP METRICS -->
+<!-- HERO -->
+<div class="hero">
+  <h1>Revenue Control Center</h1>
+  <p>Track intent → route leads → push conversions automatically through RoofFlow AI.</p>
+</div>
+
+<!-- METRICS -->
 <div class="grid">
 
   <div class="card">
@@ -133,31 +190,34 @@ body{
 
   <div class="card">
     <div class="label">STATUS</div>
-    <div class="metric" id="status">COLD</div>
+    <div class="metric" id="statusText">COLD</div>
+    <div id="statusPill" class="status-pill bad">LOW INTENT</div>
   </div>
 
   <div class="card">
-    <div class="label">SESSION ID</div>
-    <div class="metric" style="font-size:14px" id="session">...</div>
+    <div class="label">SESSION</div>
+    <div class="metric" style="font-size:14px" id="session">---</div>
   </div>
 
 </div>
 
-<!-- FUNNEL CONTROL -->
-<div class="card" style="margin-top:14px;">
-  <div class="label">REVENUE FUNNEL CONTROL</div>
-  <p style="margin-top:10px;color:var(--muted);line-height:1.6">
-    This dashboard tracks visitor intent and routes high-score users into RoofFlow AI for conversion.
+<!-- CONTROL PANEL -->
+<div class="panel">
+  <h2>AUTOMATED FUNNEL ROUTING</h2>
+
+  <p>
+    High-intent users (score 15+) are automatically pushed into RoofFlow AI for conversion.
+    This system tracks behavior across all NorthSky properties.
   </p>
 
-  <button class="btn" style="margin-top:15px"
+  <button class="btn primary"
     onclick="NorthSky.redirectToFunnel('https://goldylox752.github.io/RoofFlow-AI/')">
-    Push Traffic to RoofFlow
+    🚀 Push Traffic to RoofFlow AI
   </button>
 </div>
 
 <div class="footer">
-  NorthSky Systems OS — Revenue Command Layer
+  NorthSky OS — Revenue Command Layer v2
 </div>
 
 </div>
@@ -165,17 +225,14 @@ body{
 <script src="core.js"></script>
 
 <script>
-/* ===============================
-   DASHBOARD LIVE VIEW
-=============================== */
 
-function updateDashboard(){
+function update(){
 
   const score = parseInt(localStorage.getItem("ns_score") || "0");
   const session = localStorage.getItem("ns_session_id");
 
   document.getElementById("score").innerText = score;
-  document.getElementById("session").innerText = session || "none";
+  document.getElementById("session").innerText = session || "---";
 
   let status = "COLD";
   let cls = "bad";
@@ -188,13 +245,20 @@ function updateDashboard(){
     cls = "warn";
   }
 
-  const el = document.getElementById("status");
-  el.innerText = status;
-  el.className = "metric status " + cls;
+  document.getElementById("statusText").innerText = status;
+
+  const pill = document.getElementById("statusPill");
+  pill.className = "status-pill " + cls;
+
+  pill.innerText =
+    status === "HOT LEAD" ? "HIGH INTENT" :
+    status === "WARM" ? "ENGAGED" :
+    "LOW INTENT";
 }
 
-setInterval(updateDashboard, 1000);
-updateDashboard();
+setInterval(update, 1000);
+update();
+
 </script>
 
 </body>
