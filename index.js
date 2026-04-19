@@ -1,3 +1,125 @@
+window.NorthSkyAutopilot = (() => {
+
+  const API = "https://your-api.com";
+
+  /* ===============================
+     LEAD CAPTURE
+  =============================== */
+
+  async function captureLead(email, meta = {}) {
+
+    const payload = {
+      email,
+      user_id: localStorage.getItem("ns_user_id"),
+      session_id: localStorage.getItem("ns_session_id"),
+      score: localStorage.getItem("ns_score"),
+      url: location.href,
+      meta,
+      time: new Date().toISOString()
+    };
+
+    await fetch(`${API}/lead`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    NorthSkyOS?.track("lead", { email });
+
+    return payload;
+  }
+
+  /* ===============================
+     CHECKOUT TRACKING
+  =============================== */
+
+  function trackCheckoutClick(product = "skymaster_x1") {
+    NorthSkyOS?.track("stripe_click", { product });
+
+    fetch(`${API}/checkout-click`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        product,
+        user_id: localStorage.getItem("ns_user_id"),
+        session_id: localStorage.getItem("ns_session_id"),
+        score: localStorage.getItem("ns_score"),
+        url: location.href
+      })
+    });
+  }
+
+  /* ===============================
+     ABANDONMENT DETECTION
+  =============================== */
+
+  let startTime = Date.now();
+
+  function initAbandonTracking() {
+    window.addEventListener("beforeunload", () => {
+
+      const timeSpent = Math.round((Date.now() - startTime) / 1000);
+
+      fetch(`${API}/abandon`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          user_id: localStorage.getItem("ns_user_id"),
+          session_id: localStorage.getItem("ns_session_id"),
+          timeSpent,
+          score: localStorage.getItem("ns_score"),
+          url: location.href
+        })
+      });
+    });
+  }
+
+  /* ===============================
+     AUTO HOT LEAD ROUTER
+  =============================== */
+
+  function checkHotRoute() {
+
+    const score = Number(localStorage.getItem("ns_score") || 0);
+
+    if (score >= 15) {
+      fetch(`${API}/hot-lead`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          user_id: localStorage.getItem("ns_user_id"),
+          session_id: localStorage.getItem("ns_session_id"),
+          score,
+          url: location.href
+        })
+      });
+
+      // optional auto redirect
+      window.location.href = "https://goldylox752.github.io/RoofFlow-AI/";
+    }
+  }
+
+  /* ===============================
+     INIT
+  =============================== */
+
+  function init() {
+    initAbandonTracking();
+    checkHotRoute();
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+
+  return {
+    captureLead,
+    trackCheckoutClick,
+    checkHotRoute
+  };
+
+})();
+
+
+
 window.NorthSkyOS = {
   track(event, data) {
     fetch("https://your-api.com/event", {
