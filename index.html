@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NorthSky AI | Instant Drone Roof Inspections Alberta</title>
+<title>NorthSky AI | Drone Roof Lead Marketplace</title>
 
 <style>
 :root{
@@ -16,6 +16,7 @@
   --accent:#38bdf8;
   --good:#22c55e;
   --warn:#f59e0b;
+  --bad:#ef4444;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -33,7 +34,7 @@ body{
 }
 
 .hero h1{
-  font-size:30px;
+  font-size:32px;
   font-weight:900;
 }
 
@@ -65,11 +66,20 @@ body{
   text-decoration:none;
 }
 
-/* CONTAINER */
+/* LAYOUT */
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:auto;
   padding:20px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+
+@media(min-width:900px){
+  .container{
+    grid-template-columns:1fr 1fr;
+  }
 }
 
 .card{
@@ -77,7 +87,6 @@ body{
   border:1px solid var(--border);
   border-radius:14px;
   padding:18px;
-  margin-top:16px;
 }
 
 /* FORM */
@@ -89,7 +98,6 @@ input, select{
   border:1px solid var(--border);
   background:#0b0d12;
   color:white;
-  outline:none;
 }
 
 button{
@@ -101,10 +109,6 @@ button{
   background:var(--good);
   font-weight:900;
   cursor:pointer;
-}
-
-button:disabled{
-  opacity:0.6;
 }
 
 /* STATUS */
@@ -122,15 +126,22 @@ button:disabled{
   font-size:13px;
 }
 
-/* TRUST BAR */
-.trust{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  margin-top:10px;
+/* CONTRACTOR PANEL */
+.contractor-card{
+  border:1px solid rgba(56,189,248,0.3);
 }
 
-/* FOOTER */
+.price{
+  font-size:20px;
+  font-weight:900;
+  color:var(--good);
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+
 .footer{
   text-align:center;
   margin-top:40px;
@@ -143,59 +154,64 @@ button:disabled{
 <body>
 
 <div class="hero">
-  <div class="badge">⚡ AI Drone Detection System</div>
+  <div class="badge">⚡ NorthSky AI Lead Marketplace OS</div>
 
-  <h1>Get a Roof Inspection in 15 Minutes</h1>
-  <p>We detect hidden damage before it costs you thousands in repairs or insurance issues.</p>
+  <h1>Buy & Sell Roofing Leads in Real Time</h1>
+  <p>AI generates leads → contractors bid → highest value gets the job</p>
 
-  <a class="cta" href="#leadForm">Get Free Inspection</a>
-
-  <div class="trust">🔴 Live system — SMS alerts sent instantly to inspection team</div>
+  <a class="cta" href="#leadForm">Generate Lead</a>
 </div>
 
 <div class="container">
 
+  <!-- HOMEOWNER SIDE -->
   <div class="card">
-    <h2>Why Homeowners Use NorthSky</h2>
-    <p>
-      ✔ Detect leaks before damage spreads<br>
-      ✔ Insurance-ready photo reports<br>
-      ✔ Drone AI analysis in minutes
-    </p>
-  </div>
+    <h2>🏠 Homeowner Request</h2>
 
-  <div class="card" id="leadForm">
-    <h2>Book Free Inspection</h2>
-
-    <input id="name" type="text" placeholder="Full Name">
-    <input id="contact" type="text" placeholder="Phone or Email">
-    <input id="postalCode" type="text" placeholder="Postal Code">
+    <input id="name" placeholder="Full Name">
+    <input id="contact" placeholder="Phone or Email">
+    <input id="postalCode" placeholder="Postal Code">
 
     <select id="service">
       <option value="roof inspection">Roof inspection</option>
       <option value="leak check">Leak check</option>
-      <option value="insurance claim">Insurance claim support</option>
+      <option value="insurance claim">Insurance claim</option>
     </select>
 
-    <button id="submitBtn" onclick="submitLead()">Send Request</button>
+    <button onclick="submitLead()">Submit Request</button>
 
     <div class="status" id="status"></div>
     <div class="score-box" id="scoreBox"></div>
   </div>
 
+  <!-- CONTRACTOR SIDE -->
+  <div class="card contractor-card">
+    <h2>🧰 Contractor Marketplace</h2>
+
+    <p class="small">Live leads appear here based on city + score + bidding system</p>
+
+    <div class="price">$15 - $120 per lead</div>
+
+    <p class="small">
+      ✔ Exclusive leads available<br>
+      ✔ Bid on high-value jobs<br>
+      ✔ City-based filtering (Calgary / Edmonton)
+    </p>
+
+    <button onclick="alert('Contractor login coming soon')">
+      Contractor Login
+    </button>
+  </div>
+
 </div>
 
 <div class="footer">
-NorthSky AI — Automated Drone Inspection Funnel
+NorthSky AI — Lead Marketplace + SaaS Engine
 </div>
 
 <script>
 
-let loading = false;
-
 async function submitLead(){
-
-  if (loading) return;
 
   const name = document.getElementById("name").value.trim();
   const contact = document.getElementById("contact").value.trim();
@@ -204,65 +220,52 @@ async function submitLead(){
 
   const status = document.getElementById("status");
   const scoreBox = document.getElementById("scoreBox");
-  const btn = document.getElementById("submitBtn");
 
-  scoreBox.innerHTML = "";
-
-  if (!contact || contact.length < 5) {
-    status.innerText = "Enter valid contact info.";
-    return;
-  }
-
-  loading = true;
-  btn.disabled = true;
-  status.innerText = "Analyzing roof request...";
+  status.innerText = "Sending to AI engine...";
 
   try {
     const res = await fetch("https://YOUR-API-DOMAIN.com/lead", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({
         name,
         contact,
         postalCode,
         service,
-        source: "northsky-site",
-        pageUrl: window.location.href
+        source:"marketplace-site",
+        pageUrl:window.location.href
       })
     });
 
     const data = await res.json();
 
-    if (!data.success) {
-      status.innerText = data.error || "Submission failed.";
+    if(!data.success){
+      status.innerText = data.error || "Failed";
       return;
     }
 
-    status.innerText = "Request received — inspection team notified.";
+    status.innerText = "Lead created + sent to contractors";
 
     const score = data.score || 0;
 
     let level = "COLD";
     let color = "#ef4444";
 
-    if (score >= 15) {
-      level = "HOT LEAD 🔥 (SMS SENT)";
+    if(score >= 15){
+      level = "HOT 🔥 (SMS + BIDS ACTIVE)";
       color = "#22c55e";
-    } else if (score >= 6) {
-      level = "WARM LEAD 🟡";
+    } else if(score >= 6){
+      level = "WARM 🟡";
       color = "#f59e0b";
     }
 
     scoreBox.innerHTML = `
-      Lead Score: <b style="color:${color}">${score}</b><br>
+      Score: <b style="color:${color}">${score}</b><br>
       Status: <b style="color:${color}">${level}</b>
     `;
 
-  } catch (err) {
-    status.innerText = "Server error. Try again.";
-  } finally {
-    loading = false;
-    btn.disabled = false;
+  } catch(e){
+    status.innerText = "Server error";
   }
 }
 
