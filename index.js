@@ -18,19 +18,20 @@ app.use(express.json());
    RATE LIMIT
 ========================= */
 
-const leadLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 10,
-  message: {
-    success: false,
-    error: "Too many requests. Please slow down."
-  }
-});
-
-app.use("/lead", leadLimiter);
+app.use(
+  "/lead",
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {
+      success: false,
+      error: "Too many requests. Please slow down."
+    }
+  })
+);
 
 /* =========================
-   SUPABASE
+   CORE SERVICES
 ========================= */
 
 const supabase = createClient(
@@ -38,10 +39,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-/* =========================
-   EMAIL ALERTS
-========================= */
-
+/* EMAIL */
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -50,14 +48,56 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/* =========================
-   TWILIO SMS
-========================= */
-
+/* TWILIO (SINGLE INSTANCE ONLY) */
 const smsClient = twilio(
   process.env.TWILIO_SID,
   process.env.TWILIO_AUTH
 );
+
+/* =========================
+   SAFE SMS WRAPPER (IMPORTANT)
+========================= */
+
+async function sendSMS({ body, to }) {
+  try {
+    if (!to) return;
+
+    await smsClient.messages.create({
+      body,
+      from: process.env.TWILIO_NUMBER,
+      to
+    });
+
+  } catch (err) {
+    console.error("📵 SMS FAILED:", err.message);
+  }
+}
+
+/* =========================
+   TEST ROUTE
+========================= */
+
+app.get("/test-sms", async (req, res) => {
+  try {
+    const msg = await smsClient.messages.create({
+      body: "🚀 NorthSky SMS Test Successful",
+      from: process.env.TWILIO_NUMBER,
+      to: process.env.MY_PHONE
+    });
+
+    res.json({
+      success: true,
+      sid: msg.sid
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
 
 /* =========================
    SCORE ENGINE
@@ -114,7 +154,7 @@ async function getContractor(city) {
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
-    system: "NorthSky Revenue OS v4"
+    system: "NorthSky Revenue OS v5"
   });
 });
 
@@ -133,10 +173,7 @@ app.post("/lead", async (req, res) => {
       pageUrl = null
     } = req.body;
 
-    /* =========================
-       VALIDATION
-    ========================= */
-
+    /* VALIDATION */
     if (!contact || contact.trim().length < 5) {
       return res.status(400).json({
         success: false,
@@ -146,10 +183,7 @@ app.post("/lead", async (req, res) => {
 
     const cleanContact = contact.trim();
 
-    /* =========================
-       DUPLICATE CHECK
-    ========================= */
-
+    /* DUPLICATE CHECK */
     const { data: existing } = await supabase
       .from("leads")
       .select("id")
@@ -157,17 +191,14 @@ app.post("/lead", async (req, res) => {
       .maybeSingle();
 
     if (existing) {
-      return res.status(200).json({
+      return res.json({
         success: true,
         message: "Lead already exists",
         leadId: existing.id
       });
     }
 
-    /* =========================
-       SCORE + CITY
-    ========================= */
-
+    /* SCORE + CITY */
     const score = calculateLeadScore({
       service,
       postalCode,
@@ -176,30 +207,25 @@ app.post("/lead", async (req, res) => {
 
     const city = detectCity(postalCode);
 
-    /* =========================
-       CREATE LEAD
-    ========================= */
-
     const leadId = uuidv4();
 
-    const newLead = {
-      id: leadId,
-      name: name || null,
-      contact: cleanContact,
-      postal_code: postalCode || null,
-      service,
-      source,
-      page_url: pageUrl,
-      status: "new",
-      score,
-      city,
-      locked: false,
-      created_at: new Date().toISOString()
-    };
-
-    const { error } = await supabase
-      .from("leads")
-      .insert(newLead);
+    /* CREATE LEAD */
+    const { error } = await supabase.from("leads").insert([
+      {
+        id: leadId,
+        name: name || null,
+        contact: cleanContact,
+        postal_code: postalCode || null,
+        service,
+        source,
+        page_url: pageUrl,
+        status: "new",
+        score,
+        city,
+        locked: false,
+        created_at: new Date().toISOString()
+      }
+    ]);
 
     if (error) {
       return res.status(500).json({
@@ -208,34 +234,23 @@ app.post("/lead", async (req, res) => {
       });
     }
 
-    /* =========================
-       CONTRACTOR MATCH
-    ========================= */
-
+    /* CONTRACTOR MATCH */
     const contractor = await getContractor(city);
+    let assigned = false;
 
-    /* =========================
-       OWNER ALERT (HOT LEADS ONLY)
-    ========================= */
-
+    /* OWNER ALERT */
     if (score >= 10) {
-      await smsClient.messages.create({
+      await sendSMS({
         body: `🔥 HOT LEAD
 ${name} | ${cleanContact}
 City: ${city}
 Service: ${service}
 Score: ${score}`,
-        from: process.env.TWILIO_NUMBER,
         to: process.env.MY_PHONE
       });
     }
 
-    /* =========================
-       CONTRACTOR ASSIGNMENT
-    ========================= */
-
-    let assigned = false;
-
+    /* CONTRACTOR ASSIGNMENT */
     if (contractor) {
       assigned = true;
 
@@ -251,21 +266,17 @@ Score: ${score}`,
         }
       ]);
 
-      await smsClient.messages.create({
+      await sendSMS({
         body: `📍 NEW LEAD - ${city}
 ${name} | ${cleanContact}
 Service: ${service}
 Price: $${contractor.price_per_lead}
 Score: ${score}`,
-        from: process.env.TWILIO_NUMBER,
         to: contractor.phone
       });
     }
 
-    /* =========================
-       EMAIL ALERT
-    ========================= */
-
+    /* EMAIL ALERT */
     await transporter.sendMail({
       from: "NorthSky Leads <your@email.com>",
       to: process.env.ALERT_EMAIL,
@@ -282,17 +293,13 @@ Assigned: ${assigned}
       `
     });
 
-    /* =========================
-       RESPONSE
-    ========================= */
-
+    /* RESPONSE */
     return res.status(201).json({
       success: true,
       leadId,
       score,
       city,
       assigned,
-      status: assigned ? "assigned" : "unassigned",
       message: "Lead processed successfully"
     });
 
@@ -313,5 +320,5 @@ Assigned: ${assigned}
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 NorthSky Revenue OS v4 running on port ${PORT}`);
+  console.log(`🚀 NorthSky Revenue OS v5 running on port ${PORT}`);
 });
