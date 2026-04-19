@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NorthSky Command Dashboard</title>
+
+<style>
+:root{
+  --bg:#05060a;
+  --text:#e8e8e8;
+  --muted:rgba(232,232,232,0.6);
+  --border:rgba(255,255,255,0.08);
+  --glass:rgba(255,255,255,0.04);
+  --good:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Inter",Arial;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(34,197,94,0.10), transparent 50%),
+    var(--bg);
+  color:var(--text);
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 40px;
+  border-bottom:1px solid var(--border);
+}
+
+.logo{
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
+/* BUTTON */
+.btn{
+  padding:12px 18px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--glass);
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.btn:hover{transform:translateY(-2px);}
+
+/* GRID */
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:60px 20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+}
+
+/* METRICS */
+.metric{
+  font-size:28px;
+  font-weight:700;
+  margin-top:8px;
+}
+
+.label{
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:2px;
+}
+
+/* STATUS */
+.status{
+  padding:6px 10px;
+  border-radius:999px;
+  display:inline-block;
+  font-size:11px;
+}
+
+.good{background:rgba(34,197,94,0.15);color:var(--good);}
+.warn{background:rgba(245,158,11,0.15);color:var(--warn);}
+.bad{background:rgba(239,68,68,0.15);color:var(--bad);}
+
+.footer{
+  text-align:center;
+  margin-top:80px;
+  color:var(--muted);
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+  <div class="logo">NorthSky COMMAND DASHBOARD</div>
+
+  <button class="btn"
+    onclick="NorthSky.redirectToFunnel('https://goldylox752.github.io/RoofFlow-AI/')">
+    Open RoofFlow Funnel
+  </button>
+</div>
+
+<div class="container">
+
+<!-- TOP METRICS -->
+<div class="grid">
+
+  <div class="card">
+    <div class="label">LEAD SCORE</div>
+    <div class="metric" id="score">0</div>
+  </div>
+
+  <div class="card">
+    <div class="label">STATUS</div>
+    <div class="metric" id="status">COLD</div>
+  </div>
+
+  <div class="card">
+    <div class="label">SESSION ID</div>
+    <div class="metric" style="font-size:14px" id="session">...</div>
+  </div>
+
+</div>
+
+<!-- FUNNEL CONTROL -->
+<div class="card" style="margin-top:14px;">
+  <div class="label">REVENUE FUNNEL CONTROL</div>
+  <p style="margin-top:10px;color:var(--muted);line-height:1.6">
+    This dashboard tracks visitor intent and routes high-score users into RoofFlow AI for conversion.
+  </p>
+
+  <button class="btn" style="margin-top:15px"
+    onclick="NorthSky.redirectToFunnel('https://goldylox752.github.io/RoofFlow-AI/')">
+    Push Traffic to RoofFlow
+  </button>
+</div>
+
+<div class="footer">
+  NorthSky Systems OS — Revenue Command Layer
+</div>
+
+</div>
+
+<script src="core.js"></script>
+
+<script>
+/* ===============================
+   DASHBOARD LIVE VIEW
+=============================== */
+
+function updateDashboard(){
+
+  const score = parseInt(localStorage.getItem("ns_score") || "0");
+  const session = localStorage.getItem("ns_session_id");
+
+  document.getElementById("score").innerText = score;
+  document.getElementById("session").innerText = session || "none";
+
+  let status = "COLD";
+  let cls = "bad";
+
+  if(score >= 15){
+    status = "HOT LEAD";
+    cls = "good";
+  } else if(score >= 6){
+    status = "WARM";
+    cls = "warn";
+  }
+
+  const el = document.getElementById("status");
+  el.innerText = status;
+  el.className = "metric status " + cls;
+}
+
+setInterval(updateDashboard, 1000);
+updateDashboard();
+</script>
+
+</body>
+</html>
