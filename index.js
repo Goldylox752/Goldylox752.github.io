@@ -15,17 +15,18 @@ app.use(cors());
 app.use(express.json());
 
 /* =========================
-   RATE LIMIT
+   RATE LIMIT (ANTI-SPAM)
 ========================= */
-
 app.use(
   "/lead",
   rateLimit({
     windowMs: 60 * 1000,
     max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
     message: {
       success: false,
-      error: "Too many requests. Please slow down."
+      error: "Too many requests. Slow down."
     }
   })
 );
@@ -33,7 +34,6 @@ app.use(
 /* =========================
    CORE SERVICES
 ========================= */
-
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
@@ -48,61 +48,45 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/* TWILIO (SINGLE INSTANCE ONLY) */
+/* TWILIO */
 const smsClient = twilio(
   process.env.TWILIO_SID,
   process.env.TWILIO_AUTH
 );
 
 /* =========================
-   SAFE SMS WRAPPER (IMPORTANT)
+   SAFE NOTIFICATIONS LAYER
 ========================= */
-
 async function sendSMS({ body, to }) {
-  try {
-    if (!to) return;
+  if (!to) return;
 
+  try {
     await smsClient.messages.create({
       body,
       from: process.env.TWILIO_NUMBER,
       to
     });
-
   } catch (err) {
     console.error("📵 SMS FAILED:", err.message);
   }
 }
 
-/* =========================
-   TEST ROUTE
-========================= */
-
-app.get("/test-sms", async (req, res) => {
+async function sendEmail({ subject, text }) {
   try {
-    const msg = await smsClient.messages.create({
-      body: "🚀 NorthSky SMS Test Successful",
-      from: process.env.TWILIO_NUMBER,
-      to: process.env.MY_PHONE
+    await transporter.sendMail({
+      from: "NorthSky Leads <system@northsky.ai>",
+      to: process.env.ALERT_EMAIL,
+      subject,
+      text
     });
-
-    res.json({
-      success: true,
-      sid: msg.sid
-    });
-
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
+    console.error("📧 EMAIL FAILED:", err.message);
   }
-});
+}
 
 /* =========================
-   SCORE ENGINE
+   SCORE ENGINE (LEAD VALUE)
 ========================= */
-
 function calculateLeadScore({ service, postalCode, source }) {
   let score = 0;
 
@@ -111,16 +95,14 @@ function calculateLeadScore({ service, postalCode, source }) {
   if (service === "roof inspection") score += 5;
 
   if (source === "ad" || source === "kijiji") score += 3;
-
   if (postalCode?.startsWith("T")) score += 2;
 
   return score;
 }
 
 /* =========================
-   CITY DETECTION
+   CITY ROUTING ENGINE
 ========================= */
-
 function detectCity(postalCode) {
   if (!postalCode) return "unknown";
 
@@ -132,15 +114,15 @@ function detectCity(postalCode) {
 }
 
 /* =========================
-   CONTRACTOR LOOKUP
+   CONTRACTOR MARKET LOOKUP
 ========================= */
-
 async function getContractor(city) {
   const { data } = await supabase
     .from("contractors")
     .select("*")
     .eq("city", city)
     .eq("active", true)
+    .order("price_per_lead", { ascending: false }) // supports bidding later
     .limit(1)
     .maybeSingle();
 
@@ -150,18 +132,16 @@ async function getContractor(city) {
 /* =========================
    HEALTH CHECK
 ========================= */
-
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
-    system: "NorthSky Revenue OS v5"
+    system: "NorthSky Marketplace OS v6"
   });
 });
 
 /* =========================
-   LEAD ENGINE
+   LEAD ENGINE (CORE FLOW)
 ========================= */
-
 app.post("/lead", async (req, res) => {
   try {
     const {
@@ -183,7 +163,7 @@ app.post("/lead", async (req, res) => {
 
     const cleanContact = contact.trim();
 
-    /* DUPLICATE CHECK */
+    /* DUPLICATE PROTECTION */
     const { data: existing } = await supabase
       .from("leads")
       .select("id")
@@ -198,15 +178,9 @@ app.post("/lead", async (req, res) => {
       });
     }
 
-    /* SCORE + CITY */
-    const score = calculateLeadScore({
-      service,
-      postalCode,
-      source
-    });
-
+    /* SCORING + CITY */
+    const score = calculateLeadScore({ service, postalCode, source });
     const city = detectCity(postalCode);
-
     const leadId = uuidv4();
 
     /* CREATE LEAD */
@@ -234,11 +208,11 @@ app.post("/lead", async (req, res) => {
       });
     }
 
-    /* CONTRACTOR MATCH */
+    /* CONTRACTOR MATCH (MARKETPLACE CORE) */
     const contractor = await getContractor(city);
     let assigned = false;
 
-    /* OWNER ALERT */
+    /* OWNER ALERT (HOT LEADS ONLY) */
     if (score >= 10) {
       await sendSMS({
         body: `🔥 HOT LEAD
@@ -276,11 +250,9 @@ Score: ${score}`,
       });
     }
 
-    /* EMAIL ALERT */
-    await transporter.sendMail({
-      from: "NorthSky Leads <your@email.com>",
-      to: process.env.ALERT_EMAIL,
-      subject: `🚨 NEW LEAD (${city} | ${score})`,
+    /* EMAIL AUDIT LOG */
+    await sendEmail({
+      subject: `🚨 NEW LEAD (${city} | Score ${score})`,
       text: `
 Lead ID: ${leadId}
 Name: ${name}
@@ -293,13 +265,15 @@ Assigned: ${assigned}
       `
     });
 
-    /* RESPONSE */
+    /* RESPONSE (FRONTEND + DASHBOARD READY) */
     return res.status(201).json({
       success: true,
       leadId,
       score,
       city,
       assigned,
+      pricing_ready: true,
+      bidding_ready: true,
       message: "Lead processed successfully"
     });
 
@@ -316,9 +290,8 @@ Assigned: ${assigned}
 /* =========================
    START SERVER
 ========================= */
-
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 NorthSky Revenue OS v5 running on port ${PORT}`);
+  console.log(`🚀 NorthSky Marketplace OS v6 running on port ${PORT}`);
 });
