@@ -1,3 +1,61 @@
+/* =========================
+   AUTOPILOT ENDPOINTS
+========================= */
+
+/* LEAD CAPTURE */
+app.post("/api/lead", async (req, res) => {
+  const lead = req.body;
+
+  await supabase.from("leads").insert([{
+    ...lead,
+    created_at: new Date().toISOString()
+  }]);
+
+  res.json({ ok: true });
+});
+
+/* CHECKOUT CLICK */
+app.post("/api/checkout-click", async (req, res) => {
+  const event = req.body;
+
+  await supabase.from("events").insert([{
+    type: "checkout_click",
+    ...event,
+    created_at: new Date().toISOString()
+  }]);
+
+  res.json({ ok: true });
+});
+
+/* ABANDONMENT */
+app.post("/api/abandon", async (req, res) => {
+  const data = req.body;
+
+  await supabase.from("abandonments").insert([{
+    ...data,
+    created_at: new Date().toISOString()
+  }]);
+
+  res.json({ ok: true });
+});
+
+/* HOT LEAD ROUTING */
+app.post("/api/hot-lead", async (req, res) => {
+  const lead = req.body;
+
+  await supabase.from("hot_leads").insert([{
+    ...lead,
+    created_at: new Date().toISOString()
+  }]);
+
+  // future: trigger email + SMS + AI agent here
+  console.log("🔥 HOT LEAD:", lead.user_id);
+
+  res.json({ routed: true });
+});
+
+
+
 async function payForData(amount) {
   const tx = await tokenContract.transfer(
     "YOUR_WALLET_ADDRESS",
