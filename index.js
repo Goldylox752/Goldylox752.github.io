@@ -1,6 +1,6 @@
 /* ===============================
-   NORTHSKY SYSTEMS OS
-   Funnel Tracking + Session Engine
+   NORTHSKY GROWTH SYSTEM CORE
+   Tracking + Attribution + Lead Engine
    =============================== */
 
 (function () {
@@ -12,18 +12,33 @@
   const CONFIG = {
     sessionKey: "ns_session_id",
     userKey: "ns_user_id",
-    sourceTag: "northsky_os"
+    sourceTag: "northsky_os",
+
+    // batching (performance upgrade)
+    batchSize: 10,
+    flushInterval: 5000,
+
+    // optional backend (Supabase / API)
+    endpoint: null // "https://your-api.com/events"
   };
 
   /* ===============================
-     SESSION HELPERS
+     STATE
+  =============================== */
+
+  let eventQueue = [];
+  let startTime = Date.now();
+  let maxScroll = 0;
+
+  /* ===============================
+     ID SYSTEM
   =============================== */
 
   function createId() {
     return crypto.randomUUID();
   }
 
-  function getStorageKey(key) {
+  function getOrCreate(key) {
     let value = localStorage.getItem(key);
 
     if (!value) {
@@ -35,33 +50,65 @@
   }
 
   function getSession() {
-    return getStorageKey(CONFIG.sessionKey);
+    return getOrCreate(CONFIG.sessionKey);
   }
 
   function getUser() {
-    return getStorageKey(CONFIG.userKey);
+    return getOrCreate(CONFIG.userKey);
   }
 
   /* ===============================
-     TRAFFIC ATTRIBUTION
+     ATTRIBUTION
   =============================== */
 
   function getAttribution() {
-    const params = new URLSearchParams(window.location.search);
+    const p = new URLSearchParams(window.location.search);
 
     return {
-      utm_source: params.get("utm_source") || "direct",
-      utm_campaign: params.get("utm_campaign") || "none",
-      utm_medium: params.get("utm_medium") || "organic",
+      utm_source: p.get("utm_source") || "direct",
+      utm_campaign: p.get("utm_campaign") || "none",
+      utm_medium: p.get("utm_medium") || "organic",
       referrer: document.referrer || "none"
     };
   }
 
   /* ===============================
-     EVENT TRACKER (CORE ENGINE)
+     LEAD SCORING ENGINE
+  =============================== */
+
+  function scoreEvent(eventName) {
+    const map = {
+      page_view: 1,
+      scroll_depth: 2,
+      button_click: 5,
+      link_click: 3,
+      time_on_page: 2,
+      funnel_redirect: 10
+    };
+
+    return map[eventName] || 0;
+  }
+
+  function updateLeadScore(eventName) {
+    const score = scoreEvent(eventName);
+    if (score <= 0) return;
+
+    let current = parseInt(localStorage.getItem("ns_score") || "0");
+    current += score;
+
+    localStorage.setItem("ns_score", current);
+
+    if (current >= 15) {
+      track("hot_lead", { score: current });
+    }
+  }
+
+  /* ===============================
+     EVENT ENGINE (CORE)
   =============================== */
 
   function track(eventName, data = {}) {
+
     const event = {
       event: eventName,
       data,
@@ -72,76 +119,101 @@
       ...getAttribution()
     };
 
-    console.log("[NS TRACK]", event);
+    console.log("[NS EVENT]", event);
 
-    // Future: backend ingestion
-    // sendEvent(event);
+    // queue event (batching)
+    eventQueue.push(event);
+
+    // lead scoring
+    updateLeadScore(eventName);
+
+    // flush if needed
+    if (eventQueue.length >= CONFIG.batchSize) {
+      flushEvents();
+    }
   }
+
+  /* ===============================
+     SEND EVENTS (BATCHED)
+  =============================== */
+
+  async function flushEvents() {
+    if (eventQueue.length === 0) return;
+
+    const batch = [...eventQueue];
+    eventQueue = [];
+
+    console.log("[NS FLUSH]", batch);
+
+    if (!CONFIG.endpoint) return;
+
+    try {
+      await fetch(CONFIG.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(batch)
+      });
+    } catch (err) {
+      console.warn("Flush failed:", err);
+    }
+  }
+
+  setInterval(flushEvents, CONFIG.flushInterval);
 
   /* ===============================
      FUNNEL REDIRECT ENGINE
   =============================== */
 
-  function redirectToFunnel(destinationUrl) {
-    const url = new URL(destinationUrl);
+  function redirectToFunnel(url) {
 
-    const attribution = getAttribution();
+    const fullUrl = new URL(url);
+    const attr = getAttribution();
 
-    url.searchParams.set("session_id", getSession());
-    url.searchParams.set("user_id", getUser());
-    url.searchParams.set("from", CONFIG.sourceTag);
+    fullUrl.searchParams.set("session_id", getSession());
+    fullUrl.searchParams.set("user_id", getUser());
+    fullUrl.searchParams.set("from", CONFIG.sourceTag);
 
-    Object.entries(attribution).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
+    Object.entries(attr).forEach(([k, v]) => {
+      fullUrl.searchParams.set(k, v);
     });
 
-    track("funnel_redirect", { destination: destinationUrl });
+    track("funnel_redirect", { destination: url });
 
-    window.location.href = url.toString();
+    window.location.href = fullUrl.toString();
   }
 
   /* ===============================
-     AUTO EVENT BINDING
+     AUTO TRACKING
   =============================== */
 
-  function initAutoTracking() {
+  function initTracking() {
 
     track("page_view");
 
-    // Button clicks
-    document.querySelectorAll(".btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        track("button_click", {
-          text: btn.innerText.trim()
-        });
-      });
-    });
-
-    // Link clicks
-    document.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        track("link_click", {
-          href: link.href
+    // clicks
+    document.querySelectorAll(".btn, a").forEach(el => {
+      el.addEventListener("click", () => {
+        track("click", {
+          text: el.innerText?.trim(),
+          href: el.href || null
         });
       });
     });
   }
 
   /* ===============================
-     OPTIONAL ADVANCED EVENTS
+     ENGAGEMENT TRACKING
   =============================== */
 
-  function trackEngagement() {
-    let startTime = Date.now();
-    let maxScroll = 0;
+  function initEngagement() {
 
-    // Time on page
     window.addEventListener("beforeunload", () => {
       const duration = Math.round((Date.now() - startTime) / 1000);
       track("time_on_page", { seconds: duration });
+
+      flushEvents();
     });
 
-    // Scroll depth
     window.addEventListener("scroll", () => {
       const scrollPercent = Math.round(
         ((window.scrollY + window.innerHeight) / document.body.scrollHeight) * 100
@@ -158,12 +230,12 @@
   }
 
   /* ===============================
-     INIT SYSTEM
+     INIT
   =============================== */
 
   document.addEventListener("DOMContentLoaded", () => {
-    initAutoTracking();
-    trackEngagement();
+    initTracking();
+    initEngagement();
   });
 
   /* ===============================
@@ -173,6 +245,7 @@
   window.NorthSky = {
     track,
     redirectToFunnel,
+    flushEvents,
     getSession,
     getUser
   };
