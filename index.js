@@ -1,7 +1,7 @@
 (function () {
 
   /* ===============================
-     CONFIG (REVENUE CORE)
+     CONFIG
   =============================== */
 
   const CONFIG = {
@@ -10,7 +10,7 @@
     scoreKey: "ns_score",
     sourceTag: "northsky_os",
 
-    endpoint: null, // Supabase / webhook (optional)
+    endpoint: null,
 
     hotLeadThreshold: 15,
     warmLeadThreshold: 6,
@@ -27,27 +27,35 @@
   let startTime = Date.now();
   let maxScroll = 0;
   let initialized = false;
+  let hotLeadTriggered = false;
 
   /* ===============================
-     IDENTITY LAYER
+     SAFE STORAGE HELPERS
   =============================== */
 
   const createId = () => crypto.randomUUID();
 
   function getOrCreate(key) {
-    let val = localStorage.getItem(key);
-    if (!val) {
-      val = createId();
-      localStorage.setItem(key, val);
+    try {
+      let val = localStorage.getItem(key);
+
+      if (!val) {
+        val = createId();
+        localStorage.setItem(key, val);
+      }
+
+      return val;
+    } catch (e) {
+      console.warn("Storage error:", e);
+      return null;
     }
-    return val;
   }
 
   const getSession = () => getOrCreate(CONFIG.sessionKey);
   const getUser = () => getOrCreate(CONFIG.userKey);
 
   /* ===============================
-     ATTRIBUTION LAYER
+     ATTRIBUTION
   =============================== */
 
   function getAttribution() {
@@ -62,7 +70,7 @@
   }
 
   /* ===============================
-     LEAD SCORE ENGINE
+     SCORE ENGINE (SAFE)
   =============================== */
 
   const SCORE_MAP = {
@@ -71,24 +79,25 @@
     link_click: 3,
     scroll_depth: 2,
     funnel_redirect: 10,
-    time_on_page: 2,
-    hot_lead: 0
+    time_on_page: 2
   };
 
   function getScore() {
     return parseInt(localStorage.getItem(CONFIG.scoreKey) || "0");
   }
 
+  function setScore(value) {
+    localStorage.setItem(CONFIG.scoreKey, String(value));
+  }
+
   function addScore(event) {
     const add = SCORE_MAP[event] || 0;
-    if (!add) return;
+    if (!add) return getScore();
 
-    let current = getScore();
-    current += add;
+    const updated = getScore() + add;
+    setScore(updated);
 
-    localStorage.setItem(CONFIG.scoreKey, current);
-
-    return current;
+    return updated;
   }
 
   function getLeadStage(score) {
@@ -98,10 +107,12 @@
   }
 
   /* ===============================
-     CRM SYNC (ROOFFLOW HOOK)
+     CRM SYNC (SAFE OPTIONAL)
   =============================== */
 
   async function syncCRM(event, data = {}) {
+
+    if (!CONFIG.endpoint) return;
 
     const payload = {
       event,
@@ -109,26 +120,24 @@
 
       user_id: getUser(),
       session_id: getSession(),
-      score: getScore(),
 
+      score: getScore(),
       stage: getLeadStage(getScore()),
 
-      timestamp: new Date().toISOString(),
       page: window.location.href,
+      timestamp: new Date().toISOString(),
 
       ...getAttribution()
     };
 
-    if (CONFIG.endpoint) {
-      try {
-        await fetch(CONFIG.endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.warn("CRM sync failed:", e);
-      }
+    try {
+      await fetch(CONFIG.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      console.warn("CRM sync failed:", e);
     }
   }
 
@@ -138,6 +147,9 @@
 
   function track(event, data = {}) {
 
+    const scoreBefore = getScore();
+    const scoreAfter = addScore(event);
+
     const payload = {
       event,
       data,
@@ -145,8 +157,8 @@
       session_id: getSession(),
       user_id: getUser(),
 
-      score: getScore(),
-      stage: getLeadStage(getScore()),
+      score: scoreAfter,
+      stage: getLeadStage(scoreAfter),
 
       page: window.location.href,
       timestamp: new Date().toISOString(),
@@ -158,22 +170,29 @@
 
     queue.push(payload);
 
-    const newScore = addScore(event);
     syncCRM(event, data);
 
     if (queue.length >= CONFIG.batchSize) flush();
 
-    // auto hot lead trigger
-    if (newScore >= CONFIG.hotLeadThreshold) {
-      track("hot_lead", { score: newScore });
+    /* ===============================
+       HOT LEAD TRIGGER (FIXED LOOP SAFE)
+    =============================== */
+
+    if (
+      scoreAfter >= CONFIG.hotLeadThreshold &&
+      !hotLeadTriggered
+    ) {
+      hotLeadTriggered = true;
+      track("hot_lead", { score: scoreAfter });
     }
   }
 
   /* ===============================
-     BATCH FLUSH
+     FLUSH BATCH
   =============================== */
 
   async function flush() {
+
     if (!queue.length || !CONFIG.endpoint) return;
 
     const batch = [...queue];
@@ -193,7 +212,7 @@
   setInterval(flush, CONFIG.flushInterval);
 
   /* ===============================
-     FUNNEL REDIRECT ENGINE
+     FUNNEL REDIRECT
   =============================== */
 
   function redirectToFunnel(url) {
@@ -215,13 +234,21 @@
   }
 
   /* ===============================
-     AUTO TRACKING INIT
+     INIT SYSTEM (FIXED ORDER)
   =============================== */
 
   function init() {
 
     if (initialized) return;
     initialized = true;
+
+    /* ensure baseline values exist */
+    getSession();
+    getUser();
+
+    if (!localStorage.getItem(CONFIG.scoreKey)) {
+      setScore(0);
+    }
 
     track("page_view");
 
@@ -236,7 +263,7 @@
       });
     });
 
-    /* scroll depth */
+    /* scroll tracking */
     window.addEventListener("scroll", () => {
       const percent = Math.round(
         ((scrollY + innerHeight) / document.body.scrollHeight) * 100
