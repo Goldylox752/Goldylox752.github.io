@@ -1,11 +1,11 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import rateLimit from "express-rate-limit";
-import nodemailer from "nodemailer";
-import twilio from "twilio";
-import { createClient } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from "uuid";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const rateLimit = require("express-rate-limit");
+const nodemailer = require("nodemailer");
+const twilio = require("twilio");
+const { createClient } = require("@supabase/supabase-js");
+const { v4: uuidv4 } = require("uuid");
 
 dotenv.config();
 
@@ -13,6 +13,26 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+/* =========================
+   ENVIRONMENT VALIDATION
+========================= */
+const requiredEnv = [
+  "SUPABASE_URL",
+  "SUPABASE_KEY",
+  "EMAIL_USER",
+  "EMAIL_PASS",
+  "TWILIO_SID",
+  "TWILIO_AUTH",
+  "TWILIO_NUMBER",
+  "ALERT_EMAIL"
+];
+
+const missing = requiredEnv.filter(key => !process.env[key]);
+if (missing.length) {
+  console.error("❌ Missing required environment variables:", missing.join(", "));
+  process.exit(1);
+}
 
 /* =========================
    RATE LIMIT (ANTI-SPAM)
@@ -39,7 +59,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-/* EMAIL */
+/* EMAIL (optional but env checked) */
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -48,7 +68,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/* TWILIO */
+/* TWILIO (optional but env checked) */
 const smsClient = twilio(
   process.env.TWILIO_SID,
   process.env.TWILIO_AUTH
@@ -59,7 +79,6 @@ const smsClient = twilio(
 ========================= */
 async function sendSMS({ body, to }) {
   if (!to) return;
-
   try {
     await smsClient.messages.create({
       body,
@@ -122,7 +141,7 @@ async function getContractor(city) {
     .select("*")
     .eq("city", city)
     .eq("active", true)
-    .order("price_per_lead", { ascending: false }) // supports bidding later
+    .order("price_per_lead", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -213,19 +232,15 @@ app.post("/lead", async (req, res) => {
     let assigned = false;
 
     /* OWNER ALERT (HOT LEADS ONLY) */
-    if (score >= 10) {
+    if (score >= 10 && process.env.MY_PHONE) {
       await sendSMS({
-        body: `🔥 HOT LEAD
-${name} | ${cleanContact}
-City: ${city}
-Service: ${service}
-Score: ${score}`,
+        body: `🔥 HOT LEAD\n${name || "Anonymous"} | ${cleanContact}\nCity: ${city}\nService: ${service}\nScore: ${score}`,
         to: process.env.MY_PHONE
       });
     }
 
     /* CONTRACTOR ASSIGNMENT */
-    if (contractor) {
+    if (contractor && contractor.phone) {
       assigned = true;
 
       await supabase.from("lead_assignments").insert([
@@ -241,11 +256,7 @@ Score: ${score}`,
       ]);
 
       await sendSMS({
-        body: `📍 NEW LEAD - ${city}
-${name} | ${cleanContact}
-Service: ${service}
-Price: $${contractor.price_per_lead}
-Score: ${score}`,
+        body: `📍 NEW LEAD - ${city}\n${name || "Anonymous"} | ${cleanContact}\nService: ${service}\nPrice: $${contractor.price_per_lead}\nScore: ${score}`,
         to: contractor.phone
       });
     }
@@ -255,7 +266,7 @@ Score: ${score}`,
       subject: `🚨 NEW LEAD (${city} | Score ${score})`,
       text: `
 Lead ID: ${leadId}
-Name: ${name}
+Name: ${name || "Not provided"}
 Contact: ${cleanContact}
 City: ${city}
 Service: ${service}
@@ -279,7 +290,6 @@ Assigned: ${assigned}
 
   } catch (err) {
     console.error(err);
-
     return res.status(500).json({
       success: false,
       error: "Internal server error"
