@@ -92,6 +92,11 @@ button{
   cursor:pointer;
 }
 
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
 /* STATUS */
 .status{
   margin-top:10px;
@@ -150,7 +155,7 @@ button{
       <option value="insurance claim">Insurance claim support</option>
     </select>
 
-    <button onclick="submitLead()">Request Inspection</button>
+    <button id="submitBtn" onclick="submitLead()">Request Inspection</button>
 
     <div class="status" id="status"></div>
     <div class="score-box" id="scoreBox"></div>
@@ -163,18 +168,36 @@ NorthSky AI — Drone Roof Inspection System
 </div>
 
 <script>
+
+let isSubmitting = false;
+
 async function submitLead(){
 
-  const name = document.getElementById("name").value;
-  const contact = document.getElementById("contact").value;
-  const postalCode = document.getElementById("postalCode").value;
+  if (isSubmitting) return;
+
+  const name = document.getElementById("name").value.trim();
+  const contact = document.getElementById("contact").value.trim();
+  const postalCode = document.getElementById("postalCode").value.trim();
   const service = document.getElementById("service").value;
 
   const status = document.getElementById("status");
   const scoreBox = document.getElementById("scoreBox");
+  const btn = document.getElementById("submitBtn");
 
-  status.innerText = "Submitting...";
-  scoreBox.innerText = "";
+  scoreBox.innerHTML = "";
+
+  /* =========================
+     BASIC VALIDATION
+  ========================= */
+
+  if (!contact || contact.length < 5) {
+    status.innerText = "Please enter valid contact info.";
+    return;
+  }
+
+  isSubmitting = true;
+  btn.disabled = true;
+  status.innerText = "Submitting lead...";
 
   try {
     const res = await fetch("https://YOUR-API-DOMAIN.com/lead", {
@@ -194,37 +217,47 @@ async function submitLead(){
 
     const data = await res.json();
 
-    if (data.success) {
-
-      status.innerText = "Lead submitted successfully.";
-
-      // 🧠 SCORE DISPLAY (NEW)
-      const score = data.score || 0;
-
-      let level = "COLD";
-      let color = "#ef4444";
-
-      if (score >= 15) {
-        level = "HOT LEAD 🔥 (SMS SENT)";
-        color = "#22c55e";
-      } else if (score >= 6) {
-        level = "WARM LEAD 🟡";
-        color = "#f59e0b";
-      }
-
-      scoreBox.innerHTML = `
-        Lead Score: <b style="color:${color}">${score}</b><br>
-        Status: <b style="color:${color}">${level}</b>
-      `;
-
-    } else {
+    if (!res.ok || !data.success) {
       status.innerText = data.error || "Submission failed.";
+      return;
     }
 
+    status.innerText = "Lead submitted successfully.";
+
+    /* =========================
+       SCORE DISPLAY (SAFE FALLBACK)
+    ========================= */
+
+    const score = typeof data.score === "number" ? data.score : 0;
+
+    let level = "COLD";
+    let color = "#ef4444";
+
+    if (score >= 15) {
+      level = "HOT LEAD 🔥 (SMS SENT)";
+      color = "#22c55e";
+    } else if (score >= 6) {
+      level = "WARM LEAD 🟡";
+      color = "#f59e0b";
+    }
+
+    scoreBox.innerHTML = `
+      Lead Score: <b style="color:${color}">${score}</b><br>
+      Status: <b style="color:${color}">${level}</b>
+    `;
+
+    /* OPTIONAL: auto-scroll to result */
+    scoreBox.scrollIntoView({ behavior: "smooth" });
+
   } catch (err) {
+    console.error(err);
     status.innerText = "Server error. Try again.";
+  } finally {
+    isSubmitting = false;
+    btn.disabled = false;
   }
 }
+
 </script>
 
 </body>
