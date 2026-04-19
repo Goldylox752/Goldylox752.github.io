@@ -1,275 +1,547 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NorthSky AI | Lead Auction Marketplace</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<title>NorthSky AI | Drone Roof Lead Marketplace</title>
+    :root {
+      --bg: #0a0c12;
+      --surface: #11131c;
+      --surface-hover: #181c28;
+      --text: #edf2f8;
+      --text-muted: #8e9aaf;
+      --border: rgba(255, 255, 255, 0.06);
+      --accent: #2dd4bf;
+      --accent-dark: #14b8a6;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+      --gradient: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    }
 
-<style>
-:root{
-  --bg:#05060a;
-  --text:#e8e8e8;
-  --muted:rgba(232,232,232,0.6);
-  --border:rgba(255,255,255,0.08);
-  --glass:rgba(255,255,255,0.04);
-  --accent:#38bdf8;
-  --good:#22c55e;
-  --warn:#f59e0b;
-  --bad:#ef4444;
-}
+    body {
+      background: var(--gradient);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-body{
-  font-family:Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
 
-/* HERO */
-.hero{
-  padding:70px 20px;
-  text-align:center;
-}
+    .badge {
+      display: inline-block;
+      background: rgba(45, 212, 191, 0.12);
+      backdrop-filter: blur(4px);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      margin-bottom: 1rem;
+    }
 
-.hero h1{
-  font-size:32px;
-  font-weight:900;
-}
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
 
-.hero p{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:14px;
-}
+    .sub {
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
 
-.badge{
-  display:inline-block;
-  margin-top:10px;
-  padding:6px 10px;
-  font-size:11px;
-  background:rgba(56,189,248,0.15);
-  color:var(--accent);
-  border-radius:999px;
-}
+    /* Grid */
+    .marketplace-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.8rem;
+    }
 
-/* CTA */
-.cta{
-  margin-top:20px;
-  display:inline-block;
-  padding:14px 22px;
-  background:var(--accent);
-  color:#000;
-  font-weight:800;
-  border-radius:12px;
-  text-decoration:none;
-}
+    @media (max-width: 900px) {
+      .marketplace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-/* LAYOUT */
-.container{
-  max-width:1000px;
-  margin:auto;
-  padding:20px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
+    /* Cards */
+    .card {
+      background: rgba(17, 19, 28, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 1.8rem;
+      padding: 1.6rem;
+      transition: all 0.2s ease;
+    }
 
-@media(min-width:900px){
-  .container{
-    grid-template-columns:1fr 1fr;
-  }
-}
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      font-size: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
 
-.card{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:18px;
-}
+    /* Form */
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
 
-/* FORM */
-input, select{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#0b0d12;
-  color:white;
-}
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
 
-button{
-  width:100%;
-  margin-top:12px;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  background:var(--good);
-  font-weight:900;
-  cursor:pointer;
-}
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: #0b0e17;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      color: white;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
 
-/* STATUS */
-.status{
-  margin-top:10px;
-  font-size:13px;
-  color:var(--muted);
-}
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2);
+    }
 
-.score-box{
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  background:rgba(255,255,255,0.05);
-  font-size:13px;
-}
+    button {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 1.2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #020617;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: 0.5rem;
+    }
 
-/* CONTRACTOR PANEL */
-.contractor-card{
-  border:1px solid rgba(56,189,248,0.3);
-}
+    button:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
 
-.price{
-  font-size:20px;
-  font-weight:900;
-  color:var(--good);
-}
+    button.secondary {
+      background: #2d3748;
+      color: white;
+    }
 
-.small{
-  font-size:12px;
-  color:var(--muted);
-}
+    button.secondary:hover {
+      background: #4a5568;
+    }
 
-.footer{
-  text-align:center;
-  margin-top:40px;
-  font-size:12px;
-  color:var(--muted);
-}
-</style>
+    /* Status & score */
+    .status-panel {
+      margin-top: 1.2rem;
+      padding: 0.8rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .score-badge {
+      display: inline-block;
+      background: #1e293b;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-weight: 700;
+    }
+
+    /* Auction panel */
+    .auction-room {
+      margin-top: 1.8rem;
+      border-top: 2px dashed var(--border);
+      padding-top: 1.2rem;
+    }
+
+    .bid-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .bid-row input {
+      flex: 1;
+    }
+
+    .bid-history {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .bid-item {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .current-lead {
+      background: rgba(45, 212, 191, 0.05);
+      border-radius: 1rem;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="hero">
-  <div class="badge">⚡ NorthSky AI Lead Marketplace OS</div>
-
-  <h1>Buy & Sell Roofing Leads in Real Time</h1>
-  <p>AI generates leads → contractors bid → highest value gets the job</p>
-
-  <a class="cta" href="#leadForm">Generate Lead</a>
-</div>
-
 <div class="container">
-
-  <!-- HOMEOWNER SIDE -->
-  <div class="card">
-    <h2>🏠 Homeowner Request</h2>
-
-    <input id="name" placeholder="Full Name">
-    <input id="contact" placeholder="Phone or Email">
-    <input id="postalCode" placeholder="Postal Code">
-
-    <select id="service">
-      <option value="roof inspection">Roof inspection</option>
-      <option value="leak check">Leak check</option>
-      <option value="insurance claim">Insurance claim</option>
-    </select>
-
-    <button onclick="submitLead()">Submit Request</button>
-
-    <div class="status" id="status"></div>
-    <div class="score-box" id="scoreBox"></div>
+  <div class="header">
+    <div class="badge">⚡ AI LEAD MARKETPLACE + REAL-TIME AUCTION</div>
+    <h1>NorthSky Auction OS</h1>
+    <div class="sub">Homeowners generate leads → Contractors bid for the highest value link</div>
   </div>
 
-  <!-- CONTRACTOR SIDE -->
-  <div class="card contractor-card">
-    <h2>🧰 Contractor Marketplace</h2>
+  <div class="marketplace-grid">
+    <!-- LEFT: Homeowner Lead Form -->
+    <div class="card">
+      <div class="card-header">
+        <span>🏠</span> New Lead Request
+      </div>
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="leadName" placeholder="John Carter">
+      </div>
+      <div class="form-group">
+        <label>Phone / Email</label>
+        <input type="text" id="leadContact" placeholder="+1 (587) 123-4567">
+      </div>
+      <div class="form-group">
+        <label>Postal code</label>
+        <input type="text" id="leadPostal" placeholder="T2X 1A1">
+      </div>
+      <div class="form-group">
+        <label>Service needed</label>
+        <select id="leadService">
+          <option value="roof inspection">Roof inspection</option>
+          <option value="leak check">Leak check</option>
+          <option value="insurance claim">Insurance claim</option>
+        </select>
+      </div>
+      <button id="submitLeadBtn">✨ Generate Lead & Start Auction</button>
 
-    <p class="small">Live leads appear here based on city + score + bidding system</p>
+      <div class="status-panel" id="leadStatus">
+        <span>📡 Ready – submit to see lead score and bidding room.</span>
+      </div>
+    </div>
 
-    <div class="price">$15 - $120 per lead</div>
+    <!-- RIGHT: Auction House (Contractor Bidding) -->
+    <div class="card">
+      <div class="card-header">
+        <span>🔨</span> Live Lead Auction
+      </div>
+      <div id="auctionPanel">
+        <div class="current-lead" id="currentLeadInfo">
+          <span style="color:#8e9aaf;">No active lead. Submit a lead to start the auction.</span>
+        </div>
 
-    <p class="small">
-      ✔ Exclusive leads available<br>
-      ✔ Bid on high-value jobs<br>
-      ✔ City-based filtering (Calgary / Edmonton)
-    </p>
-
-    <button onclick="alert('Contractor login coming soon')">
-      Contractor Login
-    </button>
+        <div class="auction-room" id="auctionRoom" style="display: none;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">💰 Place your bid (contractor)</div>
+          <div class="bid-row">
+            <input type="text" id="bidderName" placeholder="Your company name">
+            <input type="number" id="bidAmount" placeholder="Bid $" step="1" min="0">
+            <button id="placeBidBtn" style="width: auto; padding: 0 1rem;">Bid</button>
+          </div>
+          <div id="auctionMessage" style="font-size:0.8rem; margin-top:6px;"></div>
+          <div class="bid-history" id="bidHistoryList">
+            <div class="bid-item">⏳ No bids yet — be the first!</div>
+          </div>
+          <div style="display: flex; gap: 0.6rem; margin-top: 1rem;">
+            <button id="endAuctionBtn" class="secondary" style="background:#7f1a1a;">End Auction</button>
+            <button id="resetAuctionBtn" class="secondary">Reset Auction</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-</div>
-
-<div class="footer">
-NorthSky AI — Lead Marketplace + SaaS Engine
+  <div class="footer">
+    ⚡ NorthSky AI Lead Marketplace | Bids are final when auction ends | Integrated with Supabase + Twilio
+  </div>
 </div>
 
 <script>
+  // ---------- CONFIGURATION ----------
+  // Replace with your actual backend URL (or keep relative if same origin)
+  const API_BASE = window.location.origin;   // assumes backend runs on same host:port
+  // For local development with separate backend, set: const API_BASE = "http://localhost:3000";
+  // For production: const API_BASE = "https://your-api.com";
 
-async function submitLead(){
+  // ---------- AUCTION ENGINE (in-memory for current lead) ----------
+  class Auction {
+    constructor(itemName, startingPrice = 0) {
+      this.itemName = itemName;
+      this.startingPrice = startingPrice;
+      this.highestBid = startingPrice;
+      this.highestBidder = null;
+      this.isActive = true;
+      this.bidHistory = [];
+    }
 
-  const name = document.getElementById("name").value.trim();
-  const contact = document.getElementById("contact").value.trim();
-  const postalCode = document.getElementById("postalCode").value.trim();
-  const service = document.getElementById("service").value;
+    placeBid(bidderName, amount) {
+      if (!this.isActive) return { success: false, message: "Auction closed." };
+      if (!bidderName || bidderName.trim() === "") return { success: false, message: "Enter your name." };
+      if (isNaN(amount) || amount <= 0) return { success: false, message: "Valid positive amount required." };
+      if (amount <= this.highestBid) return { success: false, message: `Bid must exceed $${this.highestBid.toFixed(2)}` };
 
-  const status = document.getElementById("status");
-  const scoreBox = document.getElementById("scoreBox");
+      this.highestBid = amount;
+      this.highestBidder = bidderName.trim();
+      this.bidHistory.unshift({
+        bidder: bidderName.trim(),
+        amount: amount,
+        time: new Date().toLocaleTimeString()
+      });
+      return { success: true, message: `✅ ${bidderName} bids $${amount.toFixed(2)}`, highestBid: this.highestBid, highestBidder: this.highestBidder };
+    }
 
-  status.innerText = "Sending to AI engine...";
+    endAuction() {
+      if (!this.isActive) return { success: false, message: "Already ended." };
+      this.isActive = false;
+      if (this.highestBidder && this.highestBid > this.startingPrice) {
+        return { success: true, winner: this.highestBidder, winningBid: this.highestBid, message: `🏆 WINNER: ${this.highestBidder} with $${this.highestBid.toFixed(2)}` };
+      } else {
+        return { success: true, winner: null, message: "Auction ended – no valid bids." };
+      }
+    }
 
-  try {
-    const res = await fetch("https://YOUR-API-DOMAIN.com/lead", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
-        name,
-        contact,
-        postalCode,
-        service,
-        source:"marketplace-site",
-        pageUrl:window.location.href
-      })
-    });
+    reset(startingPrice = 0) {
+      this.isActive = true;
+      this.startingPrice = startingPrice;
+      this.highestBid = startingPrice;
+      this.highestBidder = null;
+      this.bidHistory = [];
+      return { success: true, message: "Auction reset. Bidding open." };
+    }
 
-    const data = await res.json();
+    getState() {
+      return {
+        isActive: this.isActive,
+        highestBid: this.highestBid,
+        highestBidder: this.highestBidder,
+        bidHistory: this.bidHistory
+      };
+    }
+  }
 
-    if(!data.success){
-      status.innerText = data.error || "Failed";
+  // Global auction instance (null until lead created)
+  let currentAuction = null;
+  let currentLeadMeta = { id: null, score: null, city: null };
+
+  // DOM elements
+  const submitBtn = document.getElementById("submitLeadBtn");
+  const leadStatusDiv = document.getElementById("leadStatus");
+  const currentLeadInfoDiv = document.getElementById("currentLeadInfo");
+  const auctionRoom = document.getElementById("auctionRoom");
+  const bidderNameInput = document.getElementById("bidderName");
+  const bidAmountInput = document.getElementById("bidAmount");
+  const placeBidBtn = document.getElementById("placeBidBtn");
+  const endAuctionBtn = document.getElementById("endAuctionBtn");
+  const resetAuctionBtn = document.getElementById("resetAuctionBtn");
+  const bidHistoryList = document.getElementById("bidHistoryList");
+  const auctionMessageSpan = document.getElementById("auctionMessage");
+
+  // Helper: render auction UI
+  function renderAuctionUI() {
+    if (!currentAuction) {
+      auctionRoom.style.display = "none";
+      currentLeadInfoDiv.innerHTML = `<span style="color:#8e9aaf;">No active lead. Submit a lead to start the auction.</span>`;
       return;
     }
 
-    status.innerText = "Lead created + sent to contractors";
+    auctionRoom.style.display = "block";
+    const state = currentAuction.getState();
+    const statusText = state.isActive ? "🟢 OPEN" : "🔴 CLOSED";
+    const highestBidderText = state.highestBidder ? `<span class="highlight">${escapeHtml(state.highestBidder)}</span>` : "—";
 
-    const score = data.score || 0;
-
-    let level = "COLD";
-    let color = "#ef4444";
-
-    if(score >= 15){
-      level = "HOT 🔥 (SMS + BIDS ACTIVE)";
-      color = "#22c55e";
-    } else if(score >= 6){
-      level = "WARM 🟡";
-      color = "#f59e0b";
-    }
-
-    scoreBox.innerHTML = `
-      Score: <b style="color:${color}">${score}</b><br>
-      Status: <b style="color:${color}">${level}</b>
+    currentLeadInfoDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+        <div><strong>📌 Lead ID:</strong> ${currentLeadMeta.id?.slice(0,8) || "—"}</div>
+        <div><strong>⭐ Score:</strong> ${currentLeadMeta.score || 0}</div>
+        <div><strong>🏙️ City:</strong> ${currentLeadMeta.city || "—"}</div>
+      </div>
+      <div style="margin-top: 8px;"><strong>💰 Current bid:</strong> $${state.highestBid.toFixed(2)} (${highestBidderText})</div>
+      <div><strong>⏳ Status:</strong> ${statusText}</div>
     `;
 
-  } catch(e){
-    status.innerText = "Server error";
+    // render bid history
+    if (state.bidHistory.length === 0) {
+      bidHistoryList.innerHTML = '<div class="bid-item">💬 No bids yet. Place the first bid!</div>';
+    } else {
+      bidHistoryList.innerHTML = state.bidHistory.map(b => 
+        `<div class="bid-item">💰 <strong>${escapeHtml(b.bidder)}</strong> – $${b.amount.toFixed(2)}  <span style="font-size:0.7rem;">(${b.time})</span></div>`
+      ).join('');
+    }
+
+    // disable bid button if auction closed
+    placeBidBtn.disabled = !state.isActive;
   }
-}
 
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Submit lead to NorthSky backend
+  async function submitLead() {
+    const name = document.getElementById("leadName").value.trim();
+    const contact = document.getElementById("leadContact").value.trim();
+    const postalCode = document.getElementById("leadPostal").value.trim();
+    const service = document.getElementById("leadService").value;
+
+    if (!contact || contact.length < 5) {
+      leadStatusDiv.innerHTML = `<span style="color:#f97316;">⚠️ Please provide a valid phone or email.</span>`;
+      return;
+    }
+
+    leadStatusDiv.innerHTML = `⏳ Sending to AI engine & creating lead...`;
+    try {
+      const response = await fetch(`${API_BASE}/lead`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          contact,
+          postalCode,
+          service,
+          source: "auction-marketplace",
+          pageUrl: window.location.href
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Backend error");
+      }
+
+      // Lead created successfully
+      currentLeadMeta = {
+        id: data.leadId,
+        score: data.score,
+        city: data.city
+      };
+
+      // Initialize auction with starting price = lead score * 2 (dynamic)
+      const startingPrice = Math.max(5, (data.score || 0) * 2);
+      currentAuction = new Auction(`Lead ${data.leadId.slice(0,6)}`, startingPrice);
+      
+      renderAuctionUI();
+
+      let scoreColor = "#ef4444";
+      let level = "COLD";
+      if (data.score >= 15) { level = "HOT 🔥 (high value)"; scoreColor = "#22c55e"; }
+      else if (data.score >= 6) { level = "WARM 🟡"; scoreColor = "#f59e0b"; }
+
+      leadStatusDiv.innerHTML = `
+        ✅ Lead created! Score: <strong style="color:${scoreColor}">${data.score}</strong> (${level})<br>
+        Assigned to marketplace: ${data.assigned ? "✅ contractor notified" : "awaiting bids"}<br>
+        <span style="font-size:0.75rem;">Lead ID: ${data.leadId} | City: ${data.city}</span>
+      `;
+
+      // Optionally send a welcome message
+      auctionMessageSpan.innerHTML = "🎯 Auction started! Contractors can bid now.";
+
+    } catch (err) {
+      console.error(err);
+      leadStatusDiv.innerHTML = `<span style="color:#ef4444;">❌ Error: ${err.message}. Make sure backend is running.</span>`;
+    }
+  }
+
+  // Place bid on current auction
+  function placeBid() {
+    if (!currentAuction) {
+      auctionMessageSpan.innerHTML = "⚠️ No active lead auction. Submit a lead first.";
+      return;
+    }
+    const bidder = bidderNameInput.value.trim();
+    const amount = parseFloat(bidAmountInput.value);
+    const result = currentAuction.placeBid(bidder, amount);
+    if (result.success) {
+      auctionMessageSpan.innerHTML = result.message;
+      bidAmountInput.value = "";
+      renderAuctionUI();
+    } else {
+      auctionMessageSpan.innerHTML = `❌ ${result.message}`;
+    }
+  }
+
+  function endAuction() {
+    if (!currentAuction) return;
+    const result = currentAuction.endAuction();
+    auctionMessageSpan.innerHTML = result.message;
+    renderAuctionUI();
+    if (result.winner) {
+      leadStatusDiv.innerHTML += `<br>🏆 AUCTION WINNER: ${result.winner} with $${result.winningBid.toFixed(2)}`;
+    }
+  }
+
+  function resetAuction() {
+    if (!currentAuction) return;
+    const result = currentAuction.reset(0);
+    auctionMessageSpan.innerHTML = result.message;
+    renderAuctionUI();
+  }
+
+  // Attach event listeners
+  submitBtn.addEventListener("click", submitLead);
+  placeBidBtn.addEventListener("click", placeBid);
+  endAuctionBtn.addEventListener("click", endAuction);
+  resetAuctionBtn.addEventListener("click", resetAuction);
+
+  // initial UI
+  renderAuctionUI();
 </script>
-
 </body>
 </html>
