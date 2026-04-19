@@ -13,7 +13,6 @@
   --muted:rgba(232,232,232,0.6);
   --border:rgba(255,255,255,0.08);
   --glass:rgba(255,255,255,0.04);
-  --accent:#38bdf8;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -36,10 +35,7 @@ body{
   border-bottom:1px solid var(--border);
 }
 
-.logo{
-  font-weight:700;
-  letter-spacing:0.5px;
-}
+.logo{font-weight:700;}
 
 /* BUTTON */
 .btn{
@@ -54,7 +50,6 @@ body{
 
 .btn:hover{
   transform:translateY(-2px);
-  border-color:rgba(255,255,255,0.25);
 }
 
 /* LAYOUT */
@@ -64,23 +59,16 @@ body{
   padding:80px 20px;
 }
 
-/* HERO */
-.hero{
-  text-align:center;
-  margin-bottom:70px;
-}
+.hero{text-align:center;margin-bottom:70px;}
 
-.hero h1{
-  font-size:52px;
-  line-height:1.1;
-}
+.hero h1{font-size:52px;line-height:1.1;}
 
 .hero p{
   margin-top:14px;
   color:var(--muted);
-  line-height:1.6;
   max-width:800px;
   margin-inline:auto;
+  line-height:1.6;
 }
 
 /* GRID */
@@ -90,7 +78,6 @@ body{
   gap:14px;
 }
 
-/* CARD */
 .card{
   background:var(--glass);
   border:1px solid var(--border);
@@ -98,7 +85,7 @@ body{
   padding:18px;
 }
 
-/* LINK CARD */
+/* LINKS */
 .link{
   display:block;
   padding:18px;
@@ -110,10 +97,7 @@ body{
   transition:0.2s;
 }
 
-.link:hover{
-  transform:scale(1.02);
-  border-color:rgba(255,255,255,0.25);
-}
+.link:hover{transform:scale(1.02);}
 
 .link span{
   display:block;
@@ -122,7 +106,6 @@ body{
   color:var(--muted);
 }
 
-/* SECTION */
 .section-title{
   margin:70px 0 20px;
   text-align:center;
@@ -131,7 +114,6 @@ body{
   color:var(--muted);
 }
 
-/* FOOTER */
 .footer{
   text-align:center;
   margin-top:90px;
@@ -143,7 +125,6 @@ body{
 
 <body>
 
-<!-- NAV -->
 <div class="nav">
   <div class="logo">NorthSky Systems OS</div>
 
@@ -154,81 +135,39 @@ body{
 
 <div class="container">
 
-<!-- HERO -->
 <div class="hero">
-  <h1>AI Infrastructure Layer for Real-World Systems</h1>
+  <h1>AI Infrastructure Layer for Real Revenue Systems</h1>
 
   <p>
-    NorthSky Systems OS connects AI lead generation, drone inspection workflows,
-    and full-funnel tracking into one unified growth system.
+    NorthSky connects AI lead generation, drone inspection workflows, and full revenue attribution into one system.
   </p>
 
   <button class="btn" onclick="NorthSky.redirectToFunnel('https://goldylox752-github-io.vercel.app/')">
-    Enter Drone Funnel
+    Enter Funnel
   </button>
 </div>
 
-<!-- CORE -->
 <div class="section-title">CORE SYSTEMS</div>
 
 <div class="grid">
-
-  <div class="card">
-    <h3>AI Lead Engine</h3>
-    <p>Captures and qualifies high-intent roofing leads automatically.</p>
-  </div>
-
-  <div class="card">
-    <h3>Funnel Tracking Layer</h3>
-    <p>Tracks sessions, clicks, and attribution across all traffic sources.</p>
-  </div>
-
-  <div class="card">
-    <h3>Drone Inspection System</h3>
-    <p>Converts leads into visual inspections and high-ticket closes.</p>
-  </div>
-
+  <div class="card"><h3>AI Lead Engine</h3><p>Captures high-intent buyers automatically.</p></div>
+  <div class="card"><h3>Tracking Layer</h3><p>Session + attribution + behavior scoring.</p></div>
+  <div class="card"><h3>Revenue Engine</h3><p>Turns traffic into qualified sales opportunities.</p></div>
 </div>
 
-<!-- ECOSYSTEM -->
 <div class="section-title">ECOSYSTEM</div>
 
 <div class="grid">
+  <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">NorthSky AI<span>Lead generation system</span></a>
+  <a class="link" href="https://northsky-saas.vercel.app/" target="_blank">RoofFlow AI<span>Roofing funnel system</span></a>
+  <a class="link" href="https://northsky-drones.vercel.app/" target="_blank">Drone System<span>Inspection + quoting</span></a>
+</div>
 
-  <a class="link" href="https://north-sky-ai.vercel.app/" target="_blank">
-    NorthSky AI Platform
-    <span>Automation + lead generation engine</span>
-  </a>
-
-  <a class="link" href="https://northsky-saas.vercel.app/" target="_blank">
-    RoofFlow AI System
-    <span>Roofing lead capture + territory logic</span>
-  </a>
-
-  <a class="link" href="https://northsky-drones.vercel.app/" target="_blank">
-    Drone Inspection System
-    <span>Aerial inspection + quoting workflow</span>
-  </a>
+<div class="footer">© NorthSky Systems OS — Revenue Infrastructure</div>
 
 </div>
 
-<div class="footer">
-  © NorthSky Systems OS — Growth Infrastructure Layer
-</div>
-
-</div>
-
-<!-- CORE SYSTEM -->
 <script src="core.js"></script>
-
-<!-- PAGE EVENTS -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.NorthSky) {
-    NorthSky.track("page_view");
-  }
-});
-</script>
 
 </body>
 </html>
