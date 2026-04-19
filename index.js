@@ -1,133 +1,180 @@
 /* ===============================
-   NORTHSKY SYSTEMS OS CORE.JS
+   NORTHSKY SYSTEMS OS
    Funnel Tracking + Session Engine
    =============================== */
 
-(function(){
+(function () {
 
   /* ===============================
-     SESSION MANAGEMENT
+     CONFIG
   =============================== */
 
-  function getSession(){
-    let session_id = localStorage.getItem("ns_session_id");
+  const CONFIG = {
+    sessionKey: "ns_session_id",
+    userKey: "ns_user_id",
+    sourceTag: "northsky_os"
+  };
 
-    if(!session_id){
-      session_id = crypto.randomUUID();
-      localStorage.setItem("ns_session_id", session_id);
-    }
+  /* ===============================
+     SESSION HELPERS
+  =============================== */
 
-    return session_id;
+  function createId() {
+    return crypto.randomUUID();
   }
 
-  function getUser(){
-    let user_id = localStorage.getItem("ns_user_id");
+  function getStorageKey(key) {
+    let value = localStorage.getItem(key);
 
-    if(!user_id){
-      user_id = crypto.randomUUID();
-      localStorage.setItem("ns_user_id", user_id);
+    if (!value) {
+      value = createId();
+      localStorage.setItem(key, value);
     }
 
-    return user_id;
+    return value;
+  }
+
+  function getSession() {
+    return getStorageKey(CONFIG.sessionKey);
+  }
+
+  function getUser() {
+    return getStorageKey(CONFIG.userKey);
   }
 
   /* ===============================
-     UTM + SOURCE TRACKING
+     TRAFFIC ATTRIBUTION
   =============================== */
 
-  function getParams(){
-    const p = new URLSearchParams(window.location.search);
+  function getAttribution() {
+    const params = new URLSearchParams(window.location.search);
 
     return {
-      utm_source: p.get("utm_source") || "direct",
-      utm_campaign: p.get("utm_campaign") || "none",
-      utm_medium: p.get("utm_medium") || "organic",
+      utm_source: params.get("utm_source") || "direct",
+      utm_campaign: params.get("utm_campaign") || "none",
+      utm_medium: params.get("utm_medium") || "organic",
       referrer: document.referrer || "none"
     };
   }
 
   /* ===============================
-     EVENT TRACKING (LOG LAYER)
+     EVENT TRACKER (CORE ENGINE)
   =============================== */
 
-  function track(event, data = {}){
-    const payload = {
-      event,
+  function track(eventName, data = {}) {
+    const event = {
+      event: eventName,
       data,
       session_id: getSession(),
       user_id: getUser(),
-      timestamp: new Date().toISOString(),
       page: window.location.href,
-      ...getParams()
+      timestamp: new Date().toISOString(),
+      ...getAttribution()
     };
 
-    console.log("TRACK:", payload);
+    console.log("[NS TRACK]", event);
 
-    /* OPTIONAL: SEND TO BACKEND */
-    /*
-    fetch("https://YOUR_API_ENDPOINT/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    }).catch(()=>{});
-    */
+    // Future: backend ingestion
+    // sendEvent(event);
   }
 
   /* ===============================
-     FUNNEL REDIRECT
+     FUNNEL REDIRECT ENGINE
   =============================== */
 
-  function sendToFunnel(urlBase){
+  function redirectToFunnel(destinationUrl) {
+    const url = new URL(destinationUrl);
 
-    const url = new URL(urlBase);
+    const attribution = getAttribution();
 
     url.searchParams.set("session_id", getSession());
     url.searchParams.set("user_id", getUser());
+    url.searchParams.set("from", CONFIG.sourceTag);
 
-    const params = getParams();
-
-    Object.keys(params).forEach(key=>{
-      url.searchParams.set(key, params[key]);
+    Object.entries(attribution).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
     });
 
-    url.searchParams.set("from", "northsky_os");
-
-    track("funnel_redirect", { destination: urlBase });
+    track("funnel_redirect", { destination: destinationUrl });
 
     window.location.href = url.toString();
   }
 
   /* ===============================
-     AUTO PAGE TRACK
+     AUTO EVENT BINDING
   =============================== */
 
-  document.addEventListener("DOMContentLoaded", ()=>{
+  function initAutoTracking() {
+
     track("page_view");
 
-    /* Track clicks on buttons */
-    document.querySelectorAll(".btn").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        track("button_click", { text: btn.innerText });
+    // Button clicks
+    document.querySelectorAll(".btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        track("button_click", {
+          text: btn.innerText.trim()
+        });
       });
     });
 
-    /* Track outbound links */
-    document.querySelectorAll("a").forEach(link=>{
-      link.addEventListener("click", ()=>{
-        track("link_click", { href: link.href });
+    // Link clicks
+    document.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        track("link_click", {
+          href: link.href
+        });
       });
     });
+  }
+
+  /* ===============================
+     OPTIONAL ADVANCED EVENTS
+  =============================== */
+
+  function trackEngagement() {
+    let startTime = Date.now();
+    let maxScroll = 0;
+
+    // Time on page
+    window.addEventListener("beforeunload", () => {
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      track("time_on_page", { seconds: duration });
+    });
+
+    // Scroll depth
+    window.addEventListener("scroll", () => {
+      const scrollPercent = Math.round(
+        ((window.scrollY + window.innerHeight) / document.body.scrollHeight) * 100
+      );
+
+      if (scrollPercent > maxScroll) {
+        maxScroll = scrollPercent;
+
+        if ([25, 50, 75, 100].includes(scrollPercent)) {
+          track("scroll_depth", { percent: scrollPercent });
+        }
+      }
+    });
+  }
+
+  /* ===============================
+     INIT SYSTEM
+  =============================== */
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initAutoTracking();
+    trackEngagement();
   });
 
   /* ===============================
-     GLOBAL EXPORTS
+     PUBLIC API
   =============================== */
 
   window.NorthSky = {
     track,
-    sendToFunnel
+    redirectToFunnel,
+    getSession,
+    getUser
   };
 
 })();
