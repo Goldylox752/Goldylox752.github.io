@@ -39,7 +39,7 @@ const supabase = createClient(
 );
 
 /* =========================
-   EMAIL ALERTS (3CX BRIDGE)
+   EMAIL ALERTS
 ========================= */
 
 const transporter = nodemailer.createTransport({
@@ -51,7 +51,7 @@ const transporter = nodemailer.createTransport({
 });
 
 /* =========================
-   TWILIO SMS SYSTEM
+   TWILIO SMS
 ========================= */
 
 const smsClient = twilio(
@@ -72,13 +72,13 @@ function calculateLeadScore({ service, postalCode, source }) {
 
   if (source === "ad" || source === "kijiji") score += 3;
 
-  if (postalCode && postalCode.startsWith("T")) score += 2;
+  if (postalCode?.startsWith("T")) score += 2;
 
   return score;
 }
 
 /* =========================
-   CITY DETECTION (FOR LEAD SELLING)
+   CITY DETECTION
 ========================= */
 
 function detectCity(postalCode) {
@@ -92,7 +92,7 @@ function detectCity(postalCode) {
 }
 
 /* =========================
-   GET CONTRACTOR BY CITY
+   CONTRACTOR LOOKUP
 ========================= */
 
 async function getContractor(city) {
@@ -104,7 +104,7 @@ async function getContractor(city) {
     .limit(1)
     .maybeSingle();
 
-  return data;
+  return data || null;
 }
 
 /* =========================
@@ -114,12 +114,12 @@ async function getContractor(city) {
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
-    system: "NorthSky Revenue OS v3"
+    system: "NorthSky Revenue OS v4"
   });
 });
 
 /* =========================
-   LEAD API (CORE ENGINE)
+   LEAD ENGINE
 ========================= */
 
 app.post("/lead", async (req, res) => {
@@ -150,18 +150,11 @@ app.post("/lead", async (req, res) => {
        DUPLICATE CHECK
     ========================= */
 
-    const { data: existing, error: fetchError } = await supabase
+    const { data: existing } = await supabase
       .from("leads")
       .select("id")
       .eq("contact", cleanContact)
       .maybeSingle();
-
-    if (fetchError) {
-      return res.status(500).json({
-        success: false,
-        error: fetchError.message
-      });
-    }
 
     if (existing) {
       return res.status(200).json({
@@ -184,12 +177,6 @@ app.post("/lead", async (req, res) => {
     const city = detectCity(postalCode);
 
     /* =========================
-       CONTRACTOR MATCHING
-    ========================= */
-
-    const contractor = await getContractor(city);
-
-    /* =========================
        CREATE LEAD
     ========================= */
 
@@ -206,14 +193,13 @@ app.post("/lead", async (req, res) => {
       status: "new",
       score,
       city,
+      locked: false,
       created_at: new Date().toISOString()
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("leads")
-      .insert(newLead)
-      .select()
-      .single();
+      .insert(newLead);
 
     if (error) {
       return res.status(500).json({
@@ -223,7 +209,13 @@ app.post("/lead", async (req, res) => {
     }
 
     /* =========================
-       ALERT OWNER (SMS)
+       CONTRACTOR MATCH
+    ========================= */
+
+    const contractor = await getContractor(city);
+
+    /* =========================
+       OWNER ALERT (HOT LEADS ONLY)
     ========================= */
 
     if (score >= 10) {
@@ -239,10 +231,14 @@ Score: ${score}`,
     }
 
     /* =========================
-       ASSIGN + SELL LEAD TO CONTRACTOR
+       CONTRACTOR ASSIGNMENT
     ========================= */
 
+    let assigned = false;
+
     if (contractor) {
+      assigned = true;
+
       await supabase.from("lead_assignments").insert([
         {
           id: uuidv4(),
@@ -255,7 +251,6 @@ Score: ${score}`,
         }
       ]);
 
-      /* SEND CONTRACTOR SMS */
       await smsClient.messages.create({
         body: `📍 NEW LEAD - ${city}
 ${name} | ${cleanContact}
@@ -268,7 +263,7 @@ Score: ${score}`,
     }
 
     /* =========================
-       EMAIL ALERT (3CX FLOW)
+       EMAIL ALERT
     ========================= */
 
     await transporter.sendMail({
@@ -283,6 +278,7 @@ City: ${city}
 Service: ${service}
 Source: ${source}
 Score: ${score}
+Assigned: ${assigned}
       `
     });
 
@@ -295,7 +291,8 @@ Score: ${score}
       leadId,
       score,
       city,
-      assigned: !!contractor,
+      assigned,
+      status: assigned ? "assigned" : "unassigned",
       message: "Lead processed successfully"
     });
 
@@ -316,5 +313,5 @@ Score: ${score}
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 NorthSky Revenue OS running on port ${PORT}`);
+  console.log(`🚀 NorthSky Revenue OS v4 running on port ${PORT}`);
 });
