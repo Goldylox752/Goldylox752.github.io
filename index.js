@@ -1,151 +1,3 @@
-window.NorthSkyAutopilot = (() => {
-
-  const API = "https://your-api.com";
-
-  /* ===============================
-     LEAD CAPTURE
-  =============================== */
-
-  async function captureLead(email, meta = {}) {
-
-    const payload = {
-      email,
-      user_id: localStorage.getItem("ns_user_id"),
-      session_id: localStorage.getItem("ns_session_id"),
-      score: localStorage.getItem("ns_score"),
-      url: location.href,
-      meta,
-      time: new Date().toISOString()
-    };
-
-    await fetch(`${API}/lead`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-
-    NorthSkyOS?.track("lead", { email });
-
-    return payload;
-  }
-
-  /* ===============================
-     CHECKOUT TRACKING
-  =============================== */
-
-  function trackCheckoutClick(product = "skymaster_x1") {
-    NorthSkyOS?.track("stripe_click", { product });
-
-    fetch(`${API}/checkout-click`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        product,
-        user_id: localStorage.getItem("ns_user_id"),
-        session_id: localStorage.getItem("ns_session_id"),
-        score: localStorage.getItem("ns_score"),
-        url: location.href
-      })
-    });
-  }
-
-  /* ===============================
-     ABANDONMENT DETECTION
-  =============================== */
-
-  let startTime = Date.now();
-
-  function initAbandonTracking() {
-    window.addEventListener("beforeunload", () => {
-
-      const timeSpent = Math.round((Date.now() - startTime) / 1000);
-
-      fetch(`${API}/abandon`, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-          user_id: localStorage.getItem("ns_user_id"),
-          session_id: localStorage.getItem("ns_session_id"),
-          timeSpent,
-          score: localStorage.getItem("ns_score"),
-          url: location.href
-        })
-      });
-    });
-  }
-
-  /* ===============================
-     AUTO HOT LEAD ROUTER
-  =============================== */
-
-  function checkHotRoute() {
-
-    const score = Number(localStorage.getItem("ns_score") || 0);
-
-    if (score >= 15) {
-      fetch(`${API}/hot-lead`, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-          user_id: localStorage.getItem("ns_user_id"),
-          session_id: localStorage.getItem("ns_session_id"),
-          score,
-          url: location.href
-        })
-      });
-
-      // optional auto redirect
-      window.location.href = "https://goldylox752.github.io/RoofFlow-AI/";
-    }
-  }
-
-  /* ===============================
-     INIT
-  =============================== */
-
-  function init() {
-    initAbandonTracking();
-    checkHotRoute();
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-
-  return {
-    captureLead,
-    trackCheckoutClick,
-    checkHotRoute
-  };
-
-})();
-
-
-
-window.NorthSkyOS = {
-  track(event, data) {
-    fetch("https://your-api.com/event", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event,
-        data,
-        session: localStorage.getItem("ns_session_id"),
-        user: localStorage.getItem("ns_user_id"),
-        score: localStorage.getItem("ns_score"),
-        url: location.href
-      })
-    });
-  },
-
-  route(score) {
-    if (score >= 15) {
-      window.location.href = "https://goldylox752.github.io/RoofFlow-AI/";
-    }
-  }
-};
-
-
-
-
 (function () {
 
   /* =========================
@@ -153,155 +5,152 @@ window.NorthSkyOS = {
   ========================= */
 
   const CONFIG = {
+    endpoint: "https://your-api.com/event",
     sessionKey: "ns_session_id",
     userKey: "ns_user_id",
     scoreKey: "ns_score",
-    source: "northsky_os",
-    crmEndpoint: null,
-    debug: true
+    hotThreshold: 15,
+    debug: false,
+    source: location.hostname
   };
 
   /* =========================
      IDENTITY LAYER
   ========================= */
 
-  const id = () => crypto.randomUUID();
+  const uid = () => crypto.randomUUID();
 
   function getOrCreate(key) {
-    let val = localStorage.getItem(key);
-    if (!val) {
-      val = id();
-      localStorage.setItem(key, val);
+    let v = localStorage.getItem(key);
+    if (!v) {
+      v = uid();
+      localStorage.setItem(key, v);
     }
-    return val;
+    return v;
   }
 
-  const session = () => getOrCreate(CONFIG.sessionKey);
-  const user = () => getOrCreate(CONFIG.userKey);
+  const session = getOrCreate(CONFIG.sessionKey);
+  const user = getOrCreate(CONFIG.userKey);
 
   /* =========================
      SCORE ENGINE
   ========================= */
 
+  const SCORE_MAP = {
+    page_view: 1,
+    click: 2,
+    scroll: 1,
+    funnel: 8,
+    checkout_click: 12,
+    lead: 10,
+    purchase: 25
+  };
+
   function getScore() {
-    return parseInt(localStorage.getItem(CONFIG.scoreKey) || "0");
+    return Number(localStorage.getItem(CONFIG.scoreKey) || 0);
   }
 
-  function setScore(val) {
-    localStorage.setItem(CONFIG.scoreKey, val);
-    return val;
+  function setScore(v) {
+    localStorage.setItem(CONFIG.scoreKey, String(v));
   }
 
-  function addScore(val) {
-    const updated = getScore() + val;
-    return setScore(updated);
+  function addScore(event) {
+    const next = getScore() + (SCORE_MAP[event] || 0);
+    setScore(next);
+    return next;
   }
 
   function getStage(score) {
-    if (score >= 15) return "HOT";
+    if (score >= CONFIG.hotThreshold) return "HOT";
     if (score >= 6) return "WARM";
     return "COLD";
   }
 
   /* =========================
-     EVENT MAP
+     EVENT DISPATCH
   ========================= */
 
-  const SCORE_MAP = {
-    page_view: 1,
-    click: 3,
-    scroll: 2,
-    funnel: 10,
-    purchase: 25
-  };
-
-  /* =========================
-     CRM QUEUE (FIX: NO MORE LOST DATA)
-  ========================= */
-
-  let queue = [];
-
-  async function flush() {
-    if (!CONFIG.crmEndpoint || queue.length === 0) return;
-
-    const batch = [...queue];
-    queue = [];
-
+  async function send(payload) {
     try {
-      await fetch(CONFIG.crmEndpoint, {
+      await fetch(CONFIG.endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(batch)
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
       });
-
-      if (CONFIG.debug) console.log("CRM FLUSH OK", batch.length);
-
-    } catch (err) {
-      console.warn("CRM FAIL → retrying later", err);
-      queue.push(...batch); // retry safe
-    }
+    } catch (e) {}
   }
 
-  setInterval(flush, 5000);
-
   /* =========================
-     TRACK ENGINE
+     CORE TRACK FUNCTION
   ========================= */
 
   function track(event, data = {}) {
 
-    const added = SCORE_MAP[event] || 0;
-    const newScore = addScore(added);
-    const stage = getStage(newScore);
+    const score = addScore(event);
+    const stage = getStage(score);
 
     const payload = {
       event,
       data,
-      user_id: user(),
-      session_id: session(),
-      score: newScore,
+      user_id: user,
+      session_id: session,
+      score,
       stage,
-      url: location.href,
       source: CONFIG.source,
+      url: location.href,
       time: new Date().toISOString()
     };
 
-    queue.push(payload);
-
     if (CONFIG.debug) console.log("[NS]", payload);
+
+    send(payload);
+
+    /* HOT LEAD AUTO ROUTE */
+    if (score >= CONFIG.hotThreshold) {
+      send({
+        event: "hot_lead",
+        user_id: user,
+        session_id: session,
+        score,
+        stage,
+        url: location.href
+      });
+
+      window.dispatchEvent(new CustomEvent("HOT_LEAD", { detail: payload }));
+    }
 
     return payload;
   }
 
   /* =========================
-     SMART FUNNEL ROUTER (THIS IS YOUR MONEY ENGINE)
+     FUNNEL ROUTER
   ========================= */
 
   function redirect(url) {
 
-    const s = getScore();
-    const stage = getStage(s);
+    const score = getScore();
+    const stage = getStage(score);
 
-    const full = new URL(url);
+    const u = new URL(url);
+    u.searchParams.set("user", user);
+    u.searchParams.set("session", session);
+    u.searchParams.set("score", score);
+    u.searchParams.set("stage", stage);
 
-    full.searchParams.set("session", session());
-    full.searchParams.set("user", user());
-    full.searchParams.set("score", s);
-    full.searchParams.set("stage", stage);
+    track("funnel", { url });
 
-    track("funnel", { url, stage });
-
-    location.href = full.toString();
+    location.href = u.toString();
   }
 
   /* =========================
      AUTO TRACKING
   ========================= */
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function init() {
 
     track("page_view");
 
+    /* clicks */
     document.addEventListener("click", (e) => {
       const el = e.target.closest("a, button");
       if (!el) return;
@@ -312,34 +161,51 @@ window.NorthSkyOS = {
       });
     });
 
-    let maxScroll = 0;
+    /* scroll depth */
+    let last = 0;
 
     window.addEventListener("scroll", () => {
-      const percent = Math.round(
+      const pct = Math.round(
         ((scrollY + innerHeight) / document.body.scrollHeight) * 100
       );
 
-      if (percent > maxScroll) {
-        maxScroll = percent;
-        if ([25, 50, 75, 100].includes(percent)) {
-          track("scroll", { percent });
-        }
+      if (pct > last && [25, 50, 75, 100].includes(pct)) {
+        last = pct;
+        track("scroll", { pct });
       }
     });
 
-  });
+    /* abandonment */
+    window.addEventListener("beforeunload", () => {
+      send({
+        event: "abandon",
+        user_id: user,
+        session_id: session,
+        score: getScore(),
+        url: location.href,
+        time_on_page: Math.round(performance.now() / 1000)
+      });
+    });
+
+    /* hot lead listener */
+    window.addEventListener("HOT_LEAD", () => {
+      if (CONFIG.debug) console.log("🔥 HOT LEAD TRIGGERED");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
 
   /* =========================
-     GLOBAL EXPORT (IMPORTANT FIX)
+     GLOBAL EXPORT
   ========================= */
 
-  window.NorthSky = {
+  window.NorthSkyOS = {
     track,
     redirect,
-    session,
-    user,
     getScore,
-    getStage
+    getStage,
+    session: () => session,
+    user: () => user
   };
 
 })();
