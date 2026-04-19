@@ -15,6 +15,8 @@
   --glass:rgba(255,255,255,0.04);
   --accent:#38bdf8;
   --good:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -93,10 +95,19 @@ button{
 /* STATUS */
 .status{
   margin-top:10px;
-  font-size:12px;
+  font-size:13px;
   color:var(--muted);
 }
 
+.score-box{
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  font-size:13px;
+}
+
+/* FOOTER */
 .footer{
   text-align:center;
   margin-top:40px;
@@ -142,6 +153,7 @@ button{
     <button onclick="submitLead()">Request Inspection</button>
 
     <div class="status" id="status"></div>
+    <div class="score-box" id="scoreBox"></div>
   </div>
 
 </div>
@@ -159,7 +171,10 @@ async function submitLead(){
   const service = document.getElementById("service").value;
 
   const status = document.getElementById("status");
+  const scoreBox = document.getElementById("scoreBox");
+
   status.innerText = "Submitting...";
+  scoreBox.innerText = "";
 
   try {
     const res = await fetch("https://YOUR-API-DOMAIN.com/lead", {
@@ -180,7 +195,28 @@ async function submitLead(){
     const data = await res.json();
 
     if (data.success) {
-      status.innerText = "Success! We will contact you soon.";
+
+      status.innerText = "Lead submitted successfully.";
+
+      // 🧠 SCORE DISPLAY (NEW)
+      const score = data.score || 0;
+
+      let level = "COLD";
+      let color = "#ef4444";
+
+      if (score >= 15) {
+        level = "HOT LEAD 🔥 (SMS SENT)";
+        color = "#22c55e";
+      } else if (score >= 6) {
+        level = "WARM LEAD 🟡";
+        color = "#f59e0b";
+      }
+
+      scoreBox.innerHTML = `
+        Lead Score: <b style="color:${color}">${score}</b><br>
+        Status: <b style="color:${color}">${level}</b>
+      `;
+
     } else {
       status.innerText = data.error || "Submission failed.";
     }
