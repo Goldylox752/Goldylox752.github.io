@@ -1,192 +1,208 @@
-window.NorthSky = (() => {
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
+import nodemailer from "nodemailer";
+import { createClient } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
 
-  const API = "https://your-api.com";
+dotenv.config();
 
-  const CONFIG = {
-    hot: 15,
-    warm: 6,
-    sessionKey: "ns_session_id",
-    userKey: "ns_user_id",
-    scoreKey: "ns_score",
-  };
+const app = express();
 
-  /* =========================
-     IDENTITY LAYER (UNIVERSAL)
-  ========================= */
+/* =========================
+   MIDDLEWARE
+========================= */
 
-  const id = () => crypto.randomUUID();
+app.use(cors());
+app.use(express.json());
 
-  function get(key){
-    let v = localStorage.getItem(key);
-    if(!v){
-      v = id();
-      localStorage.setItem(key, v);
-    }
-    return v;
+/* =========================
+   RATE LIMIT (ANTI-SPAM)
+========================= */
+
+const leadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: {
+    success: false,
+    error: "Too many requests. Please slow down."
   }
+});
 
-  const session = get(CONFIG.sessionKey);
-  const user = get(CONFIG.userKey);
+app.use("/lead", leadLimiter);
 
-  /* =========================
-     SCORE ENGINE
-  ========================= */
+/* =========================
+   SUPABASE CLIENT
+========================= */
 
-  const MAP = {
-    page_view: 1,
-    click: 2,
-    scroll_50: 2,
-    scroll_100: 3,
-    stripe_click: 10,
-    funnel_click: 8
-  };
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
-  function score(){
-    return Number(localStorage.getItem(CONFIG.scoreKey) || 0);
+/* =========================
+   EMAIL (3CX ALERT BRIDGE)
+========================= */
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
+});
 
-  function setScore(v){
-    localStorage.setItem(CONFIG.scoreKey, v);
-    return v;
-  }
+/* =========================
+   HEALTH CHECK
+========================= */
 
-  function add(event){
-    const next = score() + (MAP[event] || 0);
-    setScore(next);
-    return next;
-  }
+app.get("/", (req, res) => {
+  res.json({
+    status: "OK",
+    system: "NorthSky Lead Engine v1"
+  });
+});
 
-  function stage(s){
-    if(s >= CONFIG.hot) return "HOT";
-    if(s >= CONFIG.warm) return "WARM";
-    return "COLD";
-  }
+/* =========================
+   LEAD API
+========================= */
 
-  /* =========================
-     EVENT PIPE (THE MONEY PIPE)
-  ========================= */
+app.post("/lead", async (req, res) => {
+  try {
+    const {
+      name,
+      contact,
+      postalCode,
+      service = "unknown",
+      source = "direct",
+      pageUrl = null
+    } = req.body;
 
-  function send(event, data = {}) {
+    /* =========================
+       VALIDATION
+    ========================= */
 
-    const s = score();
-    const payload = {
-      event,
-      data,
-      user,
-      session,
-      score: s,
-      stage: stage(s),
-      url: location.href,
-      ts: Date.now()
-    };
-
-    // fire-and-forget event stream
-    fetch(`${API}/event`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    }).catch(()=>{});
-  }
-
-  /* =========================
-     TRACK FUNCTION (CORE HOOK)
-  ========================= */
-
-  function track(event, data){
-    const newScore = add(event);
-
-    const payload = {
-      event,
-      data,
-      user,
-      session,
-      score: newScore,
-      stage: stage(newScore)
-    };
-
-    send(event, data);
-
-    // 🚨 AUTOPILOT DECISION ENGINE
-    if(stage(newScore) === "HOT"){
-      triggerHotLoop(payload);
-    }
-
-    return payload;
-  }
-
-  /* =========================
-     HOT LEAD LOOP (AUTOMATION TRIGGER)
-  ========================= */
-
-  function triggerHotLoop(data){
-
-    send("hot_lead", data);
-
-    // 1. CRM push
-    fetch(`${API}/hot-lead`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(data)
-    }).catch(()=>{});
-
-    // 2. optional redirect to conversion
-    setTimeout(() => {
-      window.location.href =
-        "https://goldylox752.github.io/RoofFlow-AI/";
-    }, 800);
-  }
-
-  /* =========================
-     FUNNEL ROUTER (SMART REDIRECT)
-  ========================= */
-
-  function go(url){
-    track("funnel_click", {url});
-    window.location.href = url;
-  }
-
-  /* =========================
-     AUTO TRACKING (EVERY PAGE)
-  ========================= */
-
-  function init(){
-
-    track("page_view");
-
-    document.addEventListener("click", (e) => {
-      const el = e.target.closest("a,button");
-      if(!el) return;
-
-      track("click", {
-        text: el.innerText?.trim(),
-        href: el.href || null
+    if (!contact || contact.trim().length < 5) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid contact information"
       });
+    }
+
+    const cleanContact = contact.trim();
+
+    /* =========================
+       DUPLICATE CHECK
+    ========================= */
+
+    const { data: existing, error: fetchError } = await supabase
+      .from("leads")
+      .select("id")
+      .eq("contact", cleanContact)
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error("Duplicate check error:", fetchError);
+
+      return res.status(500).json({
+        success: false,
+        error: fetchError.message
+      });
+    }
+
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        message: "Lead already exists",
+        leadId: existing.id
+      });
+    }
+
+    /* =========================
+       CREATE LEAD
+    ========================= */
+
+    const leadId = uuidv4();
+
+    const newLead = {
+      id: leadId,
+      name: name || null,
+      contact: cleanContact,
+      postal_code: postalCode || null,
+      service,
+      source,
+      page_url: pageUrl,
+      status: "new",
+      score: 0,
+      created_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
+      .from("leads")
+      .insert(newLead)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+        details: error
+      });
+    }
+
+    /* =========================
+       3CX / EMAIL ALERT HOOK
+    ========================= */
+
+    try {
+      await transporter.sendMail({
+        from: "NorthSky Leads <your@email.com>",
+        to: process.env.ALERT_EMAIL,
+        subject: "🚨 NEW ROOFING LEAD",
+        text: `
+Lead ID: ${leadId}
+Name: ${name}
+Contact: ${cleanContact}
+Postal: ${postalCode}
+Service: ${service}
+Source: ${source}
+Page: ${pageUrl}
+        `
+      });
+    } catch (emailErr) {
+      console.error("Email alert failed:", emailErr);
+    }
+
+    /* =========================
+       RESPONSE
+    ========================= */
+
+    return res.status(201).json({
+      success: true,
+      leadId,
+      message: "Lead captured successfully"
     });
 
-    let max = 0;
+  } catch (err) {
+    console.error("Lead API crash:", err);
 
-    window.addEventListener("scroll", () => {
-      const pct = Math.round((scrollY + innerHeight) / document.body.scrollHeight * 100);
-
-      if(pct > max){
-        max = pct;
-
-        if(pct >= 50) track("scroll_50");
-        if(pct >= 100) track("scroll_100");
-      }
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error"
     });
-
   }
+});
 
-  document.addEventListener("DOMContentLoaded", init);
+/* =========================
+   START SERVER
+========================= */
 
-  return {
-    track,
-    go,
-    score,
-    stage: () => stage(score()),
-    session: () => session,
-    user: () => user
-  };
+const PORT = process.env.PORT || 3000;
 
-})();
+app.listen(PORT, () => {
+  console.log(`🚀 NorthSky Lead Engine running on port ${PORT}`);
+});
