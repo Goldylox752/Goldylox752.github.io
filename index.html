@@ -40,15 +40,8 @@ body{
   border-bottom:1px solid var(--border);
 }
 
-.logo{
-  font-weight:800;
-  letter-spacing:0.8px;
-}
-
-.pulse{
-  font-size:11px;
-  color:var(--muted);
-}
+.logo{font-weight:800;letter-spacing:0.8px;}
+.pulse{font-size:11px;color:var(--muted);}
 
 /* LAYOUT */
 .container{
@@ -57,11 +50,7 @@ body{
   padding:50px 20px;
 }
 
-/* HERO STRIP */
-.hero{
-  margin-bottom:20px;
-}
-
+/* HERO */
 .hero h1{
   font-size:26px;
   font-weight:800;
@@ -78,6 +67,7 @@ body{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:14px;
+  margin-top:18px;
 }
 
 .card{
@@ -87,7 +77,6 @@ body{
   padding:18px;
 }
 
-/* METRICS */
 .label{
   font-size:11px;
   color:var(--muted);
@@ -113,7 +102,7 @@ body{
 .warn{background:rgba(245,158,11,0.15);color:var(--warn);}
 .bad{background:rgba(239,68,68,0.15);color:var(--bad);}
 
-/* CONTROL PANEL */
+/* PANEL */
 .panel{
   margin-top:16px;
   background:var(--glass);
@@ -122,19 +111,10 @@ body{
   padding:18px;
 }
 
-.panel h2{
-  font-size:14px;
-  letter-spacing:1px;
-}
+.panel h2{font-size:14px;}
+.panel p{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;}
 
-.panel p{
-  margin-top:8px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.6;
-}
-
-/* BUTTONS */
+/* BUTTON */
 .btn{
   margin-top:12px;
   width:100%;
@@ -143,16 +123,27 @@ body{
   border:none;
   font-weight:800;
   cursor:pointer;
-  transition:0.2s;
-}
-
-.primary{
   background:var(--accent);
   color:#000;
 }
 
-.primary:hover{
-  transform:translateY(-2px);
+.btn:hover{transform:translateY(-2px);}
+
+/* LIVE FEED */
+.feed{
+  margin-top:18px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  font-size:12px;
+  color:var(--muted);
+  height:140px;
+  overflow:hidden;
+}
+
+.feed-item{
+  margin-bottom:6px;
 }
 
 /* FOOTER */
@@ -174,10 +165,9 @@ body{
 
 <div class="container">
 
-<!-- HERO -->
 <div class="hero">
   <h1>Revenue Control Center</h1>
-  <p>Track intent → route leads → push conversions automatically through RoofFlow AI.</p>
+  <p>Tracks intent → routes leads → pushes conversions into RoofFlow AI automatically.</p>
 </div>
 
 <!-- METRICS -->
@@ -201,23 +191,27 @@ body{
 
 </div>
 
-<!-- CONTROL PANEL -->
+<!-- CONTROL -->
 <div class="panel">
   <h2>AUTOMATED FUNNEL ROUTING</h2>
 
   <p>
-    High-intent users (score 15+) are automatically pushed into RoofFlow AI for conversion.
-    This system tracks behavior across all NorthSky properties.
+    High-intent users (15+) automatically route into RoofFlow AI conversion system.
   </p>
 
-  <button class="btn primary"
+  <button class="btn"
     onclick="NorthSky.redirectToFunnel('https://goldylox752.github.io/RoofFlow-AI/')">
     🚀 Push Traffic to RoofFlow AI
   </button>
 </div>
 
+<!-- LIVE ACTIVITY -->
+<div class="feed" id="feed">
+  <div class="feed-item">SYSTEM INITIALIZED...</div>
+</div>
+
 <div class="footer">
-  NorthSky OS — Revenue Command Layer v2
+  NorthSky OS — Revenue Command Layer v3
 </div>
 
 </div>
@@ -225,6 +219,19 @@ body{
 <script src="core.js"></script>
 
 <script>
+
+function addFeed(text){
+  const feed = document.getElementById("feed");
+  const item = document.createElement("div");
+  item.className = "feed-item";
+  item.innerText = text;
+
+  feed.prepend(item);
+
+  if(feed.children.length > 8){
+    feed.removeChild(feed.lastChild);
+  }
+}
 
 function update(){
 
@@ -254,9 +261,11 @@ function update(){
     status === "HOT LEAD" ? "HIGH INTENT" :
     status === "WARM" ? "ENGAGED" :
     "LOW INTENT";
+
+  addFeed(`Score: ${score} | Stage: ${status}`);
 }
 
-setInterval(update, 1000);
+setInterval(update, 2000);
 update();
 
 </script>
