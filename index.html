@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NorthSky AI | Drone Roof Inspections Alberta</title>
+<title>NorthSky AI | Instant Drone Roof Inspections Alberta</title>
 
 <style>
 :root{
@@ -16,7 +16,6 @@
   --accent:#38bdf8;
   --good:#22c55e;
   --warn:#f59e0b;
-  --bad:#ef4444;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -29,13 +28,13 @@ body{
 
 /* HERO */
 .hero{
-  padding:60px 20px;
+  padding:70px 20px;
   text-align:center;
 }
 
 .hero h1{
-  font-size:28px;
-  font-weight:800;
+  font-size:30px;
+  font-weight:900;
 }
 
 .hero p{
@@ -44,6 +43,17 @@ body{
   font-size:14px;
 }
 
+.badge{
+  display:inline-block;
+  margin-top:10px;
+  padding:6px 10px;
+  font-size:11px;
+  background:rgba(56,189,248,0.15);
+  color:var(--accent);
+  border-radius:999px;
+}
+
+/* CTA */
 .cta{
   margin-top:20px;
   display:inline-block;
@@ -55,7 +65,7 @@ body{
   text-decoration:none;
 }
 
-/* LAYOUT */
+/* CONTAINER */
 .container{
   max-width:900px;
   margin:auto;
@@ -79,6 +89,7 @@ input, select{
   border:1px solid var(--border);
   background:#0b0d12;
   color:white;
+  outline:none;
 }
 
 button{
@@ -88,13 +99,12 @@ button{
   border:none;
   border-radius:10px;
   background:var(--good);
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
 }
 
 button:disabled{
   opacity:0.6;
-  cursor:not-allowed;
 }
 
 /* STATUS */
@@ -112,6 +122,14 @@ button:disabled{
   font-size:13px;
 }
 
+/* TRUST BAR */
+.trust{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:10px;
+}
+
 /* FOOTER */
 .footer{
   text-align:center;
@@ -125,10 +143,14 @@ button:disabled{
 <body>
 
 <div class="hero">
-  <h1>AI Drone Roof Inspections in 15 Minutes</h1>
-  <p>Detect roof damage early and avoid $5,000+ repair bills.</p>
+  <div class="badge">⚡ AI Drone Detection System</div>
 
-  <a class="cta" href="#leadForm">Get Free Roof Inspection</a>
+  <h1>Get a Roof Inspection in 15 Minutes</h1>
+  <p>We detect hidden damage before it costs you thousands in repairs or insurance issues.</p>
+
+  <a class="cta" href="#leadForm">Get Free Inspection</a>
+
+  <div class="trust">🔴 Live system — SMS alerts sent instantly to inspection team</div>
 </div>
 
 <div class="container">
@@ -136,14 +158,14 @@ button:disabled{
   <div class="card">
     <h2>Why Homeowners Use NorthSky</h2>
     <p>
-      ✔ Hidden roof leaks cause expensive damage<br>
-      ✔ Insurance claims require proof<br>
-      ✔ Drone inspections catch early issues
+      ✔ Detect leaks before damage spreads<br>
+      ✔ Insurance-ready photo reports<br>
+      ✔ Drone AI analysis in minutes
     </p>
   </div>
 
   <div class="card" id="leadForm">
-    <h2>Book Your Free Inspection</h2>
+    <h2>Book Free Inspection</h2>
 
     <input id="name" type="text" placeholder="Full Name">
     <input id="contact" type="text" placeholder="Phone or Email">
@@ -155,7 +177,7 @@ button:disabled{
       <option value="insurance claim">Insurance claim support</option>
     </select>
 
-    <button id="submitBtn" onclick="submitLead()">Request Inspection</button>
+    <button id="submitBtn" onclick="submitLead()">Send Request</button>
 
     <div class="status" id="status"></div>
     <div class="score-box" id="scoreBox"></div>
@@ -164,16 +186,16 @@ button:disabled{
 </div>
 
 <div class="footer">
-NorthSky AI — Drone Roof Inspection System
+NorthSky AI — Automated Drone Inspection Funnel
 </div>
 
 <script>
 
-let isSubmitting = false;
+let loading = false;
 
 async function submitLead(){
 
-  if (isSubmitting) return;
+  if (loading) return;
 
   const name = document.getElementById("name").value.trim();
   const contact = document.getElementById("contact").value.trim();
@@ -186,25 +208,19 @@ async function submitLead(){
 
   scoreBox.innerHTML = "";
 
-  /* =========================
-     BASIC VALIDATION
-  ========================= */
-
   if (!contact || contact.length < 5) {
-    status.innerText = "Please enter valid contact info.";
+    status.innerText = "Enter valid contact info.";
     return;
   }
 
-  isSubmitting = true;
+  loading = true;
   btn.disabled = true;
-  status.innerText = "Submitting lead...";
+  status.innerText = "Analyzing roof request...";
 
   try {
     const res = await fetch("https://YOUR-API-DOMAIN.com/lead", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         name,
         contact,
@@ -217,18 +233,14 @@ async function submitLead(){
 
     const data = await res.json();
 
-    if (!res.ok || !data.success) {
+    if (!data.success) {
       status.innerText = data.error || "Submission failed.";
       return;
     }
 
-    status.innerText = "Lead submitted successfully.";
+    status.innerText = "Request received — inspection team notified.";
 
-    /* =========================
-       SCORE DISPLAY (SAFE FALLBACK)
-    ========================= */
-
-    const score = typeof data.score === "number" ? data.score : 0;
+    const score = data.score || 0;
 
     let level = "COLD";
     let color = "#ef4444";
@@ -246,14 +258,10 @@ async function submitLead(){
       Status: <b style="color:${color}">${level}</b>
     `;
 
-    /* OPTIONAL: auto-scroll to result */
-    scoreBox.scrollIntoView({ behavior: "smooth" });
-
   } catch (err) {
-    console.error(err);
     status.innerText = "Server error. Try again.";
   } finally {
-    isSubmitting = false;
+    loading = false;
     btn.disabled = false;
   }
 }
