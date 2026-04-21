@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
-const nodemailer = require("nodemailer");
 const twilio = require("twilio");
+const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
 const { v4: uuidv4 } = require("uuid");
 
@@ -16,7 +16,7 @@ app.use(express.json());
 /* =========================
    ENV CHECK
 ========================= */
-const required = ["SUPABASE_URL", "SUPABASE_KEY"];
+const required = ["SUPABASE_URL", "SUPABASE_KEY", "STRIPE_SECRET"];
 required.forEach(k => {
   if (!process.env[k]) {
     console.error(`Missing ${k}`);
@@ -25,11 +25,11 @@ required.forEach(k => {
 });
 
 /* =========================
-   RATE LIMIT (PROTECT $$$)
+   RATE LIMIT
 ========================= */
 app.use("/lead", rateLimit({
   windowMs: 60 * 1000,
-  max: 15
+  max: 20
 }));
 
 /* =========================
@@ -40,13 +40,19 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+const stripe = new Stripe(process.env.STRIPE_SECRET);
+
 const sms = process.env.TWILIO_SID
   ? twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH)
   : null;
 
 /* =========================
-   SCORE ENGINE
+   HELPERS
 ========================= */
+function cleanContact(contact) {
+  return contact.trim().toLowerCase();
+}
+
 function scoreLead({ service, source, postalCode }) {
   let score = 0;
 
@@ -60,9 +66,6 @@ function scoreLead({ service, source, postalCode }) {
   return score;
 }
 
-/* =========================
-   CITY DETECTION
-========================= */
 function getCity(postal) {
   if (!postal) return "unknown";
   if (postal.startsWith("T5")) return "Edmonton";
@@ -70,9 +73,6 @@ function getCity(postal) {
   return "Alberta";
 }
 
-/* =========================
-   CONTRACTOR MATCH
-========================= */
 async function getBuyer(city) {
   const { data } = await supabase
     .from("contractors")
@@ -87,7 +87,31 @@ async function getBuyer(city) {
 }
 
 /* =========================
-   LEAD ENDPOINT (MONEY CORE)
+   💳 CHARGE CONTRACTOR
+========================= */
+async function chargeContractor(buyer, amount, leadId) {
+  if (!buyer.stripe_customer_id || !buyer.default_payment_method) {
+    throw new Error("No payment method");
+  }
+
+  const payment = await stripe.paymentIntents.create({
+    amount: amount * 100,
+    currency: "cad",
+    customer: buyer.stripe_customer_id,
+    payment_method: buyer.default_payment_method,
+    off_session: true,
+    confirm: true,
+    metadata: {
+      lead_id: leadId,
+      contractor_id: buyer.id
+    }
+  });
+
+  return payment;
+}
+
+/* =========================
+   LEAD ENDPOINT
 ========================= */
 app.post("/lead", async (req, res) => {
   try {
@@ -105,71 +129,91 @@ app.post("/lead", async (req, res) => {
       return res.status(400).json({ success: false });
     }
 
+    const clean = cleanContact(contact);
+
     /* DUPLICATE CHECK */
     const { data: existing } = await supabase
       .from("leads")
       .select("id")
-      .eq("contact", contact)
+      .eq("contact", clean)
       .maybeSingle();
 
     if (existing) {
       return res.json({ success: true, leadId: existing.id });
     }
 
-    /* SCORE + GEO */
+    /* SCORE + CITY */
     const score = scoreLead({ service, source, postalCode });
     const city = getCity(postalCode);
     const leadId = uuidv4();
+
+    /* FIND BUYER FIRST (IMPORTANT) */
+    const buyer = await getBuyer(city);
+
+    let revenue = 0;
+    let charged = false;
+
+    if (buyer) {
+      revenue = buyer.price_per_lead;
+
+      /* 🔥 TRY CHARGE BEFORE COMMITTING */
+      try {
+        await chargeContractor(buyer, revenue, leadId);
+        charged = true;
+      } catch (err) {
+        console.error("❌ PAYMENT FAILED:", err.message);
+
+        /* disable contractor */
+        await supabase
+          .from("contractors")
+          .update({ active: false })
+          .eq("id", buyer.id);
+      }
+    }
 
     /* SAVE LEAD */
     await supabase.from("leads").insert([{
       id: leadId,
       name,
-      contact,
+      contact: clean,
       postal_code: postalCode,
       service,
       source,
-      site_id: siteId, // 🔥 MONEY TRACKING
+      site_id: siteId,
       page_url: pageUrl,
       score,
       city,
-      status: "new",
+      status: charged ? "sold" : "new",
       created_at: new Date().toISOString()
     }]);
 
-    /* FIND BUYER */
-    const buyer = await getBuyer(city);
-    let revenue = 0;
-
-    if (buyer) {
-      revenue = buyer.price_per_lead;
-
+    /* ASSIGN ONLY IF PAID */
+    if (buyer && charged) {
       await supabase.from("lead_assignments").insert([{
         id: uuidv4(),
         lead_id: leadId,
         contractor_id: buyer.id,
         price: revenue,
-        city
+        city,
+        status: "paid"
       }]);
 
-      /* SEND SMS TO BUYER */
       if (sms && buyer.phone) {
         await sms.messages.create({
-          body: `NEW LEAD: ${service} | ${city}\n${contact}\n$${revenue}`,
+          body: `🔥 PAID LEAD\n${service} | ${city}\n${contact}\n$${revenue}`,
           from: process.env.TWILIO_NUMBER,
           to: buyer.phone
         });
       }
     }
 
-    /* 🔥 RETURN MONEY DATA */
     return res.json({
       success: true,
       leadId,
       score,
       city,
       revenue,
-      site: siteId
+      charged
     });
 
   } catch (err) {
@@ -179,8 +223,43 @@ app.post("/lead", async (req, res) => {
 });
 
 /* =========================
+   CONTRACTOR SIGNUP
+========================= */
+app.post("/contractor/signup", async (req, res) => {
+  try {
+    const { name, email, phone, city } = req.body;
+
+    const customer = await stripe.customers.create({
+      email,
+      name,
+      phone
+    });
+
+    const { data } = await supabase
+      .from("contractors")
+      .insert([{
+        id: uuidv4(),
+        name,
+        email,
+        phone,
+        city,
+        stripe_customer_id: customer.id,
+        active: true,
+        price_per_lead: 50
+      }])
+      .select()
+      .single();
+
+    res.json({ success: true, contractorId: data.id });
+
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+/* =========================
    START
 ========================= */
 app.listen(process.env.PORT || 3000, () => {
-  console.log("💰 NorthSky Lead Engine LIVE");
+  console.log("💰 NorthSky Lead Engine LIVE (Payments Enabled)");
 });
