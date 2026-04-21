@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NorthSky AI · Lead Engine + Tools Ecosystem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NorthSky AI · Lead Marketplace</title>
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2NZW6V24JP"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -14,72 +13,39 @@ gtag('js', new Date());
 gtag('config', 'G-2NZW6V24JP');
 </script>
 
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
-:root{
---bg:#0a0c12;
---card:#11131c;
---text:#edf2f8;
---muted:#8e9aaf;
---accent:#2dd4bf;
---accent-dark:#14b8a6;
---border:rgba(255,255,255,.06);
-}
-
 body{
-background:linear-gradient(135deg,#0f172a,#020617);
-color:var(--text);
+background:#020617;
+color:#fff;
 font-family:system-ui;
 padding:2rem 1rem;
 }
-
-.container{max-width:1300px;margin:auto}
-
-.header{text-align:center;margin-bottom:2rem}
-.badge{
-background:rgba(45,212,191,.1);
-border:1px solid rgba(45,212,191,.3);
-padding:.3rem 1rem;
-border-radius:40px;
-font-size:.75rem;
-color:var(--accent);
-display:inline-block;
-}
-
-h1{font-size:2.4rem;margin-top:.6rem}
-.sub{color:var(--muted);margin-top:.5rem}
+.container{max-width:1100px;margin:auto}
+h1{font-size:2.2rem;margin-bottom:.5rem}
+.sub{color:#94a3b8;margin-bottom:2rem}
 
 .grid{
 display:grid;
-grid-template-columns:1fr 1.2fr;
+grid-template-columns:1fr 1fr;
 gap:1.5rem;
 }
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
 
 .card{
-background:rgba(17,19,28,.7);
-border:1px solid var(--border);
-border-radius:1.5rem;
+background:#0f172a;
 padding:1.4rem;
-}
-
-.card-header{
-font-weight:600;
-margin-bottom:1rem;
-border-bottom:1px solid var(--border);
-padding-bottom:.5rem;
+border-radius:1rem;
+border:1px solid rgba(255,255,255,.06);
 }
 
 input,select{
 width:100%;
 padding:.75rem;
 margin-bottom:.8rem;
-background:#0b0e17;
-border:1px solid var(--border);
-border-radius:.8rem;
+background:#020617;
+border:1px solid rgba(255,255,255,.08);
+border-radius:.6rem;
 color:#fff;
 }
 
@@ -87,213 +53,162 @@ button{
 width:100%;
 padding:.8rem;
 border:none;
-border-radius:1rem;
-background:var(--accent);
+border-radius:.8rem;
+background:#2dd4bf;
 font-weight:700;
 cursor:pointer;
 }
 
-button:hover{background:var(--accent-dark)}
+button:hover{background:#14b8a6}
 
-.secondary{background:#2d3748;color:#fff}
-
-.products{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:1rem;
-margin-top:2rem;
-}
-
-.product{
-background:rgba(255,255,255,.03);
-border:1px solid var(--border);
-padding:1rem;
-border-radius:1rem;
-transition:.2s;
-}
-
-.product:hover{
-transform:translateY(-4px);
-border-color:var(--accent);
-}
-
-.product h3{font-size:1rem;margin-bottom:.4rem}
-.product p{font-size:.8rem;color:var(--muted);margin-bottom:.6rem}
-
-.product a{
-display:inline-block;
+.status{
 font-size:.8rem;
-color:var(--accent);
-text-decoration:none;
-font-weight:600;
-}
-
-.footer{
-text-align:center;
-margin-top:2rem;
-font-size:.7rem;
-color:var(--muted);
+margin-top:.5rem;
+color:#94a3b8;
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
-<div class="header">
-<div class="badge">⚡ NORTHSKY AI ECOSYSTEM</div>
-<h1>Lead Engine + Tools That Close Deals</h1>
-<div class="sub">Generate · Auction · Convert · Scale</div>
-</div>
+<h1>⚡ NorthSky Lead Marketplace</h1>
+<div class="sub">Instant Leads. Instant Buyers. Instant Revenue.</div>
 
 <div class="grid">
 
-<!-- LEAD FORM -->
+<!-- 🔥 LEAD FORM (PRIMARY MONEY) -->
 <div class="card">
-<div class="card-header">🏠 Generate Lead</div>
+<h3>🏠 Get a Quote</h3>
 
-<input id="leadName" placeholder="Full name">
-<input id="leadContact" placeholder="Phone / Email">
-<input id="leadPostal" placeholder="Postal code">
+<input id="leadName" placeholder="Full Name">
+<input id="leadContact" placeholder="Phone or Email (required)">
+<input id="leadPostal" placeholder="Postal Code">
 
 <select id="leadService">
 <option>Roof inspection</option>
-<option>Leak check</option>
+<option>Leak repair</option>
 <option>Insurance claim</option>
 <option>Full replacement</option>
 </select>
 
-<button id="submitLead">Create Lead</button>
-<div id="leadStatus" style="font-size:.8rem;margin-top:.5rem;color:#8e9aaf">Ready</div>
+<button id="submitLead">Get Quotes</button>
+<div id="leadStatus" class="status">Ready</div>
 </div>
 
-<!-- AUCTION -->
+<!-- 💳 CONTRACTOR SIGNUP (BUYERS) -->
 <div class="card">
-<div class="card-header">🔨 Live Auction</div>
+<h3>💰 Join as Contractor</h3>
 
-<input id="contractorId" placeholder="Contractor ID">
-<input id="city" value="Calgary">
+<input id="cName" placeholder="Business Name">
+<input id="cEmail" placeholder="Email">
+<input id="cPhone" placeholder="Phone">
+<input id="cCity" placeholder="City (Edmonton / Calgary)">
 
-<button id="join" class="secondary">Join Market</button>
-
-<div id="auction" style="margin-top:1rem">
-<div id="info">No active auction</div>
-
-<div id="bidUI" style="display:none">
-<input id="bidAmount" type="number" placeholder="Bid $">
-<button id="bidBtn">Place Bid</button>
-</div>
-
-<div id="history" style="font-size:.8rem;margin-top:.5rem;color:#8e9aaf"></div>
+<button id="signupBtn">Start Getting Leads</button>
+<div id="signupStatus" class="status"></div>
 </div>
 
 </div>
-
-</div>
-
-<!-- 🔥 PRODUCT ECOSYSTEM -->
-<div class="products">
-
-<div class="product">
-<h3>🚀 Core Platform</h3>
-<p>Main AI lead engine + auction system</p>
-<a href="https://north-sky-ai.vercel.app" target="_blank">Open →</a>
-</div>
-
-<div class="product">
-<h3>🚁 Drone Sales</h3>
-<p>High-ticket drone product funnel</p>
-<a href="https://northsky-drones.vercel.app" target="_blank">View →</a>
-</div>
-
-<div class="product">
-<h3>⚡ Utilities Tools</h3>
-<p>AI-powered contractor utilities</p>
-<a href="https://north-sky-utilities.vercel.app" target="_blank">Launch →</a>
-</div>
-
-<div class="product">
-<h3>🏗 RoofFlow AI</h3>
-<p>Automated roofing pipeline SaaS</p>
-<a href="https://goldylox752.github.io/NorthSky-RoofFlow/" target="_blank">Open →</a>
-</div>
-
-<div class="product">
-<h3>🧠 Admin Dashboard</h3>
-<p>Manage leads, auctions, users</p>
-<a href="https://goldylox752.github.io/NorthSky-Admin/" target="_blank">Access →</a>
-</div>
-
-</div>
-
-<div class="footer">NorthSky AI · Built for Lead Monetization</div>
 
 </div>
 
 <script>
 const BACKEND = "";
-let socket, contractor="", city="", lead=null, highest=0;
+const SITE_ID = "northsky-main";
 
-function connect(){
-socket = io(BACKEND || location.origin);
+/* =========================
+   LEAD SUBMIT
+========================= */
+submitLead.onclick = async () => {
 
-socket.on("auction_started",d=>{
-lead=d.leadId;
-highest=0;
-document.getElementById("bidUI").style.display="block";
-document.getElementById("info").innerText="Auction Live";
-});
+  const body = {
+    name: leadName.value.trim(),
+    contact: leadContact.value.trim(),
+    postalCode: leadPostal.value.trim(),
+    service: leadService.value,
+    source: "website",
+    siteId: SITE_ID,
+    pageUrl: window.location.href
+  };
 
-socket.on("new_bid",d=>{
-if(d.leadId!==lead) return;
-highest=d.highestBid;
+  if(!body.contact || body.contact.length < 5){
+    leadStatus.innerText = "❌ Enter valid contact";
+    return;
+  }
 
-const el=document.createElement("div");
-el.innerText=`${d.contractorId} → $${d.highestBid}`;
-document.getElementById("history").prepend(el);
+  leadStatus.innerText = "Sending...";
 
-gtag('event','bid_activity',{value:d.highestBid});
-});
+  try{
+    const res = await fetch((BACKEND||location.origin)+"/lead",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)
+    });
 
-socket.on("auction_closed",()=>{
-document.getElementById("bidUI").style.display="none";
-document.getElementById("info").innerText="Auction Closed";
-});
-}
+    const data = await res.json();
 
-document.getElementById("join").onclick=()=>{
-contractor=document.getElementById("contractorId").value;
-city=document.getElementById("city").value;
-if(!socket) connect();
-socket.emit("join_city",city);
+    if(!data.success){
+      leadStatus.innerText = "❌ Failed";
+      return;
+    }
+
+    leadStatus.innerText =
+      `✅ Sent | Score: ${data.score} | $${data.revenue}`;
+
+    gtag('event','lead_created',{
+      value: data.revenue || 0
+    });
+
+    leadName.value="";
+    leadContact.value="";
+    leadPostal.value="";
+
+  }catch(err){
+    leadStatus.innerText = "❌ Server error";
+  }
 };
 
-document.getElementById("submitLead").onclick=async()=>{
-const body={
-name:leadName.value,
-contact:leadContact.value,
-postal:leadPostal.value,
-service:leadService.value,
-city:city || "unknown"
-};
+/* =========================
+   CONTRACTOR SIGNUP
+========================= */
+signupBtn.onclick = async () => {
 
-gtag('event','lead_created',{event_label:body.service});
+  const body = {
+    name: cName.value,
+    email: cEmail.value,
+    phone: cPhone.value,
+    city: cCity.value
+  };
 
-await fetch((BACKEND||location.origin)+"/lead",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(body)
-});
+  if(!body.email){
+    signupStatus.innerText = "❌ Email required";
+    return;
+  }
 
-leadStatus.innerText="Lead Sent";
-};
+  signupStatus.innerText = "Creating account...";
 
-document.getElementById("bidBtn").onclick=()=>{
-const amt=parseFloat(bidAmount.value);
-if(amt<=highest) return;
+  try{
+    const res = await fetch((BACKEND||location.origin)+"/contractor/signup",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)
+    });
 
-socket.emit("bid",{leadId:lead,contractorId:contractor,amount:amt});
-gtag('event','bid_placed',{value:amt});
+    const data = await res.json();
+
+    if(!data.success){
+      signupStatus.innerText = "❌ Failed";
+      return;
+    }
+
+    signupStatus.innerText =
+      "✅ Account created. Add payment method next.";
+
+  }catch(err){
+    signupStatus.innerText = "❌ Server error";
+  }
 };
 </script>
 
