@@ -1,12 +1,11 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NorthSky Auction OS · Real-Time Lead Auction</title>
+<title>NorthSky AI · Lead Engine + Tools Ecosystem</title>
 
-<!-- ✅ Google Analytics -->
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2NZW6V24JP"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -19,32 +18,44 @@ gtag('config', 'G-2NZW6V24JP');
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 :root{
---bg:#0a0c12;--surface:#11131c;--text:#edf2f8;--muted:#8e9aaf;
---border:rgba(255,255,255,.06);--accent:#2dd4bf;--accent-dark:#14b8a6;
---warn:#f59e0b
+--bg:#0a0c12;
+--card:#11131c;
+--text:#edf2f8;
+--muted:#8e9aaf;
+--accent:#2dd4bf;
+--accent-dark:#14b8a6;
+--border:rgba(255,255,255,.06);
 }
+
 body{
 background:linear-gradient(135deg,#0f172a,#020617);
 color:var(--text);
-font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-padding:2rem 1rem
+font-family:system-ui;
+padding:2rem 1rem;
 }
+
 .container{max-width:1300px;margin:auto}
-.header{text-align:center;margin-bottom:2.5rem}
+
+.header{text-align:center;margin-bottom:2rem}
 .badge{
 background:rgba(45,212,191,.1);
 border:1px solid rgba(45,212,191,.3);
-padding:.3rem 1rem;border-radius:40px;
-font-size:.75rem;color:var(--accent)
+padding:.3rem 1rem;
+border-radius:40px;
+font-size:.75rem;
+color:var(--accent);
+display:inline-block;
 }
-h1{font-size:2.3rem;margin-top:.6rem}
-.sub{color:var(--muted);margin-top:.4rem}
+
+h1{font-size:2.4rem;margin-top:.6rem}
+.sub{color:var(--muted);margin-top:.5rem}
 
 .grid{
 display:grid;
 grid-template-columns:1fr 1.2fr;
-gap:1.5rem
+gap:1.5rem;
 }
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 
@@ -52,47 +63,77 @@ gap:1.5rem
 background:rgba(17,19,28,.7);
 border:1px solid var(--border);
 border-radius:1.5rem;
-padding:1.4rem
+padding:1.4rem;
 }
+
 .card-header{
-font-weight:600;margin-bottom:1rem;
+font-weight:600;
+margin-bottom:1rem;
 border-bottom:1px solid var(--border);
-padding-bottom:.5rem
+padding-bottom:.5rem;
 }
 
 input,select{
 width:100%;
 padding:.75rem;
-margin-bottom:.9rem;
+margin-bottom:.8rem;
 background:#0b0e17;
 border:1px solid var(--border);
 border-radius:.8rem;
-color:#fff
+color:#fff;
 }
 
 button{
 width:100%;
 padding:.8rem;
-border:none;border-radius:1rem;
+border:none;
+border-radius:1rem;
 background:var(--accent);
-font-weight:700;color:#020617;
-cursor:pointer
+font-weight:700;
+cursor:pointer;
 }
+
 button:hover{background:var(--accent-dark)}
 
 .secondary{background:#2d3748;color:#fff}
 
-.status{font-size:.8rem;margin-top:.6rem;color:var(--muted)}
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:1rem;
+margin-top:2rem;
+}
 
-.bid-row{display:flex;gap:.5rem}
-.bid-row input{flex:1}
+.product{
+background:rgba(255,255,255,.03);
+border:1px solid var(--border);
+padding:1rem;
+border-radius:1rem;
+transition:.2s;
+}
 
-.timer{font-family:monospace;color:var(--warn)}
+.product:hover{
+transform:translateY(-4px);
+border-color:var(--accent);
+}
 
-.history{max-height:160px;overflow:auto;font-size:.8rem;color:var(--muted)}
-.history div{padding:.3rem 0;border-bottom:1px solid var(--border)}
+.product h3{font-size:1rem;margin-bottom:.4rem}
+.product p{font-size:.8rem;color:var(--muted);margin-bottom:.6rem}
 
-.footer{text-align:center;margin-top:2rem;font-size:.7rem;color:var(--muted)}
+.product a{
+display:inline-block;
+font-size:.8rem;
+color:var(--accent);
+text-decoration:none;
+font-weight:600;
+}
+
+.footer{
+text-align:center;
+margin-top:2rem;
+font-size:.7rem;
+color:var(--muted);
+}
 </style>
 </head>
 
@@ -100,16 +141,16 @@ button:hover{background:var(--accent-dark)}
 <div class="container">
 
 <div class="header">
-<div class="badge">⚡ REAL-TIME AI LEAD MARKETPLACE</div>
-<h1>NorthSky Auction OS</h1>
-<div class="sub">Live contractor bidding for high-value leads</div>
+<div class="badge">⚡ NORTHSKY AI ECOSYSTEM</div>
+<h1>Lead Engine + Tools That Close Deals</h1>
+<div class="sub">Generate · Auction · Convert · Scale</div>
 </div>
 
 <div class="grid">
 
-<!-- Lead Form -->
+<!-- LEAD FORM -->
 <div class="card">
-<div class="card-header">🏠 New Lead</div>
+<div class="card-header">🏠 Generate Lead</div>
 
 <input id="leadName" placeholder="Full name">
 <input id="leadContact" placeholder="Phone / Email">
@@ -122,11 +163,11 @@ button:hover{background:var(--accent-dark)}
 <option>Full replacement</option>
 </select>
 
-<button id="submitLead">Generate Lead</button>
-<div id="leadStatus" class="status">Ready</div>
+<button id="submitLead">Create Lead</button>
+<div id="leadStatus" style="font-size:.8rem;margin-top:.5rem;color:#8e9aaf">Ready</div>
 </div>
 
-<!-- Auction -->
+<!-- AUCTION -->
 <div class="card">
 <div class="card-header">🔨 Live Auction</div>
 
@@ -139,62 +180,85 @@ button:hover{background:var(--accent-dark)}
 <div id="info">No active auction</div>
 
 <div id="bidUI" style="display:none">
-<div class="bid-row">
 <input id="bidAmount" type="number" placeholder="Bid $">
-<button id="bidBtn">Bid</button>
-</div>
-<div id="feedback" class="status"></div>
+<button id="bidBtn">Place Bid</button>
 </div>
 
-<div id="history" class="history"></div>
+<div id="history" style="font-size:.8rem;margin-top:.5rem;color:#8e9aaf"></div>
 </div>
 
 </div>
+
 </div>
 
-<div class="footer">Powered by NorthSky AI</div>
+<!-- 🔥 PRODUCT ECOSYSTEM -->
+<div class="products">
+
+<div class="product">
+<h3>🚀 Core Platform</h3>
+<p>Main AI lead engine + auction system</p>
+<a href="https://north-sky-ai.vercel.app" target="_blank">Open →</a>
+</div>
+
+<div class="product">
+<h3>🚁 Drone Sales</h3>
+<p>High-ticket drone product funnel</p>
+<a href="https://northsky-drones.vercel.app" target="_blank">View →</a>
+</div>
+
+<div class="product">
+<h3>⚡ Utilities Tools</h3>
+<p>AI-powered contractor utilities</p>
+<a href="https://north-sky-utilities.vercel.app" target="_blank">Launch →</a>
+</div>
+
+<div class="product">
+<h3>🏗 RoofFlow AI</h3>
+<p>Automated roofing pipeline SaaS</p>
+<a href="https://goldylox752.github.io/NorthSky-RoofFlow/" target="_blank">Open →</a>
+</div>
+
+<div class="product">
+<h3>🧠 Admin Dashboard</h3>
+<p>Manage leads, auctions, users</p>
+<a href="https://goldylox752.github.io/NorthSky-Admin/" target="_blank">Access →</a>
+</div>
+
+</div>
+
+<div class="footer">NorthSky AI · Built for Lead Monetization</div>
 
 </div>
 
 <script>
 const BACKEND = "";
-let socket, contractor="", city="", lead=null, highest=0, expires=0;
+let socket, contractor="", city="", lead=null, highest=0;
 
 function connect(){
 socket = io(BACKEND || location.origin);
 
-socket.on("connect",()=>console.log("connected"));
-
 socket.on("auction_started",d=>{
-lead=d.leadId; expires=d.expiresAt; highest=0;
+lead=d.leadId;
+highest=0;
 document.getElementById("bidUI").style.display="block";
-document.getElementById("info").innerHTML="Auction live";
-document.getElementById("history").innerHTML="";
+document.getElementById("info").innerText="Auction Live";
 });
 
 socket.on("new_bid",d=>{
 if(d.leadId!==lead) return;
 highest=d.highestBid;
-addHistory(d.contractorId,d.highestBid);
+
+const el=document.createElement("div");
+el.innerText=`${d.contractorId} → $${d.highestBid}`;
+document.getElementById("history").prepend(el);
 
 gtag('event','bid_activity',{value:d.highestBid});
 });
 
-socket.on("auction_closed",d=>{
+socket.on("auction_closed",()=>{
 document.getElementById("bidUI").style.display="none";
-
-if(d.winnerId===contractor){
-gtag('event','auction_win',{value:d.price});
-}
-
-document.getElementById("info").innerHTML="Auction closed";
+document.getElementById("info").innerText="Auction Closed";
 });
-}
-
-function addHistory(id,amt){
-const el=document.createElement("div");
-el.innerHTML=`${id} → $${amt}`;
-document.getElementById("history").prepend(el);
 }
 
 document.getElementById("join").onclick=()=>{
@@ -221,7 +285,7 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify(body)
 });
 
-document.getElementById("leadStatus").innerText="Lead sent";
+leadStatus.innerText="Lead Sent";
 };
 
 document.getElementById("bidBtn").onclick=()=>{
@@ -229,11 +293,9 @@ const amt=parseFloat(bidAmount.value);
 if(amt<=highest) return;
 
 socket.emit("bid",{leadId:lead,contractorId:contractor,amount:amt});
-
 gtag('event','bid_placed',{value:amt});
 };
 </script>
 
 </body>
 </html>
-```
