@@ -1,3 +1,28 @@
+const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Your routes and middleware
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
+// Lead capture endpoint
 app.post("/lead", async (req, res) => {
   try {
     const {
@@ -76,7 +101,7 @@ app.post("/lead", async (req, res) => {
       .single();
 
     /* =========================
-       ERROR HANDLING (IMPORTANT)
+       ERROR HANDLING
     ========================= */
 
     if (error) {
@@ -107,4 +132,9 @@ app.post("/lead", async (req, res) => {
       error: "Internal server error"
     });
   }
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
