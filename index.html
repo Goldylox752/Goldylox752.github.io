@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NorthSky AI · Lead Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NorthSky AI · Ecosystem & Lead Hub</title>
+<meta name="description" content="Central hub for NorthSky AI platforms: Lead Marketplace, Admin OS, Utilities, Roof Flow, and Products. Generate leads or access contractor tools.">
+<meta name="theme-color" content="#020617">
 
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2NZW6V24JP"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -14,203 +17,487 @@ gtag('config', 'G-2NZW6V24JP');
 </script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-background:#020617;
-color:#fff;
-font-family:system-ui;
-padding:2rem 1rem;
-}
-.container{max-width:1100px;margin:auto}
-h1{font-size:2.2rem;margin-bottom:.5rem}
-.sub{color:#94a3b8;margin-bottom:2rem}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:1.5rem;
-}
-@media(max-width:800px){.grid{grid-template-columns:1fr}}
-
-.card{
-background:#0f172a;
-padding:1.4rem;
-border-radius:1rem;
-border:1px solid rgba(255,255,255,.06);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-input,select{
-width:100%;
-padding:.75rem;
-margin-bottom:.8rem;
-background:#020617;
-border:1px solid rgba(255,255,255,.08);
-border-radius:.6rem;
-color:#fff;
+body {
+  background: radial-gradient(circle at 10% 20%, #0a0f2a, #020617);
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  padding: 2rem 1.5rem;
+  line-height: 1.5;
 }
 
-button{
-width:100%;
-padding:.8rem;
-border:none;
-border-radius:.8rem;
-background:#2dd4bf;
-font-weight:700;
-cursor:pointer;
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
-button:hover{background:#14b8a6}
+/* header area */
+.hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
 
-.status{
-font-size:.8rem;
-margin-top:.5rem;
-color:#94a3b8;
+h1 {
+  font-size: 2.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #2dd4bf, #5ee0e0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.badge-sub {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  border-bottom: 1px dashed #334155;
+  display: inline-block;
+  padding-bottom: 0.25rem;
+}
+
+/* grid base */
+.grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.8rem;
+  margin-bottom: 3rem;
+}
+
+/* cards universal */
+.card {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  border-radius: 1.5rem;
+  padding: 1.6rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  border-color: rgba(45, 212, 191, 0.6);
+  transform: translateY(-3px);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+}
+
+.card h3 i {
+  font-size: 1.6rem;
+}
+
+/* inputs & selects */
+input, select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.9rem;
+  background: #020617cc;
+  border: 1px solid #334155;
+  border-radius: 1rem;
+  color: white;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.3);
+}
+
+button {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 2rem;
+  background: linear-gradient(95deg, #2dd4bf, #14b8a6);
+  font-weight: 700;
+  font-size: 1rem;
+  color: #020617;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+button:hover {
+  transform: scale(0.98);
+  background: linear-gradient(95deg, #14b8a6, #0d9488);
+  box-shadow: 0 4px 12px rgba(45,212,191,0.3);
+}
+
+.status {
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* showcase section */
+.showcase-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 2.5rem 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-left: 4px solid #2dd4bf;
+  padding-left: 1rem;
+}
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.platform-card {
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid #1e293b;
+  border-radius: 1.5rem;
+  padding: 1.4rem;
+  transition: all 0.25s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
+}
+
+.platform-card:hover {
+  border-color: #2dd4bf;
+  background: #0f172a;
+  transform: translateY(-5px);
+}
+
+.platform-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.platform-card h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: white;
+}
+
+.platform-card p {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0.5rem 0 1rem;
+  line-height: 1.4;
+}
+
+.link-arrow {
+  margin-top: auto;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #2dd4bf;
+  font-weight: 500;
+}
+
+.platform-card:hover .link-arrow {
+  gap: 0.6rem;
+}
+
+.footer-note {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1e293b;
+  font-size: 0.8rem;
+  color: #5b6e8c;
+}
+
+@media (max-width: 780px) {
+  body {
+    padding: 1.2rem;
+  }
+  .grid-2col {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  .showcase-title {
+    font-size: 1.5rem;
+  }
 }
 </style>
 </head>
-
 <body>
-
 <div class="container">
+  
+  <div class="hero">
+    <h1>⚡ NorthSky AI · Nexus</h1>
+    <div class="badge-sub">Intelligent lead ecosystem + next‑gen contractor tools</div>
+    <p style="margin-top: 0.8rem; color: #94a3b8; max-width: 600px; margin-left: auto; margin-right: auto;">Generate high-intent roofing leads or access our full suite of operational platforms.</p>
+  </div>
 
-<h1>⚡ NorthSky Lead Marketplace</h1>
-<div class="sub">Instant Leads. Instant Buyers. Instant Revenue.</div>
+  <!-- LEAD & CONTRACTOR CORE -->
+  <div class="grid-2col">
+    <!-- LEAD FORM -->
+    <div class="card">
+      <h3>🏠 Instant Lead · Roofing Quote</h3>
+      <input type="text" id="leadName" placeholder="Full name" autocomplete="name">
+      <input type="text" id="leadContact" placeholder="Phone or email (required)" autocomplete="email">
+      <input type="text" id="leadPostal" placeholder="Postal code / ZIP">
+      <select id="leadService">
+        <option value="Roof inspection">🔍 Roof inspection</option>
+        <option value="Leak repair">💧 Leak repair</option>
+        <option value="Insurance claim">📄 Insurance claim</option>
+        <option value="Full replacement">🏗️ Full replacement</option>
+      </select>
+      <button id="submitLead">🚀 Get Quotes →</button>
+      <div id="leadStatus" class="status">✅ Ready — premium buyers active</div>
+    </div>
 
-<div class="grid">
+    <!-- CONTRACTOR SIGNUP -->
+    <div class="card">
+      <h3>💰 Join as Contractor · Buy Leads</h3>
+      <input type="text" id="cName" placeholder="Business name" autocomplete="organization">
+      <input type="email" id="cEmail" placeholder="Email address" autocomplete="email">
+      <input type="tel" id="cPhone" placeholder="Phone number">
+      <input type="text" id="cCity" placeholder="City (Edmonton / Calgary / etc)">
+      <button id="signupBtn">📈 Start Getting Leads</button>
+      <div id="signupStatus" class="status">Exclusive access to real-time leads</div>
+    </div>
+  </div>
 
-<!-- 🔥 LEAD FORM (PRIMARY MONEY) -->
-<div class="card">
-<h3>🏠 Get a Quote</h3>
-
-<input id="leadName" placeholder="Full Name">
-<input id="leadContact" placeholder="Phone or Email (required)">
-<input id="leadPostal" placeholder="Postal Code">
-
-<select id="leadService">
-<option>Roof inspection</option>
-<option>Leak repair</option>
-<option>Insurance claim</option>
-<option>Full replacement</option>
-</select>
-
-<button id="submitLead">Get Quotes</button>
-<div id="leadStatus" class="status">Ready</div>
-</div>
-
-<!-- 💳 CONTRACTOR SIGNUP (BUYERS) -->
-<div class="card">
-<h3>💰 Join as Contractor</h3>
-
-<input id="cName" placeholder="Business Name">
-<input id="cEmail" placeholder="Email">
-<input id="cPhone" placeholder="Phone">
-<input id="cCity" placeholder="City (Edmonton / Calgary)">
-
-<button id="signupBtn">Start Getting Leads</button>
-<div id="signupStatus" class="status"></div>
-</div>
-
-</div>
-
+  <!-- SHOWCASE: ALL NORTHSKY ECOSYSTEM SITES -->
+  <div class="showcase-title">
+    <span>🌐 NorthSky Network</span> 
+    <span style="font-size: 0.8rem; background: #2dd4bf20; padding: 0.2rem 0.6rem; border-radius: 40px;">5 active platforms</span>
+  </div>
+  
+  <div class="showcase-grid" id="platformGrid">
+    <!-- data will be populated via JS but static fallback built-in -->
+  </div>
+  <div class="footer-note">
+    🚀 Seamless integration across all NorthSky services — leads flow to your dashboard, utilities boost operations.
+  </div>
 </div>
 
 <script>
-const BACKEND = "";
+// ---------- BACKEND CONFIG ----------
+const BACKEND = "";   // leave empty = relative/origin, same as live
 const SITE_ID = "northsky-main";
 
-/* =========================
-   LEAD SUBMIT
-========================= */
-submitLead.onclick = async () => {
+// ---------- LEAD SUBMIT ----------
+const leadName = document.getElementById('leadName');
+const leadContact = document.getElementById('leadContact');
+const leadPostal = document.getElementById('leadPostal');
+const leadService = document.getElementById('leadService');
+const submitBtn = document.getElementById('submitLead');
+const leadStatus = document.getElementById('leadStatus');
 
-  const body = {
-    name: leadName.value.trim(),
-    contact: leadContact.value.trim(),
-    postalCode: leadPostal.value.trim(),
-    service: leadService.value,
+submitBtn.onclick = async () => {
+  const nameRaw = leadName.value.trim();
+  const contactRaw = leadContact.value.trim();
+  const postalRaw = leadPostal.value.trim();
+  const serviceVal = leadService.value;
+
+  if (!contactRaw || contactRaw.length < 4) {
+    leadStatus.innerText = "❌ Please enter valid phone or email (min 4 chars)";
+    leadStatus.style.color = "#f97316";
+    return;
+  }
+
+  leadStatus.innerText = "⏳ Sending to marketplace...";
+  leadStatus.style.color = "#94a3b8";
+
+  const payload = {
+    name: nameRaw,
+    contact: contactRaw,
+    postalCode: postalRaw,
+    service: serviceVal,
     source: "website",
     siteId: SITE_ID,
-    pageUrl: window.location.href
+    pageUrl: window.location.href,
+    timestamp: new Date().toISOString()
   };
 
-  if(!body.contact || body.contact.length < 5){
-    leadStatus.innerText = "❌ Enter valid contact";
-    return;
-  }
-
-  leadStatus.innerText = "Sending...";
-
-  try{
-    const res = await fetch((BACKEND||location.origin)+"/lead",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(body)
+  try {
+    const endpoint = (BACKEND || window.location.origin) + "/lead";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
-
-    if(!data.success){
-      leadStatus.innerText = "❌ Failed";
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      leadStatus.innerText = "❌ Lead not delivered. Try again.";
+      leadStatus.style.color = "#ef4444";
       return;
     }
 
-    leadStatus.innerText =
-      `✅ Sent | Score: ${data.score} | $${data.revenue}`;
-
-    gtag('event','lead_created',{
-      value: data.revenue || 0
-    });
-
-    leadName.value="";
-    leadContact.value="";
-    leadPostal.value="";
-
-  }catch(err){
-    leadStatus.innerText = "❌ Server error";
+    const scoreText = data.score ? `score ${data.score}` : 'verified';
+    const revenueVal = data.revenue ? `$${data.revenue}` : '$0';
+    leadStatus.innerHTML = `✅ Lead sent! ${scoreText} · estimated value ${revenueVal}`;
+    leadStatus.style.color = "#2dd4bf";
+    
+    // GA event tracking
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'lead_created', {
+        value: data.revenue || 0,
+        service: serviceVal,
+        send_to: 'G-2NZW6V24JP'
+      });
+    }
+    
+    // reset form (keep contact optional but clear)
+    leadName.value = "";
+    leadContact.value = "";
+    leadPostal.value = "";
+    setTimeout(() => {
+      leadStatus.innerText = "✅ Ready — premium buyers active";
+      leadStatus.style.color = "#94a3b8";
+    }, 3000);
+    
+  } catch (err) {
+    console.error(err);
+    leadStatus.innerText = "❌ Server error. Please retry.";
+    leadStatus.style.color = "#ef4444";
   }
 };
 
-/* =========================
-   CONTRACTOR SIGNUP
-========================= */
+// ---------- CONTRACTOR SIGNUP ----------
+const cName = document.getElementById('cName');
+const cEmail = document.getElementById('cEmail');
+const cPhone = document.getElementById('cPhone');
+const cCity = document.getElementById('cCity');
+const signupBtn = document.getElementById('signupBtn');
+const signupStatus = document.getElementById('signupStatus');
+
 signupBtn.onclick = async () => {
+  const business = cName.value.trim();
+  const email = cEmail.value.trim();
+  const phone = cPhone.value.trim();
+  const city = cCity.value.trim();
 
-  const body = {
-    name: cName.value,
-    email: cEmail.value,
-    phone: cPhone.value,
-    city: cCity.value
-  };
-
-  if(!body.email){
-    signupStatus.innerText = "❌ Email required";
+  if (!email || !email.includes('@')) {
+    signupStatus.innerText = "❌ Valid email required";
+    signupStatus.style.color = "#f97316";
     return;
   }
 
-  signupStatus.innerText = "Creating account...";
+  signupStatus.innerText = "⏳ Creating contractor profile...";
+  signupStatus.style.color = "#94a3b8";
 
-  try{
-    const res = await fetch((BACKEND||location.origin)+"/contractor/signup",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(body)
+  const payload = {
+    name: business || "Contractor",
+    email: email,
+    phone: phone,
+    city: city,
+    source: "main_hub",
+    siteId: SITE_ID
+  };
+
+  try {
+    const endpoint = (BACKEND || window.location.origin) + "/contractor/signup";
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-
     const data = await res.json();
-
-    if(!data.success){
-      signupStatus.innerText = "❌ Failed";
+    if (!res.ok || !data.success) {
+      signupStatus.innerText = "❌ Signup failed. Try again later.";
+      signupStatus.style.color = "#ef4444";
       return;
     }
-
-    signupStatus.innerText =
-      "✅ Account created. Add payment method next.";
-
-  }catch(err){
-    signupStatus.innerText = "❌ Server error";
+    signupStatus.innerHTML = "✅ Account created! Check email to activate & add payment method.";
+    signupStatus.style.color = "#2dd4bf";
+    
+    // clear only email (keep optional fields)
+    cEmail.value = "";
+    cName.value = "";
+    cPhone.value = "";
+    cCity.value = "";
+    setTimeout(() => {
+      signupStatus.innerText = "Exclusive access to real-time leads";
+      signupStatus.style.color = "#94a3b8";
+    }, 4000);
+  } catch (err) {
+    signupStatus.innerText = "❌ Server error. Please retry.";
+    signupStatus.style.color = "#ef4444";
   }
 };
-</script>
 
+// ---------- DYNAMIC SHOWCASE OF ALL SITES (5 LINKS) ----------
+const platforms = [
+  {
+    name: "Lead Marketplace OS",
+    url: "https://north-sky-leads-os.vercel.app/",
+    icon: "📊",
+    description: "Real-time lead distribution, bidding, and analytics engine for contractors."
+  },
+  {
+    name: "Admin OS",
+    url: "https://north-sky-admin-os.vercel.app/",
+    icon: "⚙️",
+    description: "Centralized dashboard — manage users, leads, revenue & system health."
+  },
+  {
+    name: "Utilities OS",
+    url: "https://north-sky-utilities-os.vercel.app/",
+    icon: "🔧",
+    description: "Automation tools, lead scrubbing, reporting & smart notifications."
+  },
+  {
+    name: "Roof Flow",
+    url: "https://north-sky-roof-flow-os.vercel.app/",
+    icon: "🏠✨",
+    description: "Streamlined roofing inspections, claims workflow & field operations."
+  },
+  {
+    name: "Products OS",
+    url: "https://north-sky-products-os.vercel.app/",
+    icon: "🛒",
+    description: "Material sourcing, product catalog & supplier integrations."
+  }
+];
+
+const gridContainer = document.getElementById('platformGrid');
+if (gridContainer) {
+  platforms.forEach(platform => {
+    const cardLink = document.createElement('a');
+    cardLink.href = platform.url;
+    cardLink.target = "_blank";
+    cardLink.rel = "noopener noreferrer";
+    cardLink.className = "platform-card";
+    
+    cardLink.innerHTML = `
+      <div class="platform-icon">${platform.icon}</div>
+      <h4>${platform.name}</h4>
+      <p>${platform.description}</p>
+      <div class="link-arrow">Visit platform →</div>
+    `;
+    gridContainer.appendChild(cardLink);
+  });
+}
+
+// small additional effect: console log that hub is live
+console.log("NorthSky Hub v2 · showcasing 5 active platforms + lead engine");
+</script>
 </body>
 </html>
