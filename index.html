@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>NorthSky OS · Revenue Hub | Secure Checkout</title>
-<!-- Google Fonts & modern reset -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-<!-- Stripe.js for card element & payment intents (direct integration, no backend proxy) -->
-<script src="https://js.stripe.com/v3/"></script>
+<title>NorthSky OS · Revenue Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * {
     margin: 0;
@@ -28,7 +25,6 @@
     margin: 0 auto;
   }
 
-  /* header & status */
   .nav-header {
     display: flex;
     justify-content: space-between;
@@ -74,7 +70,6 @@
     color: #bbf7d0;
   }
 
-  /* pricing cards row */
   .pricing-grid {
     display: flex;
     flex-wrap: wrap;
@@ -139,7 +134,6 @@
     transform: scale(0.98);
   }
 
-  /* dashboard container with relative overlay */
   .dashboard-wrapper {
     position: relative;
     background: #0a0f1e;
@@ -192,21 +186,6 @@
     border: 1px solid #334155;
   }
 
-  .lock-card h2 {
-    margin-bottom: 12px;
-  }
-
-  .btn-unlock-demo {
-    background: #3b82f6;
-    border: none;
-    margin-top: 16px;
-    padding: 10px 24px;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  /* stats & buttons */
   .stats-panel {
     display: flex;
     gap: 28px;
@@ -329,38 +308,35 @@
 <body>
 
 <div class="container">
-  <!-- Header & status -->
   <div class="nav-header">
     <div class="logo">
       <h2>☁️ NorthSky OS · Revenue Hub</h2>
     </div>
-    <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED · Activate now</div>
+    <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED · Purchase to unlock</div>
   </div>
 
-  <!-- PRICING SECTION - Card checkout / stripe elements -->
   <div class="pricing-grid">
     <div class="price-card">
       <h3>Starter</h3>
       <div class="price">$99<span><small>/mo</small></span></div>
-      <button class="btn-buy" data-plan="starter" data-price="99">💳 Subscribe with Card</button>
+      <button class="btn-buy" data-plan="starter">💳 Subscribe with Stripe</button>
     </div>
     <div class="price-card">
       <h3>Pro</h3>
       <div class="price">$299<span><small>/mo</small></span></div>
-      <button class="btn-buy" data-plan="pro" data-price="299">💳 Subscribe with Card</button>
+      <button class="btn-buy" data-plan="pro">💳 Subscribe with Stripe</button>
     </div>
     <div class="price-card">
       <h3>Elite</h3>
       <div class="price">$999<span><small>/mo</small></span></div>
-      <button class="btn-buy" data-plan="elite" data-price="999">💳 Subscribe with Card</button>
+      <button class="btn-buy" data-plan="elite">💳 Subscribe with Stripe</button>
     </div>
   </div>
 
-  <!-- MAIN DASHBOARD (locked until payment success) -->
   <div class="dashboard-wrapper" id="dashboardWrapper">
     <div id="dashboardContent" class="dashboard-content locked-dashboard">
       <h1 style="font-size: 1.8rem; margin-bottom: 8px;">📊 Revenue Command Center</h1>
-      <p style="margin-bottom: 20px;">Simulate lead routing & score growth — unlock full access after any plan purchase.</p>
+      <p style="margin-bottom: 20px;">Track leads, optimize funnels, and grow revenue — unlocked after subscription.</p>
       
       <div class="stats-panel">
         <div class="stat-item">
@@ -382,7 +358,6 @@
 
       <hr />
 
-      <!-- OFFER SIGN-UP SECTION: users sign up for offers (email capture) -->
       <div class="offer-signup" id="offerSignupSection">
         <h3>🎁 Exclusive Offers & Discounts</h3>
         <p style="font-size: 0.85rem; margin-bottom: 16px;">Sign up for premium offers, early access & partner deals.</p>
@@ -397,13 +372,11 @@
       </div>
     </div>
 
-    <!-- Lock overlay (visible when not purchased) -->
     <div id="lockOverlay" class="overlay-lock">
       <div class="lock-card">
         <span style="font-size: 48px;">🔐</span>
         <h2>Access Locked</h2>
-        <p>Select a plan above & complete card payment to unlock the Revenue Hub and start scoring.</p>
-        <button id="simulatePurchaseBtn" style="background:#334155; margin-top:12px;" class="btn-unlock-demo">⚡ Test Checkout Demo</button>
+        <p>Select a plan above & complete secure Stripe payment to unlock.</p>
         <p style="font-size:12px; margin-top:12px;">Stripe test card: 4242 4242 4242 4242</p>
       </div>
     </div>
@@ -411,259 +384,226 @@
 </div>
 
 <script>
-  // ----------------------------------------------
-  // STRIPE CONFIGURATION (Direct card element payment)
-  // Using public test key (for demo purposes) — create PaymentIntent via client-side? 
-  // To avoid backend, we simulate full Stripe Checkout session via redirect to Stripe's test mode.
-  // But the requirement: "card stripe check out not inking or loading blank white screen"
-  // We implement Stripe Checkout redirect (production-ready pattern) for each plan.
-  // Since we don't have a backend, we'll use Stripe's Client-Side Checkout Session creation via Fetch to a demo API? 
-  // To be 100% functional and avoid blank screens: we use Stripe's redirect checkout with a mock endpoint that simulates success? 
-  // Actually to deliver working demo: I will create a synthetic Stripe Checkout flow using a demo server? But safer: Use Stripe's own test mode with prebuilt Checkout.
-  // I'll implement a direct redirect to Stripe Checkout using test price IDs (simulated) - but better: Create a simulated payment success for demo.
-  // However, requirement says "user to sign up for offers" + stripe checkout fix. I'll implement Stripe.js redirect to a mock serverless function? 
-  // Actually I can use "https://js.stripe.com/v3/" and create a fake Checkout Session via fetch to a working test endpoint. But free hosting may not have API.
-  // To ensure 100% working & no blank screen, we will implement a realistic Stripe Checkout simulation using local storage flag + fake success redirect.
-  // For real stripe: I'll embed card element? but that's complex. Instead use Stripe Checkout redirect approach but with a fake backend simulation to guarantee UI works.
-  // But the user expects 'card stripe checkout not blank' and fixes. I'll implement both: a real stripe test checkout using my own demo endpoint? Not required, we can simulate.
-  // To be production-like: I'll create a modal that collects card using Stripe Elements? That requires backend. Better to implement Stripe Checkout Sessions with a working mock (but fails without backend). 
-  // Given this is a standalone HTML, I will implement a functional payment simulation (demo) that mimics Stripe and sets access token. But the requirement says "class card stripe check out not inking or loading blank" - ensures checkout works.
-  // I'll implement Stripe redirect to a dummy success? Not great. Instead I'll implement a Stripe-like payment modal that uses test card 4242, then triggers purchase success (since there's no backend, but token generation works in local storage). 
-  // For the purpose of this demo to work seamlessly: I'll create a simulated Stripe payment window that validates card number (frontend validation) and simulates a successful transaction.
-  // But to match user expectation of 'Stripe' I will implement a professional card payment form using Stripe Elements? No backend required if we use Checkout Sessions. But without server we cannot create session. 
-  // I'll use the existing verification endpoint provided by user: "https://northsky-auth.vercel.app" but we need create-checkout. However original code has fetch to that endpoint that may fail if not set.
-  // To avoid blank/inking, I'll rewrite checkout to use Stripe redirect to a mock success that stores token.
-  // Final robust: Use the existing mock local storage token generator: if user clicks buy -> open modal or use Stripe test redirect. I'll implement a custom card modal (fake stripe but shows card fields) with demo validation, after "payment" we generate a valid token "demo_token_valid" and set in localStorage.
-  // This ensures 100% card check out, no blank screen, plus user can sign up for offers.
-  
-  // ----- Local Storage Keys -----
-  const TOKEN_KEY = "ns_token";
-  const SCORE_KEY = "ns_score";
-  const REVENUE_KEY = "ns_revenue";
-  
+  // ---------- CONFIGURATION ----------
+  const API_BASE = window.location.origin; // backend serves same origin
   let currentScore = 0;
   let currentRevenue = 0;
+  let isAuthenticated = false;
+  let currentPlan = null;
 
-  // Helper functions
-  function updateUIAfterAuth() {
-    const isAuthed = !!localStorage.getItem(TOKEN_KEY) && localStorage.getItem(TOKEN_KEY) !== "expired";
-    const dashboardDiv = document.getElementById("dashboardContent");
-    const overlay = document.getElementById("lockOverlay");
-    const statusBadge = document.getElementById("globalStatusBadge");
-    if (isAuthed) {
-      dashboardDiv.classList.remove("locked-dashboard");
-      overlay.classList.add("hidden");
-      statusBadge.innerHTML = "✅ ACTIVE · Full Access";
-      statusBadge.className = "badge-status active";
+  // DOM elements
+  const dashboardContent = document.getElementById('dashboardContent');
+  const lockOverlay = document.getElementById('lockOverlay');
+  const statusBadge = document.getElementById('globalStatusBadge');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const revenueDisplay = document.getElementById('revenueDisplay');
+  const addScoreBtn = document.getElementById('addScoreBtn');
+  const routeLeadBtn = document.getElementById('routeLeadBtn');
+  const roofFlowBtn = document.getElementById('roofFlowBtn');
+  const auditorBtn = document.getElementById('auditorBtn');
+  const submitOfferBtn = document.getElementById('submitOfferBtn');
+  const offerEmail = document.getElementById('offerEmail');
+  const offerName = document.getElementById('offerName');
+  const offerMessage = document.getElementById('offerMessage');
+
+  // ---------- HELPER FUNCTIONS ----------
+  function updateUIForAuth(authenticated) {
+    isAuthenticated = authenticated;
+    if (authenticated) {
+      dashboardContent.classList.remove('locked-dashboard');
+      lockOverlay.classList.add('hidden');
+      statusBadge.innerHTML = '✅ ACTIVE · Full Access';
+      statusBadge.className = 'badge-status active';
       loadStats();
     } else {
-      dashboardDiv.classList.add("locked-dashboard");
-      overlay.classList.remove("hidden");
-      statusBadge.innerHTML = "🔒 LOCKED · Purchase to unlock";
-      statusBadge.className = "badge-status locked";
+      dashboardContent.classList.add('locked-dashboard');
+      lockOverlay.classList.remove('hidden');
+      statusBadge.innerHTML = '🔒 LOCKED · Purchase to unlock';
+      statusBadge.className = 'badge-status locked';
     }
   }
 
   function loadStats() {
-    const savedScore = localStorage.getItem(SCORE_KEY);
-    const savedRevenue = localStorage.getItem(REVENUE_KEY);
+    const savedScore = localStorage.getItem('ns_score');
+    const savedRevenue = localStorage.getItem('ns_revenue');
     currentScore = savedScore ? parseInt(savedScore) : 0;
     currentRevenue = savedRevenue ? parseInt(savedRevenue) : 0;
-    document.getElementById("scoreDisplay").innerText = currentScore;
-    document.getElementById("revenueDisplay").innerText = currentRevenue;
+    scoreDisplay.innerText = currentScore;
+    revenueDisplay.innerText = currentRevenue;
   }
 
   function saveStats() {
-    localStorage.setItem(SCORE_KEY, currentScore);
-    localStorage.setItem(REVENUE_KEY, currentRevenue);
-    document.getElementById("scoreDisplay").innerText = currentScore;
-    document.getElementById("revenueDisplay").innerText = currentRevenue;
+    localStorage.setItem('ns_score', currentScore);
+    localStorage.setItem('ns_revenue', currentRevenue);
+    scoreDisplay.innerText = currentScore;
+    revenueDisplay.innerText = currentRevenue;
   }
 
+  async function verifyAccess() {
+    // Check URL for session_id after Stripe redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    let sessionId = urlParams.get('session_id');
+    
+    // Also check localStorage for existing token
+    const storedToken = localStorage.getItem('ns_subscription_token');
+    if (storedToken && !sessionId) {
+      sessionId = storedToken;
+    }
+
+    if (sessionId) {
+      // Verify with backend
+      try {
+        const res = await fetch(`${API_BASE}/api/verify`, {
+          headers: { 'Authorization': `Bearer ${sessionId}` }
+        });
+        const data = await res.json();
+        if (data.valid) {
+          localStorage.setItem('ns_subscription_token', sessionId);
+          currentPlan = data.plan;
+          updateUIForAuth(true);
+          // Remove session_id from URL without reload
+          window.history.replaceState({}, document.title, window.location.pathname);
+          return;
+        } else {
+          // Token invalid
+          localStorage.removeItem('ns_subscription_token');
+          updateUIForAuth(false);
+        }
+      } catch (err) {
+        console.error('Verification error:', err);
+        updateUIForAuth(false);
+      }
+    } else {
+      // No token, check if any token exists
+      if (storedToken) {
+        // Try to verify stored token
+        try {
+          const res = await fetch(`${API_BASE}/api/verify`, {
+            headers: { 'Authorization': `Bearer ${storedToken}` }
+          });
+          const data = await res.json();
+          if (data.valid) {
+            currentPlan = data.plan;
+            updateUIForAuth(true);
+            return;
+          } else {
+            localStorage.removeItem('ns_subscription_token');
+          }
+        } catch (err) {
+          console.error('Stored token verification error:', err);
+        }
+      }
+      updateUIForAuth(false);
+    }
+  }
+
+  async function startCheckout(plan) {
+    try {
+      const response = await fetch(`${API_BASE}/api/create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: plan,
+          successUrl: window.location.href.split('?')[0] + '?session_id={CHECKOUT_SESSION_ID}',
+          cancelUrl: window.location.href
+        })
+      });
+      
+      if (!response.ok) throw new Error('Checkout session creation failed');
+      
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url; // Redirect to Stripe Checkout
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert('Unable to start checkout. Please try again later.');
+    }
+  }
+
+  // ---------- DASHBOARD ACTIONS (only if authenticated) ----------
   function addScore(amount) {
-    if (!isAuthenticated()) { alert("Please purchase a plan to unlock interactions."); return false; }
+    if (!isAuthenticated) {
+      alert('Please purchase a subscription to unlock this feature.');
+      return false;
+    }
     currentScore += amount;
     saveStats();
     return true;
   }
 
   function routeLead() {
-    if (!isAuthenticated()) { alert("Access denied: Purchase any plan to route leads."); return false; }
+    if (!isAuthenticated) {
+      alert('Please purchase a subscription to unlock lead routing.');
+      return false;
+    }
     if (currentScore >= 80) {
       currentRevenue += 75;
       saveStats();
-      alert("✅ Lead routed! +$75 revenue");
+      alert('✅ Lead routed! +$75 revenue');
     } else {
-      alert("❌ Need at least 80 score. Earn more points first.");
+      alert('❌ Need at least 80 score. Earn more points first.');
     }
     return true;
   }
 
-  function isAuthenticated() {
-    const token = localStorage.getItem(TOKEN_KEY);
-    return token && token === "active_northsky_token_demo";
+  function navigateSecurely(url) {
+    if (!isAuthenticated) {
+      alert('Please unlock the platform by purchasing a plan first.');
+      return;
+    }
+    window.open(url, '_blank');
   }
 
-  // Stripe-style checkout simulation (card entry modal, no blank screen)
-  function triggerStripeCheckout(planName, priceAmount) {
-    // Create a modal overlay with card inputs (stripe-like)
-    const modalDiv = document.createElement("div");
-    modalDiv.id = "stripeModal";
-    modalDiv.style.position = "fixed";
-    modalDiv.style.top = "0";
-    modalDiv.style.left = "0";
-    modalDiv.style.width = "100%";
-    modalDiv.style.height = "100%";
-    modalDiv.style.backgroundColor = "rgba(0,0,0,0.85)";
-    modalDiv.style.display = "flex";
-    modalDiv.style.alignItems = "center";
-    modalDiv.style.justifyContent = "center";
-    modalDiv.style.zIndex = "10000";
-    modalDiv.style.backdropFilter = "blur(6px)";
-    
-    const cardForm = document.createElement("div");
-    cardForm.style.background = "#0f172a";
-    cardForm.style.padding = "28px";
-    cardForm.style.borderRadius = "36px";
-    cardForm.style.width = "90%";
-    cardForm.style.maxWidth = "440px";
-    cardForm.style.border = "1px solid #2d3e6e";
-    cardForm.style.boxShadow = "0 20px 35px rgba(0,0,0,0.5)";
-    cardForm.innerHTML = `
-      <h3 style="margin-bottom: 8px;">💳 Complete Payment</h3>
-      <p style="margin-bottom: 20px;">${planName} — $${priceAmount}/mo</p>
-      <div style="margin-bottom: 16px;">
-        <label style="display:block; font-size:0.8rem;">Card Number</label>
-        <input type="text" id="fakeCardNumber" placeholder="4242 4242 4242 4242" style="width:100%; padding:12px; border-radius:20px; border:none; background:#1e293b; color:white;">
-      </div>
-      <div style="display:flex; gap:12px; margin-bottom:24px;">
-        <div style="flex:1"><label>MM/YY</label><input type="text" id="fakeExpiry" placeholder="12/28" style="width:100%; padding:10px; border-radius:20px; background:#1e293b; color:white; border:none;"></div>
-        <div style="flex:1"><label>CVC</label><input type="text" id="fakeCvc" placeholder="123" style="width:100%; padding:10px; border-radius:20px; background:#1e293b; color:white; border:none;"></div>
-      </div>
-      <button id="confirmPaymentBtn" style="background:#10b981; width:100%; padding:14px; border-radius:40px; font-weight:bold; border:none; cursor:pointer;">Pay $${priceAmount} & Unlock</button>
-      <button id="closeModalBtn" style="background:#334155; margin-top:12px; width:100%; padding:10px; border-radius:40px; border:none; cursor:pointer;">Cancel</button>
-      <p style="font-size:11px; margin-top:12px; text-align:center;">Test mode: use card 4242 4242 4242 4242, any expiry & CVC</p>
-    `;
-    modalDiv.appendChild(cardForm);
-    document.body.appendChild(modalDiv);
-    
-    const confirmBtn = cardForm.querySelector("#confirmPaymentBtn");
-    const closeBtn = cardForm.querySelector("#closeModalBtn");
-    const cardNumberInput = cardForm.querySelector("#fakeCardNumber");
-    
-    const processPayment = () => {
-      let cardNumber = cardNumberInput.value.replace(/\s/g, '');
-      if (!cardNumber.startsWith("4242") || cardNumber.length < 15) {
-        alert("Test card required: 4242 4242 4242 4242");
-        return;
-      }
-      // simulate stripe success
-      localStorage.setItem(TOKEN_KEY, "active_northsky_token_demo");
-      document.body.removeChild(modalDiv);
-      updateUIAfterAuth();
-      // additional: reset stats maybe but keep existing if any
-      loadStats();
-      alert(`✅ Payment successful! ${planName} activated. Full dashboard unlocked.`);
-    };
-    
-    confirmBtn.onclick = (e) => {
-      e.preventDefault();
-      processPayment();
-    };
-    closeBtn.onclick = () => {
-      document.body.removeChild(modalDiv);
-    };
-  }
-  
-  // offer sign-up handler
   function registerOffer() {
-    const email = document.getElementById("offerEmail").value.trim();
-    const name = document.getElementById("offerName").value.trim();
+    const email = offerEmail.value.trim();
+    const name = offerName.value.trim();
     if (!email) {
-      document.getElementById("offerMessage").innerHTML = "❌ Please enter your email to sign up for offers.";
-      document.getElementById("offerMessage").style.color = "#f87171";
+      offerMessage.innerHTML = '❌ Please enter your email to sign up for offers.';
+      offerMessage.style.color = '#f87171';
       return;
     }
-    if (!email.includes("@") || !email.includes(".")) {
-      document.getElementById("offerMessage").innerHTML = "❌ Valid email required for offers.";
+    if (!email.includes('@') || !email.includes('.')) {
+      offerMessage.innerHTML = '❌ Valid email required for offers.';
       return;
     }
-    // Simulate storing offer signup (localStorage)
-    const offersData = JSON.parse(localStorage.getItem("offer_signups") || "[]");
-    offersData.push({ email, name, plan: "offers", timestamp: Date.now() });
-    localStorage.setItem("offer_signups", JSON.stringify(offersData));
-    document.getElementById("offerMessage").innerHTML = "🎉 You're signed up! Exclusive offers will be sent to your inbox.";
-    document.getElementById("offerMessage").style.color = "#86efac";
-    document.getElementById("offerEmail").value = "";
-    document.getElementById("offerName").value = "";
-    // bonus: give 5 score if authenticated
-    if (isAuthenticated()) {
+    // Store in localStorage (demo) – you can replace with API call
+    const offers = JSON.parse(localStorage.getItem('offer_signups') || '[]');
+    offers.push({ email, name, timestamp: Date.now() });
+    localStorage.setItem('offer_signups', JSON.stringify(offers));
+    offerMessage.innerHTML = '🎉 You\'re signed up! Exclusive offers will be sent to your inbox.';
+    offerMessage.style.color = '#86efac';
+    offerEmail.value = '';
+    offerName.value = '';
+    
+    // Bonus score if authenticated
+    if (isAuthenticated) {
       currentScore += 5;
       saveStats();
-      document.getElementById("offerMessage").innerHTML += " 🎁 +5 bonus score!";
+      offerMessage.innerHTML += ' 🎁 +5 bonus score!';
     }
   }
-  
-  // external apps redirect (with token persistence)
-  function navigateSecurely(url) {
-    if (!isAuthenticated()) {
-      alert("Please unlock the platform by purchasing a plan first.");
-      return;
-    }
-    window.open(url, "_blank");
-  }
-  
-  // attach event listeners
-  document.querySelectorAll(".btn-buy").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const plan = btn.getAttribute("data-plan");
-      const price = btn.getAttribute("data-price");
-      let displayPlan = plan.charAt(0).toUpperCase() + plan.slice(1);
-      triggerStripeCheckout(displayPlan, price);
+
+  // ---------- EVENT LISTENERS ----------
+  document.querySelectorAll('.btn-buy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const plan = btn.getAttribute('data-plan');
+      startCheckout(plan);
     });
   });
-  
-  document.getElementById("addScoreBtn").addEventListener("click", () => {
-    if (!isAuthenticated()) { alert("Unlock system first via card checkout."); return; }
-    addScore(10);
-  });
-  
-  document.getElementById("routeLeadBtn").addEventListener("click", () => routeLead());
-  
-  document.getElementById("roofFlowBtn").addEventListener("click", () => navigateSecurely("https://north-sky-roof-flow-os.vercel.app"));
-  document.getElementById("auditorBtn").addEventListener("click", () => navigateSecurely("https://north-sky-auditor-sim.vercel.app"));
-  
-  document.getElementById("submitOfferBtn").addEventListener("click", registerOffer);
-  
-  // Demo purchase simulation overlay button (test)
-  const simulateBtn = document.getElementById("simulatePurchaseBtn");
-  if (simulateBtn) {
-    simulateBtn.addEventListener("click", () => {
-      triggerStripeCheckout("Demo Elite", 0);
-    });
-  }
-  
-  // initial auth check: check for valid demo token
-  if (!localStorage.getItem(TOKEN_KEY)) {
-    localStorage.removeItem(TOKEN_KEY);
-  }
-  // clear any expired mock token except active
-  if (localStorage.getItem(TOKEN_KEY) !== "active_northsky_token_demo") {
-    localStorage.setItem(TOKEN_KEY, "");
-  }
-  updateUIAfterAuth();
-  // if already authed, load stats; else ensure stats loaded for later
-  if (isAuthenticated()) loadStats();
-  else {
-    currentScore = 0; currentRevenue = 0;
-    saveStats();
-  }
-  
-  // Edge: prevent blank white screen due to any async error
-  window.addEventListener("error", (e) => {
-    console.warn("Global error guarded", e);
-  });
-  // ensure stripe not conflicting, all good.
+
+  addScoreBtn.addEventListener('click', () => addScore(10));
+  routeLeadBtn.addEventListener('click', () => routeLead());
+  roofFlowBtn.addEventListener('click', () => navigateSecurely('https://north-sky-roof-flow-os.vercel.app'));
+  auditorBtn.addEventListener('click', () => navigateSecurely('https://north-sky-auditor-sim.vercel.app'));
+  submitOfferBtn.addEventListener('click', registerOffer);
+
+  // ---------- INITIAL LOAD ----------
+  verifyAccess();
+  // Optional: Poll every 10 seconds to re-verify (in case subscription updated)
+  setInterval(verifyAccess, 10000);
 </script>
 </body>
 </html>
