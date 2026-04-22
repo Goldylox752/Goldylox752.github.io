@@ -1,138 +1,3 @@
-/* =========================
-   STRIPE CHECKOUT ENDPOINTS
-========================= */
-
-// Price IDs for your Stripe products (you need to add these to your .env)
-// You can find Price IDs in Stripe Dashboard -> Products
-const PLAN_PRICE_IDS = {
-  starter: process.env.STRIPE_STARTER_PRICE_ID,
-  pro: process.env.STRIPE_PRO_PRICE_ID,
-  elite: process.env.STRIPE_ELITE_PRICE_ID
-};
-
-// Create checkout session
-app.post("/api/create-checkout", async (req, res) => {
-  try {
-    const { plan, successUrl, cancelUrl } = req.body;
-    
-    // Map plan to your actual Stripe payment links or Price IDs
-    let paymentLink;
-    switch(plan) {
-      case "starter":
-        paymentLink = "https://buy.stripe.com/aFaeV6cX97yIfsjcvu2ZO0E";
-        break;
-      case "pro":
-        paymentLink = "https://buy.stripe.com/dRm28k8GTaKU1Btcvu2ZO0D";
-        break;
-      case "elite":
-        paymentLink = "https://buy.stripe.com/dRmfZae1d2eoeofgLK2ZO0C";
-        break;
-      default:
-        return res.status(400).json({ error: "Invalid plan" });
-    }
-    
-    // Since you're using Stripe Payment Links, just redirect to the link
-    // Or if you want full Checkout experience with Price IDs:
-    if (PLAN_PRICE_IDS[plan] && process.env.STRIPE_SECRET) {
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{
-          price: PLAN_PRICE_IDS[plan],
-          quantity: 1,
-        }],
-        mode: "subscription",
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        metadata: {
-          plan: plan,
-          userId: req.body.userId || "anonymous"
-        }
-      });
-      return res.json({ url: session.url });
-    }
-    
-    // Fallback to direct payment link redirect
-    return res.json({ url: paymentLink });
-    
-  } catch (err) {
-    console.error("Checkout error:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Verify subscription status
-app.post("/api/verify", async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.json({ valid: false });
-    }
-    
-    const token = authHeader.split(" ")[1];
-    
-    // Check if token is in our verified_sessions table
-    const { data, error } = await supabase
-      .from("verified_sessions")
-      .select("*")
-      .eq("session_id", token)
-      .gt("expires_at", new Date().toISOString())
-      .maybeSingle();
-    
-    if (data && !error) {
-      return res.json({ valid: true, plan: data.plan });
-    }
-    
-    return res.json({ valid: false });
-  } catch (err) {
-    console.error("Verify error:", err);
-    res.json({ valid: false });
-  }
-});
-
-// Stripe Webhook endpoint (critical for subscription tracking)
-app.post("/webhook/stripe", express.raw({type: "application/json"}), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  
-  let event;
-  
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-  } catch (err) {
-    console.error(`Webhook signature verification failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-  
-  // Handle the event
-  switch (event.type) {
-    case "checkout.session.completed":
-      const session = event.data.object;
-      // Store verified session in Supabase
-      await supabase.from("verified_sessions").insert([{
-        session_id: session.id,
-        customer_email: session.customer_details.email,
-        plan: session.metadata?.plan || "starter",
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date().toISOString()
-      }]);
-      console.log(`✅ Subscription verified for ${session.customer_details.email}`);
-      break;
-      
-    case "customer.subscription.deleted":
-      // Handle cancellation
-      console.log("Subscription cancelled:", event.data.object);
-      break;
-      
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
-  }
-  
-  res.json({ received: true });
-});
-
-
-
-
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -152,6 +17,44 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+// Raw body for Stripe webhook (must be before JSON parser)
+app.post("/webhook/stripe", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  let event;
+  
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err) {
+    console.error(`Webhook signature verification failed: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  
+  switch (event.type) {
+    case "checkout.session.completed":
+      const session = event.data.object;
+      await supabase.from("verified_sessions").insert([{
+        session_id: session.id,
+        customer_email: session.customer_details.email,
+        plan: session.metadata?.plan || "starter",
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date().toISOString()
+      }]);
+      console.log(`✅ Subscription verified for ${session.customer_details.email}`);
+      break;
+      
+    case "customer.subscription.deleted":
+      console.log("Subscription cancelled:", event.data.object.id);
+      break;
+      
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+  
+  res.json({ received: true });
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
@@ -190,6 +93,115 @@ let sms = null;
 if (process.env.TWILIO_SID && process.env.TWILIO_AUTH && process.env.TWILIO_NUMBER) {
   sms = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
 }
+
+/* =========================
+   STRIPE CHECKOUT ENDPOINTS
+========================= */
+
+const PLAN_PRICE_IDS = {
+  starter: process.env.STRIPE_STARTER_PRICE_ID,
+  pro: process.env.STRIPE_PRO_PRICE_ID,
+  elite: process.env.STRIPE_ELITE_PRICE_ID
+};
+
+// Create checkout session
+app.post("/api/create-checkout", async (req, res) => {
+  try {
+    const { plan, successUrl, cancelUrl, userId } = req.body;
+    
+    // Map plan to Stripe Payment Links
+    let paymentLink;
+    switch(plan) {
+      case "starter":
+        paymentLink = "https://buy.stripe.com/aFaeV6cX97yIfsjcvu2ZO0E";
+        break;
+      case "pro":
+        paymentLink = "https://buy.stripe.com/dRm28k8GTaKU1Btcvu2ZO0D";
+        break;
+      case "elite":
+        paymentLink = "https://buy.stripe.com/dRmfZae1d2eoeofgLK2ZO0C";
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid plan" });
+    }
+    
+    // Use full Stripe Checkout if Price IDs are configured
+    if (PLAN_PRICE_IDS[plan] && process.env.STRIPE_SECRET) {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price: PLAN_PRICE_IDS[plan],
+          quantity: 1,
+        }],
+        mode: "subscription",
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        metadata: {
+          plan: plan,
+          userId: userId || "anonymous"
+        }
+      });
+      return res.json({ url: session.url });
+    }
+    
+    // Fallback to direct payment link redirect
+    return res.json({ url: paymentLink });
+    
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Verify subscription status
+app.post("/api/verify", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.json({ valid: false });
+    }
+    
+    const token = authHeader.split(" ")[1];
+    
+    const { data, error } = await supabase
+      .from("verified_sessions")
+      .select("*")
+      .eq("session_id", token)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    
+    if (data && !error) {
+      return res.json({ valid: true, plan: data.plan });
+    }
+    
+    return res.json({ valid: false });
+  } catch (err) {
+    console.error("Verify error:", err);
+    res.json({ valid: false });
+  }
+});
+
+// Offer signup endpoint
+app.post("/api/offer-signup", async (req, res) => {
+  try {
+    const { email, name, userId } = req.body;
+    
+    const { error } = await supabase
+      .from("offer_signups")
+      .insert([{
+        email,
+        name: name || null,
+        user_id: userId,
+        created_at: new Date().toISOString()
+      }]);
+    
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Offer signup error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 /* =========================
    HELPERS
@@ -278,7 +290,6 @@ app.post("/lead", leadLimiter, async (req, res) => {
 
     const clean = cleanContact(contact);
 
-    // Duplicate check (last 24h only)
     const { data: existing, error: dupError } = await supabase
       .from("leads")
       .select("id")
@@ -296,7 +307,6 @@ app.post("/lead", leadLimiter, async (req, res) => {
     const city = getCity(postalCode);
     const leadId = uuidv4();
 
-    // Find buyer first
     const buyer = await getBestBuyer(city);
     let revenue = 0;
     let charged = false;
@@ -308,7 +318,6 @@ app.post("/lead", leadLimiter, async (req, res) => {
         charged = true;
       } catch (chargeErr) {
         console.error(`❌ Payment failed for contractor ${buyer.id}:`, chargeErr.message);
-        // Disable contractor after payment failure
         await supabase
           .from("contractors")
           .update({ active: false, last_error: chargeErr.message })
@@ -316,7 +325,6 @@ app.post("/lead", leadLimiter, async (req, res) => {
       }
     }
 
-    // Insert lead
     const { error: leadError } = await supabase.from("leads").insert([{
       id: leadId,
       name: name || null,
@@ -334,7 +342,6 @@ app.post("/lead", leadLimiter, async (req, res) => {
 
     if (leadError) throw new Error(`Lead insert failed: ${leadError.message}`);
 
-    // If charged, create assignment and send SMS
     if (buyer && charged) {
       const { error: assignError } = await supabase.from("lead_assignments").insert([{
         id: uuidv4(),
@@ -398,7 +405,6 @@ app.post("/api/event", async (req, res) => {
 
     const scoreValue = eventScoreMap[eventType] || 0;
 
-    // Get or create user cumulative score
     let currentScore = 0;
     const { data: userScoreData, error: fetchError } = await supabase
       .from("user_scores")
@@ -416,12 +422,10 @@ app.post("/api/event", async (req, res) => {
 
     const newTotalScore = currentScore + scoreValue;
 
-    // Determine stage based on NEW total score
     let stage = "COLD";
     if (newTotalScore >= 15) stage = "HOT";
     else if (newTotalScore >= 6) stage = "WARM";
 
-    // Insert event
     const enrichedEvent = {
       id: uuidv4(),
       user_id,
@@ -440,7 +444,6 @@ app.post("/api/event", async (req, res) => {
 
     if (insertEventError) throw new Error(`Event insert failed: ${insertEventError.message}`);
 
-    // Upsert user total score
     const { error: upsertError } = await supabase
       .from("user_scores")
       .upsert({
@@ -452,7 +455,6 @@ app.post("/api/event", async (req, res) => {
 
     if (upsertError) console.error("User score upsert error:", upsertError);
 
-    // HOT LEAD ROUTING (insert into hot_leads table)
     if (stage === "HOT") {
       const { error: hotLeadError } = await supabase
         .from("hot_leads")
@@ -472,7 +474,6 @@ app.post("/api/event", async (req, res) => {
       }
     }
 
-    // Special handling for checkout clicks
     if (eventType === "checkout_click") {
       const { error: checkoutError } = await supabase
         .from("checkout_events")
