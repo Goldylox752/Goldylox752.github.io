@@ -1,3 +1,72 @@
+const express = require('express');
+const cors = require('cors');
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// In-memory store (replace with DB in production)
+const validSessions = new Map(); // session_id -> { plan, userId }
+
+// 1. Create Stripe Checkout session
+app.post('/api/create-checkout', async (req, res) => {
+  const { plan, successUrl, cancelUrl, userId } = req.body;
+  const priceId = process.env[`STRIPE_${plan.toUpperCase()}_PRICE_ID`];
+  
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: { userId, plan }
+    });
+    validSessions.set(session.id, { plan, userId, valid: false });
+    res.json({ url: session.url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Verify subscription (called by frontend after redirect)
+app.post('/api/verify', async (req, res) => {
+  const { session_id } = req.body;
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1] || session_id;
+  
+  try {
+    const session = await stripe.checkout.sessions.retrieve(token);
+    const isValid = session.payment_status === 'paid' || session.status === 'complete';
+    if (isValid) {
+      validSessions.set(token, { plan: session.metadata.plan, valid: true });
+      return res.json({ valid: true, plan: session.metadata.plan });
+    }
+    res.json({ valid: false });
+  } catch {
+    res.json({ valid: false });
+  }
+});
+
+// 3. Event tracking (optional)
+app.post('/api/event', (req, res) => {
+  console.log('Event:', req.body);
+  res.json({ ok: true });
+});
+
+// 4. Offer signup storage
+app.post('/api/offer-signup', (req, res) => {
+  console.log('Offer signup:', req.body);
+  res.json({ ok: true });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
