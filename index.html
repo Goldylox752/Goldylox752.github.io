@@ -134,6 +134,11 @@
     transform: scale(0.98);
   }
 
+  .btn-buy:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .dashboard-wrapper {
     position: relative;
     background: #0a0f1e;
@@ -291,12 +296,32 @@
     border-radius: 60px;
     font-weight: 700;
     cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-offer:hover {
+    opacity: 0.9;
   }
 
   .message-toast {
     margin-top: 12px;
     font-size: 0.85rem;
     color: #86efac;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.6s linear infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   @media (max-width: 720px) {
@@ -385,11 +410,18 @@
 
 <script>
   // ---------- CONFIGURATION ----------
-  const API_BASE = window.location.origin; // backend serves same origin
+  const API_BASE = window.location.origin;
   let currentScore = 0;
   let currentRevenue = 0;
   let isAuthenticated = false;
   let currentPlan = null;
+  let userId = localStorage.getItem('ns_user_id') || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  let verificationInterval = null;
+
+  // Save user ID if new
+  if (!localStorage.getItem('ns_user_id')) {
+    localStorage.setItem('ns_user_id', userId);
+  }
 
   // DOM elements
   const dashboardContent = document.getElementById('dashboardContent');
@@ -407,14 +439,15 @@
   const offerMessage = document.getElementById('offerMessage');
 
   // ---------- HELPER FUNCTIONS ----------
-  function updateUIForAuth(authenticated) {
+  function updateUIForAuth(authenticated, plan = null) {
     isAuthenticated = authenticated;
     if (authenticated) {
       dashboardContent.classList.remove('locked-dashboard');
       lockOverlay.classList.add('hidden');
-      statusBadge.innerHTML = '✅ ACTIVE · Full Access';
+      statusBadge.innerHTML = `✅ ACTIVE · ${plan ? plan.toUpperCase() : 'Full'} Access`;
       statusBadge.className = 'badge-status active';
       loadStats();
+      trackEvent('subscription_activated', { plan: plan });
     } else {
       dashboardContent.classList.add('locked-dashboard');
       lockOverlay.classList.remove('hidden');
@@ -437,153 +470,219 @@
     localStorage.setItem('ns_revenue', currentRevenue);
     scoreDisplay.innerText = currentScore;
     revenueDisplay.innerText = currentRevenue;
+    
+    if (isAuthenticated) {
+      trackEvent('score_update', { score: currentScore, revenue: currentRevenue });
+    }
+  }
+
+  async function trackEvent(eventType, metadata = {}) {
+    try {
+      await fetch(`${API_BASE}/api/event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          event: eventType,
+          session_id: localStorage.getItem('ns_subscription_token'),
+          metadata: metadata
+        })
+      });
+    } catch (err) {
+      console.error('Event tracking error:', err);
+    }
   }
 
   async function verifyAccess() {
-    // Check URL for session_id after Stripe redirect
     const urlParams = new URLSearchParams(window.location.search);
     let sessionId = urlParams.get('session_id');
-    
-    // Also check localStorage for existing token
     const storedToken = localStorage.getItem('ns_subscription_token');
-    if (storedToken && !sessionId) {
-      sessionId = storedToken;
-    }
+    const tokenToVerify = sessionId || storedToken;
 
-    if (sessionId) {
-      // Verify with backend
+    if (tokenToVerify) {
       try {
         const res = await fetch(`${API_BASE}/api/verify`, {
-          headers: { 'Authorization': `Bearer ${sessionId}` }
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenToVerify}`
+          },
+          body: JSON.stringify({ session_id: tokenToVerify })
         });
+        
         const data = await res.json();
+        
         if (data.valid) {
-          localStorage.setItem('ns_subscription_token', sessionId);
+          localStorage.setItem('ns_subscription_token', tokenToVerify);
           currentPlan = data.plan;
-          updateUIForAuth(true);
-          // Remove session_id from URL without reload
-          window.history.replaceState({}, document.title, window.location.pathname);
+          updateUIForAuth(true, data.plan);
+          
+          if (sessionId) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            if (!storedToken) {
+              setTimeout(() => {
+                alert('🎉 Subscription activated! Welcome to NorthSky OS.');
+              }, 100);
+            }
+          }
           return;
         } else {
-          // Token invalid
           localStorage.removeItem('ns_subscription_token');
           updateUIForAuth(false);
         }
       } catch (err) {
         console.error('Verification error:', err);
-        updateUIForAuth(false);
-      }
-    } else {
-      // No token, check if any token exists
-      if (storedToken) {
-        // Try to verify stored token
-        try {
-          const res = await fetch(`${API_BASE}/api/verify`, {
-            headers: { 'Authorization': `Bearer ${storedToken}` }
-          });
-          const data = await res.json();
-          if (data.valid) {
-            currentPlan = data.plan;
-            updateUIForAuth(true);
-            return;
-          } else {
-            localStorage.removeItem('ns_subscription_token');
-          }
-        } catch (err) {
-          console.error('Stored token verification error:', err);
+        if (err.name !== 'TypeError' || !err.message.includes('fetch')) {
+          updateUIForAuth(false);
         }
       }
+    } else {
       updateUIForAuth(false);
     }
   }
 
   async function startCheckout(plan) {
+    const clickedBtn = document.querySelector(`.btn-buy[data-plan="${plan}"]`);
+    const originalText = clickedBtn ? clickedBtn.textContent : 'Subscribe';
+    
+    if (clickedBtn) {
+      clickedBtn.innerHTML = '<span class="loading-spinner"></span> Redirecting...';
+      clickedBtn.disabled = true;
+    }
+    
     try {
       const response = await fetch(`${API_BASE}/api/create-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan: plan,
-          successUrl: window.location.href.split('?')[0] + '?session_id={CHECKOUT_SESSION_ID}',
-          cancelUrl: window.location.href
+          successUrl: window.location.origin + window.location.pathname + '?session_id={CHECKOUT_SESSION_ID}',
+          cancelUrl: window.location.href,
+          userId: userId
         })
       });
       
-      if (!response.ok) throw new Error('Checkout session creation failed');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Checkout creation failed (${response.status})`);
+      }
       
       const { url } = await response.json();
+      
       if (url) {
-        window.location.href = url; // Redirect to Stripe Checkout
+        await trackEvent('checkout_initiated', { plan: plan });
+        localStorage.setItem('pending_plan', plan);
+        window.location.href = url;
       } else {
-        throw new Error('No checkout URL returned');
+        throw new Error('No checkout URL returned from server');
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      alert('Unable to start checkout. Please try again later.');
+      
+      let errorMsg = 'Unable to start checkout. ';
+      if (err.message.includes('fetch')) {
+        errorMsg += 'Cannot connect to payment server. Please try again later.';
+      } else if (err.message.includes('400') || err.message.includes('500')) {
+        errorMsg += 'Payment configuration error. Please contact support.';
+      } else {
+        errorMsg += err.message;
+      }
+      
+      alert(errorMsg);
+      
+      if (clickedBtn) {
+        clickedBtn.innerHTML = originalText;
+        clickedBtn.disabled = false;
+      }
     }
   }
 
-  // ---------- DASHBOARD ACTIONS (only if authenticated) ----------
+  // ---------- DASHBOARD ACTIONS ----------
   function addScore(amount) {
     if (!isAuthenticated) {
-      alert('Please purchase a subscription to unlock this feature.');
+      alert('✨ Please purchase a subscription to unlock this feature.');
       return false;
     }
     currentScore += amount;
     saveStats();
+    trackEvent('score_added', { amount: amount, new_score: currentScore });
     return true;
   }
 
   function routeLead() {
     if (!isAuthenticated) {
-      alert('Please purchase a subscription to unlock lead routing.');
+      alert('✨ Please purchase a subscription to unlock lead routing.');
       return false;
     }
     if (currentScore >= 80) {
       currentRevenue += 75;
       saveStats();
-      alert('✅ Lead routed! +$75 revenue');
+      trackEvent('lead_routed', { revenue_added: 75, score_at_routing: currentScore });
+      alert('✅ Lead routed successfully! +$75 revenue');
     } else {
-      alert('❌ Need at least 80 score. Earn more points first.');
+      alert(`❌ Need at least 80 score to route leads. Current score: ${currentScore}\nEarn more points by clicking +10 Score.`);
     }
     return true;
   }
 
-  function navigateSecurely(url) {
+  function navigateSecurely(url, featureName) {
     if (!isAuthenticated) {
-      alert('Please unlock the platform by purchasing a plan first.');
+      alert(`✨ Please purchase a subscription to access ${featureName}.`);
       return;
     }
+    trackEvent('feature_accessed', { feature: featureName, url: url });
     window.open(url, '_blank');
   }
 
-  function registerOffer() {
+  async function registerOffer() {
     const email = offerEmail.value.trim();
     const name = offerName.value.trim();
+    
     if (!email) {
       offerMessage.innerHTML = '❌ Please enter your email to sign up for offers.';
       offerMessage.style.color = '#f87171';
       return;
     }
+    
     if (!email.includes('@') || !email.includes('.')) {
-      offerMessage.innerHTML = '❌ Valid email required for offers.';
+      offerMessage.innerHTML = '❌ Please enter a valid email address.';
+      offerMessage.style.color = '#f87171';
       return;
     }
-    // Store in localStorage (demo) – you can replace with API call
+    
     const offers = JSON.parse(localStorage.getItem('offer_signups') || '[]');
-    offers.push({ email, name, timestamp: Date.now() });
+    offers.push({ email, name, timestamp: Date.now(), userId: userId });
     localStorage.setItem('offer_signups', JSON.stringify(offers));
+    
+    if (isAuthenticated) {
+      try {
+        await fetch(`${API_BASE}/api/offer-signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, userId })
+        });
+      } catch (err) {
+        console.error('Failed to save offer signup to backend:', err);
+      }
+    }
+    
     offerMessage.innerHTML = '🎉 You\'re signed up! Exclusive offers will be sent to your inbox.';
     offerMessage.style.color = '#86efac';
     offerEmail.value = '';
     offerName.value = '';
     
-    // Bonus score if authenticated
     if (isAuthenticated) {
       currentScore += 5;
       saveStats();
       offerMessage.innerHTML += ' 🎁 +5 bonus score!';
+      trackEvent('offer_signup_bonus', { bonus_score: 5 });
     }
+    
+    setTimeout(() => {
+      if (offerMessage.innerHTML.includes('signed up')) {
+        offerMessage.innerHTML = '';
+      }
+    }, 5000);
   }
 
   // ---------- EVENT LISTENERS ----------
@@ -594,16 +693,28 @@
     });
   });
 
-  addScoreBtn.addEventListener('click', () => addScore(10));
-  routeLeadBtn.addEventListener('click', () => routeLead());
-  roofFlowBtn.addEventListener('click', () => navigateSecurely('https://north-sky-roof-flow-os.vercel.app'));
-  auditorBtn.addEventListener('click', () => navigateSecurely('https://north-sky-auditor-sim.vercel.app'));
-  submitOfferBtn.addEventListener('click', registerOffer);
+  if (addScoreBtn) addScoreBtn.addEventListener('click', () => addScore(10));
+  if (routeLeadBtn) routeLeadBtn.addEventListener('click', () => routeLead());
+  if (roofFlowBtn) roofFlowBtn.addEventListener('click', () => navigateSecurely('https://north-sky-roof-flow-os.vercel.app', 'RoofFlow'));
+  if (auditorBtn) auditorBtn.addEventListener('click', () => navigateSecurely('https://north-sky-auditor-sim.vercel.app', 'Auditor'));
+  if (submitOfferBtn) submitOfferBtn.addEventListener('click', registerOffer);
 
   // ---------- INITIAL LOAD ----------
+  console.log('NorthSky OS initializing...', { userId, apiBase: API_BASE });
+  
   verifyAccess();
-  // Optional: Poll every 10 seconds to re-verify (in case subscription updated)
-  setInterval(verifyAccess, 10000);
+  trackEvent('page_view', { page: 'revenue_hub', timestamp: Date.now() });
+  
+  // Poll every 30 seconds to re-verify
+  verificationInterval = setInterval(verifyAccess, 30000);
+  
+  window.addEventListener('beforeunload', () => {
+    if (isAuthenticated && verificationInterval) {
+      clearInterval(verificationInterval);
+      trackEvent('session_end', { duration: Date.now() - (window._sessionStart || Date.now()) });
+    }
+  });
+  window._sessionStart = Date.now();
 </script>
 </body>
 </html>
