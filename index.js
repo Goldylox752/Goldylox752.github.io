@@ -1,629 +1,609 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const xss = require("xss-clean");
-const hpp = require("hpp");
-const dotenv = require("dotenv");
-const rateLimit = require("express-rate-limit");
-const { body, validationResult } = require("express-validator");
-const twilio = require("twilio");
-const Stripe = require("stripe");
-const { createClient } = require("@supabase/supabase-js");
-const { v4: uuidv4 } = require("uuid");
-const path = require("path");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>NorthSky OS · Revenue Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-dotenv.config();
-const app = express();
+  body {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+    font-family: 'Inter', sans-serif;
+    color: #f1f5f9;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
 
-/* =========================
-   SECURITY MIDDLEWARE (early)
-========================= */
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://*.vercel.app"],
-      frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com"],
-      connectSrc: ["'self'", "https://api.stripe.com", "https://*.supabase.co"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https://*.stripe.com"],
-    },
-  },
-}));
-app.use(xss());
-app.use(hpp());
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
 
-// Dynamic CORS – allow multiple frontend origins
-const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:3000,https://yourdomain.com").split(",");
-const corsOptions = {
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+  .nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    padding: 16px 24px;
+    border-radius: 32px;
+    border: 1px solid rgba(37, 99, 235, 0.3);
+  }
+
+  .logo h2 {
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+  }
+
+  .badge-status {
+    background: #1e293b;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  .badge-status.locked {
+    background: #7f1a1a;
+    color: #fecaca;
+  }
+
+  .badge-status.active {
+    background: #14532d;
+    color: #bbf7d0;
+  }
+
+  .pricing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 48px;
+    justify-content: center;
+  }
+
+  .price-card {
+    flex: 1;
+    min-width: 220px;
+    background: #0f172a;
+    border-radius: 32px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+    border: 1px solid #1e293b;
+    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+  }
+
+  .price-card:hover {
+    transform: translateY(-4px);
+    border-color: #3b82f6;
+    background: #111827;
+  }
+
+  .price-card h3 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin: 12px 0;
+  }
+
+  .price small {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #94a3b8;
+  }
+
+  .btn-buy {
+    background: #2563eb;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .btn-buy:hover {
+    background: #1d4ed8;
+    transform: scale(0.98);
+  }
+
+  .dashboard-wrapper {
+    position: relative;
+    background: #0a0f1e;
+    border-radius: 36px;
+    border: 1px solid #1e293b;
+    overflow: hidden;
+    transition: all 0.2s;
+    min-height: 460px;
+  }
+
+  .dashboard-content {
+    padding: 32px 28px;
+    transition: filter 0.25s ease;
+  }
+
+  .locked-dashboard {
+    filter: blur(12px);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .overlay-lock {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.92);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    z-index: 20;
+    border-radius: 36px;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .overlay-lock.hidden {
+    display: none;
+  }
+
+  .lock-card {
+    background: #0f172a;
+    padding: 28px 32px;
+    border-radius: 40px;
+    max-width: 340px;
+    border: 1px solid #334155;
+  }
+
+  .stats-panel {
+    display: flex;
+    gap: 28px;
+    background: #0f172a;
+    padding: 20px 24px;
+    border-radius: 28px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #facc15;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .btn-action {
+    background: #1e293b;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .btn-action.primary {
+    background: #3b82f6;
+  }
+
+  .btn-action.warning {
+    background: #ea580c;
+  }
+
+  .btn-action:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  hr {
+    margin: 20px 0;
+    border-color: #1e293b;
+  }
+
+  .offer-signup {
+    margin-top: 24px;
+    background: #020617;
+    border-radius: 28px;
+    padding: 20px;
+    border: 1px solid #2d3a5e;
+  }
+
+  .offer-flex {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .offer-input-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 2;
+  }
+
+  .offer-input-group input {
+    flex: 1;
+    padding: 12px 18px;
+    border-radius: 60px;
+    border: none;
+    background: #0f172a;
+    color: white;
+    font-size: 0.9rem;
+    border: 1px solid #334155;
+  }
+
+  .btn-offer {
+    background: #10b981;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .message-toast {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #86efac;
+  }
+
+  @media (max-width: 720px) {
+    .pricing-grid { flex-direction: column; }
+    .stats-panel { flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-header">
+    <div class="logo">
+      <h2>☁️ NorthSky OS · Revenue Hub</h2>
+    </div>
+    <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED · Purchase to unlock</div>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <h3>Starter</h3>
+      <div class="price">$99<span><small>/mo</small></span></div>
+      <button class="btn-buy" data-plan="starter">💳 Subscribe with Stripe</button>
+    </div>
+    <div class="price-card">
+      <h3>Pro</h3>
+      <div class="price">$299<span><small>/mo</small></span></div>
+      <button class="btn-buy" data-plan="pro">💳 Subscribe with Stripe</button>
+    </div>
+    <div class="price-card">
+      <h3>Elite</h3>
+      <div class="price">$999<span><small>/mo</small></span></div>
+      <button class="btn-buy" data-plan="elite">💳 Subscribe with Stripe</button>
+    </div>
+  </div>
+
+  <div class="dashboard-wrapper" id="dashboardWrapper">
+    <div id="dashboardContent" class="dashboard-content locked-dashboard">
+      <h1 style="font-size: 1.8rem; margin-bottom: 8px;">📊 Revenue Command Center</h1>
+      <p style="margin-bottom: 20px;">Track leads, optimize funnels, and grow revenue — unlocked after subscription.</p>
+      
+      <div class="stats-panel">
+        <div class="stat-item">
+          <div class="stat-label">🏆 SCORE</div>
+          <div class="stat-value" id="scoreDisplay">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">💰 REVENUE (USD)</div>
+          <div class="stat-value" id="revenueDisplay">0</div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-action primary" id="addScoreBtn">+10 Score</button>
+        <button class="btn-action warning" id="routeLeadBtn">🚀 Route Lead</button>
+        <button class="btn-action" id="roofFlowBtn">🏠 RoofFlow</button>
+        <button class="btn-action" id="auditorBtn">📑 Auditor</button>
+      </div>
+
+      <hr />
+
+      <div class="offer-signup" id="offerSignupSection">
+        <h3>🎁 Exclusive Offers & Discounts</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 16px;">Sign up for premium offers, early access & partner deals.</p>
+        <div class="offer-flex">
+          <div class="offer-input-group">
+            <input type="email" id="offerEmail" placeholder="Your best email" autocomplete="email">
+            <input type="text" id="offerName" placeholder="Full name (optional)">
+          </div>
+          <button class="btn-offer" id="submitOfferBtn">✉️ Sign up for offers →</button>
+        </div>
+        <div id="offerMessage" class="message-toast"></div>
+      </div>
+    </div>
+
+    <div id="lockOverlay" class="overlay-lock">
+      <div class="lock-card">
+        <span style="font-size: 48px;">🔐</span>
+        <h2>Access Locked</h2>
+        <p>Select a plan above & complete secure Stripe payment to unlock.</p>
+        <p style="font-size:12px; margin-top:12px;">Stripe test card: 4242 4242 4242 4242</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- CONFIGURATION ----------
+  const API_BASE = window.location.origin; // backend serves same origin
+  let currentScore = 0;
+  let currentRevenue = 0;
+  let isAuthenticated = false;
+  let currentPlan = null;
+
+  // DOM elements
+  const dashboardContent = document.getElementById('dashboardContent');
+  const lockOverlay = document.getElementById('lockOverlay');
+  const statusBadge = document.getElementById('globalStatusBadge');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const revenueDisplay = document.getElementById('revenueDisplay');
+  const addScoreBtn = document.getElementById('addScoreBtn');
+  const routeLeadBtn = document.getElementById('routeLeadBtn');
+  const roofFlowBtn = document.getElementById('roofFlowBtn');
+  const auditorBtn = document.getElementById('auditorBtn');
+  const submitOfferBtn = document.getElementById('submitOfferBtn');
+  const offerEmail = document.getElementById('offerEmail');
+  const offerName = document.getElementById('offerName');
+  const offerMessage = document.getElementById('offerMessage');
+
+  // ---------- HELPER FUNCTIONS ----------
+  function updateUIForAuth(authenticated) {
+    isAuthenticated = authenticated;
+    if (authenticated) {
+      dashboardContent.classList.remove('locked-dashboard');
+      lockOverlay.classList.add('hidden');
+      statusBadge.innerHTML = '✅ ACTIVE · Full Access';
+      statusBadge.className = 'badge-status active';
+      loadStats();
     } else {
-      callback(new Error("Not allowed by CORS"));
+      dashboardContent.classList.add('locked-dashboard');
+      lockOverlay.classList.remove('hidden');
+      statusBadge.innerHTML = '🔒 LOCKED · Purchase to unlock';
+      statusBadge.className = 'badge-status locked';
     }
-  },
-  optionsSuccessStatus: 200,
-  methods: ["POST", "GET", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "x-api-key", "Authorization"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-// Limit JSON body size to 10KB
-app.use(express.json({ limit: "10kb" }));
-
-// Serve static files from /public
-app.use(express.static(path.join(__dirname, "public")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-/* =========================
-   ENVIRONMENT CHECKS
-========================= */
-const required = ["SUPABASE_URL", "SUPABASE_KEY", "STRIPE_SECRET", "STRIPE_WEBHOOK_SECRET"];
-required.forEach(k => {
-  if (!process.env[k]) {
-    console.error(`❌ Missing ${k} in environment variables`);
-    process.exit(1);
-  }
-});
-
-const API_KEY = process.env.API_KEY;
-if (!API_KEY) console.warn("⚠️ API_KEY not set – contractor endpoints are unprotected");
-
-/* =========================
-   RATE LIMITING
-========================= */
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  message: "Too many requests from this IP",
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(globalLimiter);
-
-const leadLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 20,
-  message: "Too many lead submissions, please slow down",
-});
-
-const checkoutLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 10,
-  message: "Too many checkout attempts, please wait",
-});
-
-/* =========================
-   SERVICES
-========================= */
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY,
-  {
-    auth: { persistSession: false },
-    db: { schema: "public" },
-  }
-);
-
-const stripe = new Stripe(process.env.STRIPE_SECRET, {
-  apiVersion: "2025-02-24.acacia",
-  maxNetworkRetries: 2,
-});
-
-const sms = process.env.TWILIO_SID && process.env.TWILIO_AUTH && process.env.TWILIO_NUMBER
-  ? twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH)
-  : null;
-
-/* =========================
-   HELPERS
-========================= */
-function cleanContact(contact) {
-  return contact.trim().toLowerCase();
-}
-
-function scoreLead({ service, source, postalCode }) {
-  let score = 0;
-  const serviceLower = (service || "").toLowerCase();
-  if (serviceLower.includes("inspection")) score += 5;
-  if (serviceLower.includes("repair")) score += 7;
-  if (serviceLower.includes("replacement")) score += 10;
-  if (source === "ad") score += 5;
-  if (postalCode && postalCode.match(/^[A-Z]/i)) score += 3;
-  return Math.min(score, 50);
-}
-
-function getCity(postal) {
-  if (!postal) return "unknown";
-  const upper = postal.toUpperCase().trim();
-  if (upper.startsWith("T5")) return "Edmonton";
-  if (upper.startsWith("T2") || upper.startsWith("T3")) return "Calgary";
-  if (upper.startsWith("V")) return "Vancouver";
-  if (upper.startsWith("M")) return "Toronto";
-  return "Alberta";
-}
-
-async function getBuyer(city) {
-  const { data, error } = await supabase
-    .from("contractors")
-    .select("*")
-    .eq("city", city)
-    .eq("active", true)
-    .order("price_per_lead", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Error fetching buyer:", error.message);
-    return null;
-  }
-  return data;
-}
-
-async function chargeContractor(buyer, amount, leadId, idempotencyKey) {
-  if (!buyer.stripe_customer_id || !buyer.default_payment_method) {
-    throw new Error("Contractor has no payment method on file");
   }
 
-  const paymentIntent = await stripe.paymentIntents.create(
-    {
-      amount: Math.round(amount * 100),
-      currency: "cad",
-      customer: buyer.stripe_customer_id,
-      payment_method: buyer.default_payment_method,
-      off_session: true,
-      confirm: true,
-      metadata: {
-        lead_id: leadId,
-        contractor_id: buyer.id,
-        lead_price: amount.toString(),
-      },
-    },
-    { idempotencyKey }
-  );
-
-  return paymentIntent;
-}
-
-/* =========================
-   AUTHENTICATION MIDDLEWARE
-========================= */
-function authenticateApiKey(req, res, next) {
-  const providedKey = req.headers["x-api-key"];
-  if (!API_KEY || providedKey !== API_KEY) {
-    return res.status(401).json({ success: false, message: "Unauthorized: Invalid or missing API key" });
+  function loadStats() {
+    const savedScore = localStorage.getItem('ns_score');
+    const savedRevenue = localStorage.getItem('ns_revenue');
+    currentScore = savedScore ? parseInt(savedScore) : 0;
+    currentRevenue = savedRevenue ? parseInt(savedRevenue) : 0;
+    scoreDisplay.innerText = currentScore;
+    revenueDisplay.innerText = currentRevenue;
   }
-  next();
-}
 
-/* =========================
-   VALIDATION RULES
-========================= */
-const leadValidationRules = [
-  body("contact")
-    .trim()
-    .isLength({ min: 5, max: 100 })
-    .withMessage("Contact must be between 5 and 100 characters")
-    .matches(/^[^<>{}()[\]]+$/)
-    .withMessage("Invalid characters in contact"),
-  body("name").optional().trim().escape().isLength({ max: 100 }),
-  body("postalCode")
-    .optional()
-    .matches(/^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/)
-    .withMessage("Invalid Canadian postal code format"),
-  body("service").optional().trim().escape().isLength({ max: 50 }),
-  body("source").optional().trim().escape().isLength({ max: 50 }),
-  body("siteId").optional().trim().escape().isLength({ max: 100 }),
-  body("pageUrl").optional().isURL().withMessage("Invalid URL"),
-];
+  function saveStats() {
+    localStorage.setItem('ns_score', currentScore);
+    localStorage.setItem('ns_revenue', currentRevenue);
+    scoreDisplay.innerText = currentScore;
+    revenueDisplay.innerText = currentRevenue;
+  }
 
-const contractorValidationRules = [
-  body("name").trim().notEmpty().escape().isLength({ max: 100 }),
-  body("email").isEmail().normalizeEmail(),
-  body("phone").matches(/^\+?[1-9]\d{1,14}$/).withMessage("Invalid phone number (E.164 format)"),
-  body("city").trim().notEmpty().escape().isLength({ max: 50 }),
-];
-
-const paymentMethodValidationRules = [
-  body("contractorId").isUUID().withMessage("Valid contractor ID required"),
-  body("paymentMethodId").notEmpty().withMessage("Payment method ID required"),
-];
-
-/* =========================
-   STRIPE CHECKOUT SESSION (for frontend purchases)
-========================= */
-app.post("/api/create-checkout", checkoutLimiter, async (req, res) => {
-  try {
-    const { plan, successUrl, cancelUrl } = req.body;
-
-    if (!plan || !["starter", "pro", "elite"].includes(plan)) {
-      return res.status(400).json({ error: "Invalid plan selected" });
+  async function verifyAccess() {
+    // Check URL for session_id after Stripe redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    let sessionId = urlParams.get('session_id');
+    
+    // Also check localStorage for existing token
+    const storedToken = localStorage.getItem('ns_subscription_token');
+    if (storedToken && !sessionId) {
+      sessionId = storedToken;
     }
 
-    const planPrices = {
-      starter: 9900,  // $99.00 CAD
-      pro: 29900,     // $299.00 CAD
-      elite: 99900,   // $999.00 CAD
-    };
-
-    const planNames = {
-      starter: "NorthSky Starter Plan",
-      pro: "NorthSky Pro Plan",
-      elite: "NorthSky Elite Plan",
-    };
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "cad",
-            product_data: {
-              name: planNames[plan],
-              description: `Monthly subscription - ${plan} access to Revenue Hub`,
-              metadata: { plan_type: plan },
-            },
-            unit_amount: planPrices[plan],
-            recurring: { interval: "month" },
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "subscription",
-      success_url: successUrl || `${process.env.FRONTEND_URL || "http://localhost:3000"}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${process.env.FRONTEND_URL || "http://localhost:3000"}?checkout=cancel`,
-      metadata: { plan, platform: "northsky_os" },
-      allow_promotion_codes: true,
-    });
-
-    res.json({ url: session.url, sessionId: session.id });
-  } catch (err) {
-    console.error("Checkout error:", err.message);
-    res.status(500).json({ error: "Failed to create checkout session" });
-  }
-});
-
-/* =========================
-   STRIPE WEBHOOK (handle subscription events)
-========================= */
-app.post("/webhook/stripe", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    console.error(`Webhook signature verification failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        const customerEmail = session.customer_details?.email;
-        const plan = session.metadata?.plan;
-
-        if (customerEmail && plan) {
-          // Store subscription in Supabase for verification
-          const { error } = await supabase.from("subscriptions").insert({
-            id: session.id,
-            email: customerEmail,
-            plan: plan,
-            status: "active",
-            stripe_customer_id: session.customer,
-            created_at: new Date().toISOString(),
-          });
-          if (error) console.error("Failed to save subscription:", error.message);
-        }
-        break;
-      }
-      case "customer.subscription.deleted": {
-        const subscription = event.data.object;
-        await supabase
-          .from("subscriptions")
-          .update({ status: "canceled", updated_at: new Date().toISOString() })
-          .eq("id", subscription.id);
-        break;
-      }
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
-
-    res.json({ received: true });
-  } catch (err) {
-    console.error("Webhook processing error:", err);
-    res.status(500).json({ error: "Webhook processing failed" });
-  }
-});
-
-/* =========================
-   VERIFY USER AUTHENTICATION
-========================= */
-app.get("/api/verify", async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
-
-  if (!token) {
-    return res.json({ valid: false, message: "No token provided" });
-  }
-
-  try {
-    // Check if token corresponds to a valid subscription
-    const { data, error } = await supabase
-      .from("subscriptions")
-      .select("status, plan")
-      .eq("id", token)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    const isValid = data && data.status === "active";
-    res.json({ valid: isValid, plan: data?.plan || null });
-  } catch (err) {
-    console.error("Verification error:", err);
-    res.json({ valid: false, message: "Verification failed" });
-  }
-});
-
-/* =========================
-   ADD PAYMENT METHOD FOR CONTRACTOR
-========================= */
-app.post("/contractor/payment-method", authenticateApiKey, paymentMethodValidationRules, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
-  try {
-    const { contractorId, paymentMethodId } = req.body;
-
-    const { data: contractor, error: fetchError } = await supabase
-      .from("contractors")
-      .select("stripe_customer_id")
-      .eq("id", contractorId)
-      .single();
-
-    if (fetchError || !contractor) {
-      return res.status(404).json({ success: false, error: "Contractor not found" });
-    }
-
-    // Attach payment method to customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: contractor.stripe_customer_id,
-    });
-
-    // Set as default payment method
-    await stripe.customers.update(contractor.stripe_customer_id, {
-      invoice_settings: { default_payment_method: paymentMethodId },
-    });
-
-    // Update contractor record
-    await supabase
-      .from("contractors")
-      .update({ default_payment_method: paymentMethodId })
-      .eq("id", contractorId);
-
-    res.json({ success: true, message: "Payment method added successfully" });
-  } catch (err) {
-    console.error("Payment method error:", err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-/* =========================
-   LEAD ENDPOINT (SECURED)
-========================= */
-app.post("/lead", leadLimiter, leadValidationRules, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
-  }
-
-  try {
-    const {
-      name,
-      contact,
-      postalCode,
-      service = "unknown",
-      source = "direct",
-      siteId = "unknown",
-      pageUrl = null,
-    } = req.body;
-
-    const clean = cleanContact(contact);
-
-    // Duplicate check within last 24 hours
-    const { data: existing } = await supabase
-      .from("leads")
-      .select("id, created_at")
-      .eq("contact", clean)
-      .gte("created_at", new Date(Date.now() - 86400000).toISOString())
-      .maybeSingle();
-
-    if (existing) {
-      return res.json({ success: true, leadId: existing.id, duplicate: true });
-    }
-
-    const score = scoreLead({ service, source, postalCode });
-    const city = getCity(postalCode);
-    const leadId = uuidv4();
-
-    const buyer = await getBuyer(city);
-    let revenue = 0;
-    let charged = false;
-
-    if (buyer) {
-      revenue = buyer.price_per_lead;
-
-      await supabase.from("leads").insert([{
-        id: leadId,
-        name: name || null,
-        contact: clean,
-        postal_code: postalCode || null,
-        service,
-        source,
-        site_id: siteId,
-        page_url: pageUrl,
-        score,
-        city,
-        status: "pending_payment",
-        created_at: new Date().toISOString(),
-      }]);
-
-      const idempotencyKey = `${leadId}_${Date.now()}`;
+    if (sessionId) {
+      // Verify with backend
       try {
-        await chargeContractor(buyer, revenue, leadId, idempotencyKey);
-        charged = true;
-
-        await supabase
-          .from("leads")
-          .update({ status: "sold" })
-          .eq("id", leadId);
-
-        await supabase.from("lead_assignments").insert([{
-          id: uuidv4(),
-          lead_id: leadId,
-          contractor_id: buyer.id,
-          price: revenue,
-          city,
-          status: "paid",
-          assigned_at: new Date().toISOString(),
-        }]);
-
-        if (sms && buyer.phone) {
-          await sms.messages.create({
-            body: `🔥 PAID LEAD\nService: ${service}\nCity: ${city}\nContact: ${contact}\nPrice: $${revenue} CAD`,
-            from: process.env.TWILIO_NUMBER,
-            to: buyer.phone,
-          }).catch(e => console.error("SMS failed:", e.message));
+        const res = await fetch(`${API_BASE}/api/verify`, {
+          headers: { 'Authorization': `Bearer ${sessionId}` }
+        });
+        const data = await res.json();
+        if (data.valid) {
+          localStorage.setItem('ns_subscription_token', sessionId);
+          currentPlan = data.plan;
+          updateUIForAuth(true);
+          // Remove session_id from URL without reload
+          window.history.replaceState({}, document.title, window.location.pathname);
+          return;
+        } else {
+          // Token invalid
+          localStorage.removeItem('ns_subscription_token');
+          updateUIForAuth(false);
         }
       } catch (err) {
-        console.error("Payment failed:", err.message);
-        await supabase
-          .from("leads")
-          .update({ status: "payment_failed" })
-          .eq("id", leadId);
-
-        await supabase
-          .from("contractors")
-          .update({ active: false })
-          .eq("id", buyer.id);
-
-        return res.status(402).json({ success: false, error: "Payment failed. Contractor has been deactivated." });
+        console.error('Verification error:', err);
+        updateUIForAuth(false);
       }
     } else {
-      await supabase.from("leads").insert([{
-        id: leadId,
-        name: name || null,
-        contact: clean,
-        postal_code: postalCode || null,
-        service,
-        source,
-        site_id: siteId,
-        page_url: pageUrl,
-        score,
-        city,
-        status: "new",
-        created_at: new Date().toISOString(),
-      }]);
+      // No token, check if any token exists
+      if (storedToken) {
+        // Try to verify stored token
+        try {
+          const res = await fetch(`${API_BASE}/api/verify`, {
+            headers: { 'Authorization': `Bearer ${storedToken}` }
+          });
+          const data = await res.json();
+          if (data.valid) {
+            currentPlan = data.plan;
+            updateUIForAuth(true);
+            return;
+          } else {
+            localStorage.removeItem('ns_subscription_token');
+          }
+        } catch (err) {
+          console.error('Stored token verification error:', err);
+        }
+      }
+      updateUIForAuth(false);
     }
-
-    res.json({
-      success: true,
-      leadId,
-      score,
-      city,
-      revenue,
-      charged,
-    });
-  } catch (err) {
-    console.error("Lead processing error:", err);
-    res.status(500).json({ success: false, error: "Internal server error" });
-  }
-});
-
-/* =========================
-   CONTRACTOR SIGNUP (PROTECTED)
-========================= */
-app.post("/contractor/signup", authenticateApiKey, contractorValidationRules, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
   }
 
-  try {
-    const { name, email, phone, city } = req.body;
-
-    const existingContractor = await supabase
-      .from("contractors")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (existingContractor.data) {
-      return res.status(409).json({ success: false, error: "Contractor already exists with this email" });
+  async function startCheckout(plan) {
+    try {
+      const response = await fetch(`${API_BASE}/api/create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: plan,
+          successUrl: window.location.href.split('?')[0] + '?session_id={CHECKOUT_SESSION_ID}',
+          cancelUrl: window.location.href
+        })
+      });
+      
+      if (!response.ok) throw new Error('Checkout session creation failed');
+      
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url; // Redirect to Stripe Checkout
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert('Unable to start checkout. Please try again later.');
     }
-
-    const customer = await stripe.customers.create({
-      email,
-      name,
-      phone,
-      metadata: { source: "northsky_lead_system" },
-    });
-
-    const { data, error } = await supabase
-      .from("contractors")
-      .insert([{
-        id: uuidv4(),
-        name,
-        email,
-        phone,
-        city,
-        stripe_customer_id: customer.id,
-        active: true,
-        price_per_lead: 50,
-        created_at: new Date().toISOString(),
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    res.json({ success: true, contractorId: data.id, message: "Contractor registered successfully" });
-  } catch (err) {
-    console.error("Signup error:", err);
-    res.status(500).json({ success: false, error: err.message || "Could not create contractor" });
   }
-});
 
-/* =========================
-   HEALTH CHECK
-========================= */
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString(), environment: process.env.NODE_ENV || "development" });
-});
+  // ---------- DASHBOARD ACTIONS (only if authenticated) ----------
+  function addScore(amount) {
+    if (!isAuthenticated) {
+      alert('Please purchase a subscription to unlock this feature.');
+      return false;
+    }
+    currentScore += amount;
+    saveStats();
+    return true;
+  }
 
-/* =========================
-   ERROR HANDLING MIDDLEWARE
-========================= */
-app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err.stack);
-  res.status(500).json({ success: false, error: "Something went wrong on the server" });
-});
+  function routeLead() {
+    if (!isAuthenticated) {
+      alert('Please purchase a subscription to unlock lead routing.');
+      return false;
+    }
+    if (currentScore >= 80) {
+      currentRevenue += 75;
+      saveStats();
+      alert('✅ Lead routed! +$75 revenue');
+    } else {
+      alert('❌ Need at least 80 score. Earn more points first.');
+    }
+    return true;
+  }
 
-/* =========================
-   START SERVER
-========================= */
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`💰 NorthSky Lead Engine LIVE on http://localhost:${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`💳 Stripe mode: ${process.env.STRIPE_SECRET?.startsWith("sk_test") ? "TEST" : "LIVE"}`);
-});
+  function navigateSecurely(url) {
+    if (!isAuthenticated) {
+      alert('Please unlock the platform by purchasing a plan first.');
+      return;
+    }
+    window.open(url, '_blank');
+  }
+
+  function registerOffer() {
+    const email = offerEmail.value.trim();
+    const name = offerName.value.trim();
+    if (!email) {
+      offerMessage.innerHTML = '❌ Please enter your email to sign up for offers.';
+      offerMessage.style.color = '#f87171';
+      return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      offerMessage.innerHTML = '❌ Valid email required for offers.';
+      return;
+    }
+    // Store in localStorage (demo) – you can replace with API call
+    const offers = JSON.parse(localStorage.getItem('offer_signups') || '[]');
+    offers.push({ email, name, timestamp: Date.now() });
+    localStorage.setItem('offer_signups', JSON.stringify(offers));
+    offerMessage.innerHTML = '🎉 You\'re signed up! Exclusive offers will be sent to your inbox.';
+    offerMessage.style.color = '#86efac';
+    offerEmail.value = '';
+    offerName.value = '';
+    
+    // Bonus score if authenticated
+    if (isAuthenticated) {
+      currentScore += 5;
+      saveStats();
+      offerMessage.innerHTML += ' 🎁 +5 bonus score!';
+    }
+  }
+
+  // ---------- EVENT LISTENERS ----------
+  document.querySelectorAll('.btn-buy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const plan = btn.getAttribute('data-plan');
+      startCheckout(plan);
+    });
+  });
+
+  addScoreBtn.addEventListener('click', () => addScore(10));
+  routeLeadBtn.addEventListener('click', () => routeLead());
+  roofFlowBtn.addEventListener('click', () => navigateSecurely('https://north-sky-roof-flow-os.vercel.app'));
+  auditorBtn.addEventListener('click', () => navigateSecurely('https://north-sky-auditor-sim.vercel.app'));
+  submitOfferBtn.addEventListener('click', registerOffer);
+
+  // ---------- INITIAL LOAD ----------
+  verifyAccess();
+  // Optional: Poll every 10 seconds to re-verify (in case subscription updated)
+  setInterval(verifyAccess, 10000);
+</script>
+</body>
+</html>
