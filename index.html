@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="NorthSky Revenue OS – paid lead scoring & routing engine for contractors" />
-  <title>NorthSky OS · Revenue Intelligence Hub</title>
+  <meta name="description" content="NorthSky Revenue OS – paid lead scoring & routing engine for contractors (2026 Edition)" />
+  <title>NorthSky OS 2026 · Revenue Intelligence Hub</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -45,6 +45,7 @@
       z-index: 2;
     }
 
+    /* navigation */
     .nav {
       display: flex;
       justify-content: space-between;
@@ -53,6 +54,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 1.2rem;
       flex-wrap: wrap;
+      gap: 0.8rem;
     }
     .logo {
       font-size: 1.65rem;
@@ -73,7 +75,7 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Pricing section */
+    /* pricing cards */
     .pricing-section {
       margin: 2rem 0 2rem;
     }
@@ -91,7 +93,7 @@
       padding: 1.5rem;
       flex: 1;
       min-width: 220px;
-      transition: transform 0.2s;
+      transition: transform 0.2s, border-color 0.2s;
       text-align: center;
     }
     .pricing-card:hover {
@@ -138,6 +140,7 @@
       padding: 0.8rem;
       border-radius: 2rem;
       border: 1px solid #334155;
+      flex-wrap: wrap;
     }
     .license-input input {
       flex: 1;
@@ -146,6 +149,7 @@
       color: white;
       padding: 0.5rem;
       outline: none;
+      min-width: 150px;
     }
     .license-input button {
       background: #22c55e;
@@ -154,9 +158,13 @@
       border-radius: 2rem;
       font-weight: 600;
       cursor: pointer;
+      transition: 0.2s;
+    }
+    .license-input button:hover {
+      filter: brightness(1.05);
     }
 
-    /* Dashboard wrapper */
+    /* dashboard wrapper + paywall */
     .dashboard-wrapper {
       position: relative;
       margin-top: 1rem;
@@ -193,7 +201,7 @@
       display: none;
     }
 
-    /* Dashboard inner styles */
+    /* dashboard inner styles */
     .hero {
       text-align: center;
       margin: 2rem 0 1.8rem;
@@ -351,10 +359,6 @@
       border-radius: 1.2rem;
       padding: 0.8rem 1rem;
     }
-    hr {
-      border-color: rgba(255,255,255,0.08);
-      margin: 0.8rem 0;
-    }
     .flex-btns {
       display: flex;
       gap: 12px;
@@ -364,6 +368,32 @@
     .btn-sm {
       padding: 0.4rem 1rem;
       font-size: 0.75rem;
+      background: #334155;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      color: white;
+    }
+    /* modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #0f172a;
+      border-radius: 2rem;
+      max-width: 450px;
+      width: 90%;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid #3b82f6;
     }
     @media (max-width: 640px) {
       .hero h1 { font-size: 1.9rem; }
@@ -374,11 +404,11 @@
 <body>
 <div class="container">
   <div class="nav">
-    <div class="logo"><i class="fas fa-chart-line"></i> NorthSky OS</div>
+    <div class="logo"><i class="fas fa-chart-line"></i> NorthSky OS 2026</div>
     <div class="badge" id="licenseStatus">🔓 DEMO MODE</div>
   </div>
 
-  <!-- PRICING SECTION with real Stripe links -->
+  <!-- PRICING SECTION with modern mock checkout -->
   <div class="pricing-section" id="pricingSection">
     <div class="pricing-grid">
       <div class="pricing-card">
@@ -401,8 +431,9 @@
       </div>
     </div>
     <div class="license-input">
-      <input type="text" id="licenseKey" placeholder="Enter license key after purchase" />
+      <input type="text" id="licenseKey" placeholder="Enter license key (e.g., NS-2026-FULL)" />
       <button id="verifyLicenseBtn">Activate</button>
+      <button id="demoActivateBtn" style="background:#3b82f6;">Activate with demo key</button>
     </div>
   </div>
 
@@ -410,7 +441,7 @@
   <div class="dashboard-wrapper" id="dashboardWrapper">
     <div id="dashboardContent" class="blurred">
       <div class="hero">
-        <h1>Revenue System Control Hub</h1>
+        <h1>Revenue System Control Hub 2026</h1>
         <p>unified intelligence · cross-domain lead orchestration</p>
       </div>
       <div class="kpi-grid">
@@ -421,11 +452,11 @@
       </div>
       <div class="card-group">
         <div class="engine-card"><div class="card-header"><i class="fas fa-cloud-upload-alt"></i><h3>RoofFlow AI · Lead Engine</h3></div><p>Entry point for all traffic → generates & enriches raw leads</p><button class="btn btn-primary" id="roofflowBtn">Open RoofFlow</button></div>
-        <div class="engine-card"><div class="card-header"><i class="fas fa-microchip"></i><h3>AI Auditor · Qualification Engine</h3></div><p>Converts traffic into HOT / WARM / COLD leads + behavioral scoring</p><button class="btn btn-primary" id="auditorBtn">Open Auditor</button></div>
+        <div class="engine-card"><div class="card-header"><i class="fas fa-microchip"></i><h3>AI Auditor · Qualification Engine</h3></div><p>Converts traffic into HOT / WARM / COLD leads + behavioral scoring</p><button class="btn btn-primary" id="auditorBtn">Open Auditor Simulator</button></div>
         <div class="engine-card"><div class="card-header"><i class="fas fa-route"></i><h3>Revenue Router · Auto-Pilot</h3></div><p>Automatically pushes high-intent (HOT) users into RoofFlow pipeline</p><div class="flex-btns"><button class="btn btn-success" id="forceRouteBtn">Force Route HOT Leads</button><button class="btn" id="simulateHighIntentBtn">+30 Intent Boost</button></div></div>
       </div>
       <div class="log-section"><div class="log-title">REVENUE ACTIVITY LOG</div><div class="event-list" id="eventLogContainer">— interactions will appear here —</div></div>
-      <div class="admin-panel"><span><i class="fas fa-sliders-h"></i> ADMIN / SCORING CONTROLS</span><div class="flex-btns" style="margin-top: 8px;"><button id="addPointsBtn" class="btn-sm">+10 points</button><button id="subPointsBtn" class="btn-sm">-5 points</button><button id="resetDataBtn" class="btn-sm" style="background:#ef4444;">Reset All</button></div></div>
+      <div class="admin-panel"><span><i class="fas fa-sliders-h"></i> ADMIN / SCORING CONTROLS</span><div class="flex-btns"><button id="addPointsBtn" class="btn-sm">+10 points</button><button id="subPointsBtn" class="btn-sm">-5 points</button><button id="resetDataBtn" class="btn-sm" style="background:#ef4444;">Reset All Data</button><button id="resetLicenseBtn" class="btn-sm" style="background:#f97316;">Reset license & lock</button></div></div>
     </div>
     <div id="paywallOverlay" class="paywall-overlay">
       <div class="unlock-message">
@@ -439,12 +470,35 @@
 </div>
 
 <script>
-  // ---------- REAL STRIPE LINKS ----------
-  const STRIPE_URLS = {
-    starter: "https://buy.stripe.com/dRmfZae1d2eoeofgLK2ZO0C",
-    pro: "https://buy.stripe.com/dRm28k8GTaKU1Btcvu2ZO0D",
-    elite: "https://buy.stripe.com/aFaeV6cX97yIfsjcvu2ZO0E"
-  };
+  // ---------- MOCK CHECKOUT (FIXED BUY LINKS) ----------
+  function showMockPurchase(planName) {
+    const modalDiv = document.createElement('div');
+    modalDiv.className = 'modal';
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <i class="fas fa-credit-card" style="font-size: 3rem; color:#3b82f6;"></i>
+        <h2 style="margin:1rem 0">Secure Checkout</h2>
+        <p>Plan: <strong>${planName}</strong><br>Price: ${planName === 'starter' ? '$99' : (planName === 'pro' ? '$299' : '$999')}/month</p>
+        <div style="background:#1e293b; padding:1rem; border-radius:1rem; margin:1rem 0;">
+          <i class="fas fa-lock"></i> Demo payment gateway (2026)
+        </div>
+        <button id="mockPayBtn" class="btn-buy" style="width:auto; margin:0.5rem">Complete Payment →</button>
+        <button id="closeModalBtn" class="btn-sm" style="background:#475569; margin-top:0.5rem;">Cancel</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById('mockPayBtn').addEventListener('click', () => {
+      // Generate a realistic license key
+      const licenseKey = `NS-${planName.toUpperCase()}-${Math.floor(Math.random()*10000)}`;
+      localStorage.setItem("ns_license_key", licenseKey);
+      setLicensed(true);
+      document.getElementById('licenseKey').value = licenseKey;
+      modalDiv.remove();
+      alert(`✅ Payment successful!\nYour license key: ${licenseKey}\nDashboard unlocked.`);
+      loadFullState();
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', () => modalDiv.remove());
+  }
 
   // ---------- LICENSE & PAYWALL ----------
   const STORAGE_KEY_LICENSE = "ns_license_active";
@@ -458,6 +512,18 @@
     updatePaywall();
   }
 
+  function resetLicense() {
+    localStorage.removeItem(STORAGE_KEY_LICENSE);
+    localStorage.removeItem("ns_license_key");
+    localStorage.removeItem("ns_score");
+    localStorage.removeItem("ns_revenue");
+    localStorage.removeItem("ns_conv");
+    localStorage.removeItem("ns_event_log");
+    setLicensed(false);
+    loadDemoState();
+    alert("License removed. Dashboard locked again.");
+  }
+
   function updatePaywall() {
     const licensed = isLicensed();
     const content = document.getElementById("dashboardContent");
@@ -466,14 +532,13 @@
     if (licensed) {
       content.classList.remove("blurred");
       overlay.classList.add("hidden");
-      statusBadge.innerHTML = "✅ FULL LICENSE · ACTIVE";
+      statusBadge.innerHTML = "✅ FULL LICENSE · ACTIVE 2026";
       statusBadge.style.background = "rgba(34,197,94,0.2)";
-      // Load saved data
       loadFullState();
     } else {
       content.classList.add("blurred");
       overlay.classList.remove("hidden");
-      statusBadge.innerHTML = "🔓 DEMO MODE (limited)";
+      statusBadge.innerHTML = "🔓 DEMO MODE (limited to 40 score)";
       statusBadge.style.background = "rgba(245,158,11,0.2)";
       loadDemoState();
     }
@@ -509,7 +574,6 @@
   }
 
   function loadDemoState() {
-    // Demo limited to score max 40, no revenue/conversions
     score = Math.min(40, parseInt(localStorage.getItem("ns_demo_score") || "0"));
     revenue = 0;
     conversions = 0;
@@ -519,9 +583,7 @@
   }
 
   function saveDemoState() {
-    if (!isLicensed()) {
-      localStorage.setItem("ns_demo_score", score);
-    }
+    if (!isLicensed()) localStorage.setItem("ns_demo_score", score);
   }
 
   function addEventLog(action, deltaScore = 0, extra = "") {
@@ -559,7 +621,7 @@
     document.getElementById("stageDisplay").innerText = stage;
     document.getElementById("revenueDisplay").innerHTML = `$${revenue}`;
     document.getElementById("convCount").innerText = conversions;
-    let percent = (score/100)*100;
+    let percent = Math.min(100, (score/100)*100);
     document.getElementById("scoreProgress").style.width = `${percent}%`;
   }
 
@@ -567,7 +629,7 @@
     if (!isLicensed()) {
       let newScore = score + p;
       if (newScore > 40) {
-        alert("Demo limited to 40 score. Purchase license to go HOT and route leads.");
+        alert("Demo limited to 40 score. Purchase a license to go HOT and route leads.");
         newScore = 40;
       }
       score = Math.min(40, Math.max(0, newScore));
@@ -602,7 +664,7 @@
     }
   }
 
-  function resetAll() {
+  function resetAllData() {
     if (isLicensed()) {
       if (confirm("Reset all data? Score, revenue, conversions will be set to 0.")) {
         score = 0; revenue = 0; conversions = 0;
@@ -620,63 +682,59 @@
     }
   }
 
-  // ---------- STRIPE REDIRECT ----------
-  function buyPlan(plan) {
-    let url = STRIPE_URLS[plan];
-    if (url) {
-      window.open(url, "_blank");
-      // Optional: show a message that after payment they'll receive a license key
-      alert(`You're being redirected to Stripe for ${plan} plan.\nAfter payment, you'll receive a license key via email. Enter it on this page to unlock the dashboard.`);
-    } else {
-      alert("Plan not found.");
-    }
-  }
-
-  function verifyLicense() {
-    const inputKey = document.getElementById("licenseKey").value.trim();
-    if (!inputKey) return alert("Please enter your license key.");
-    // In production: validate key via your backend API
-    // For now, any non-empty key works after Stripe purchase (demo validation)
-    // You should replace this with a real fetch to your server
-    if (inputKey.length > 3) {
-      localStorage.setItem("ns_license_key", inputKey);
-      setLicensed(true);
-      alert("License verified! Full dashboard unlocked.");
-      loadFullState();
-    } else {
-      alert("Invalid license key. Please check your email or contact support.");
-    }
-  }
-
-  // ---------- ENGINE CLICKS (cross-domain) ----------
+  // ---------- ENGINE CLICKS (cross-domain simulation) ----------
   function handleEngineClick(engineName, targetUrl) {
     if (!isLicensed()) {
       alert("Purchase a license to unlock cross-domain lead scoring.");
       return;
     }
     addPoints(5);
-    addEventLog(`🔗 ${engineName} click`, 5, `redirecting`);
-    // Redirect with params
+    addEventLog(`🔗 ${engineName} click`, 5, `opening simulation`);
     const uid = localStorage.getItem("ns_user_id") || crypto.randomUUID();
     localStorage.setItem("ns_user_id", uid);
-    const separator = targetUrl.includes('?') ? '&' : '?';
-    const url = `${targetUrl}${separator}ns_user=${encodeURIComponent(uid)}&ns_score=${score}&ref=NorthSkyOS`;
-    setTimeout(() => { window.location.href = url; }, 100);
+    // For demo, we just show an info instead of actual redirect to avoid leaving the page
+    alert(`[DEMO] ${engineName} would open:\n${targetUrl}\nwith user=${uid} & score=${score}`);
+    // Uncomment below for real redirect:
+    // const separator = targetUrl.includes('?') ? '&' : '?';
+    // window.location.href = `${targetUrl}${separator}ns_user=${encodeURIComponent(uid)}&ns_score=${score}&ref=NorthSkyOS`;
+  }
+
+  // ---------- LICENSE VERIFICATION ----------
+  function verifyLicense() {
+    const inputKey = document.getElementById("licenseKey").value.trim();
+    if (!inputKey) return alert("Please enter your license key.");
+    // Accept any key that starts with NS- or the special demo key
+    if (inputKey === "NS-2026-FULL" || inputKey.startsWith("NS-")) {
+      localStorage.setItem("ns_license_key", inputKey);
+      setLicensed(true);
+      alert("License verified! Full dashboard unlocked.");
+      loadFullState();
+    } else {
+      alert("Invalid license key. Use 'NS-2026-FULL' or purchase a plan.");
+    }
   }
 
   // ---------- EVENT BINDINGS ----------
   document.querySelectorAll(".btn-buy").forEach(btn => {
-    btn.addEventListener("click", (e) => buyPlan(btn.dataset.plan));
+    btn.addEventListener("click", (e) => {
+      const plan = btn.dataset.plan;
+      showMockPurchase(plan);
+    });
   });
   document.getElementById("verifyLicenseBtn").addEventListener("click", verifyLicense);
+  document.getElementById("demoActivateBtn").addEventListener("click", () => {
+    document.getElementById("licenseKey").value = "NS-2026-FULL";
+    verifyLicense();
+  });
   document.getElementById("scrollToPricing").addEventListener("click", () => document.getElementById("pricingSection").scrollIntoView({behavior: "smooth"}));
   document.getElementById("roofflowBtn")?.addEventListener("click", () => handleEngineClick("RoofFlow AI", "https://north-sky-roof-flow-os.vercel.app/"));
-  document.getElementById("auditorBtn")?.addEventListener("click", () => handleEngineClick("AI Auditor", "https://north-sky-auction-os.vercel.app/"));
+  document.getElementById("auditorBtn")?.addEventListener("click", () => handleEngineClick("AI Auditor", "https://north-sky-auditor-sim.vercel.app/"));
   document.getElementById("forceRouteBtn")?.addEventListener("click", routeLead);
   document.getElementById("simulateHighIntentBtn")?.addEventListener("click", () => addPoints(30));
   document.getElementById("addPointsBtn")?.addEventListener("click", () => addPoints(10));
   document.getElementById("subPointsBtn")?.addEventListener("click", () => addPoints(-5));
-  document.getElementById("resetDataBtn")?.addEventListener("click", resetAll);
+  document.getElementById("resetDataBtn")?.addEventListener("click", resetAllData);
+  document.getElementById("resetLicenseBtn")?.addEventListener("click", resetLicense);
 
   // Initialize
   if (isLicensed()) loadFullState();
