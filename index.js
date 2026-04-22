@@ -6,12 +6,24 @@ const twilio = require("twilio");
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
 const { v4: uuidv4 } = require("uuid");
+const path = require("path");
 
 dotenv.config();
 const app = express();
 
+/* =========================
+   MIDDLEWARE
+========================= */
 app.use(cors());
 app.use(express.json());
+
+// ✅ FIX: Serve static files (HTML, JS, CSS, etc.) from /public
+app.use(express.static(path.join(__dirname, "public")));
+
+// ✅ Serve index.html on root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 /* =========================
    ENV CHECK
@@ -260,6 +272,7 @@ app.post("/contractor/signup", async (req, res) => {
 /* =========================
    START
 ========================= */
-app.listen(process.env.PORT || 3000, () => {
-  console.log("💰 NorthSky Lead Engine LIVE (Payments Enabled)");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`💰 NorthSky Lead Engine LIVE on http://localhost:${PORT}`);
 });
