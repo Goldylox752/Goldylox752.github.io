@@ -1,745 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="NorthSky Revenue OS – paid lead scoring & routing engine for contractors (2026 Edition)" />
-  <title>NorthSky OS 2026 · Revenue Intelligence Hub</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NorthSky OS · Revenue Hub</title>
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(ellipse at 30% 10%, #0a0f2a, #02040e);
-      color: #f0f3ff;
-      min-height: 100vh;
-      padding-bottom: 3rem;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-      z-index: 0;
-    }
+<style>
+body {
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:#020617;
+  color:#fff;
+}
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-      position: relative;
-      z-index: 2;
-    }
+.container { max-width:1100px; margin:auto; padding:20px; }
 
-    /* navigation */
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 1.2rem;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-    .logo {
-      font-size: 1.65rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #FFF, #3b82f6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.3px;
-    }
-    .badge {
-      background: rgba(34,197,94,0.15);
-      border: 1px solid rgba(34,197,94,0.4);
-      padding: 0.4rem 1rem;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      backdrop-filter: blur(4px);
-    }
+.nav {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
 
-    /* pricing cards */
-    .pricing-section {
-      margin: 2rem 0 2rem;
-    }
-    .pricing-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: center;
-    }
-    .pricing-card {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(12px);
-      border-radius: 1.8rem;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 1.5rem;
-      flex: 1;
-      min-width: 220px;
-      transition: transform 0.2s, border-color 0.2s;
-      text-align: center;
-    }
-    .pricing-card:hover {
-      transform: translateY(-5px);
-      border-color: #3b82f6;
-    }
-    .pricing-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .price {
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 1rem 0;
-      color: #3b82f6;
-    }
-    .price small {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: #94a3b8;
-    }
-    .btn-buy {
-      background: linear-gradient(105deg, #3b82f6, #2563eb);
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 1rem;
-      transition: 0.2s;
-      color: white;
-      font-size: 0.9rem;
-    }
-    .btn-buy:hover {
-      filter: brightness(1.05);
-      transform: scale(0.98);
-    }
-    .license-input {
-      margin-top: 1.5rem;
-      display: flex;
-      gap: 0.5rem;
-      background: #0f172a;
-      padding: 0.8rem;
-      border-radius: 2rem;
-      border: 1px solid #334155;
-      flex-wrap: wrap;
-    }
-    .license-input input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: white;
-      padding: 0.5rem;
-      outline: none;
-      min-width: 150px;
-    }
-    .license-input button {
-      background: #22c55e;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .license-input button:hover {
-      filter: brightness(1.05);
-    }
+.badge {
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  background:#1e293b;
+}
 
-    /* dashboard wrapper + paywall */
-    .dashboard-wrapper {
-      position: relative;
-      margin-top: 1rem;
-    }
-    .blurred {
-      filter: blur(5px);
-      pointer-events: none;
-      user-select: none;
-    }
-    .paywall-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 2rem;
-      z-index: 10;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .unlock-message {
-      text-align: center;
-      background: #1e293b;
-      padding: 2rem;
-      border-radius: 2rem;
-      max-width: 80%;
-    }
-    .hidden {
-      display: none;
-    }
+.pricing {
+  display:flex;
+  gap:20px;
+  margin-bottom:30px;
+}
 
-    /* dashboard inner styles */
-    .hero {
-      text-align: center;
-      margin: 2rem 0 1.8rem;
-    }
-    .hero h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      background: linear-gradient(to right, #ffffff, #94a3f8);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .hero p {
-      opacity: 0.7;
-      font-size: 1rem;
-      margin-top: 0.6rem;
-    }
-    .kpi-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin: 2rem 0 2rem;
-      justify-content: space-between;
-    }
-    .kpi-card {
-      flex: 1;
-      background: rgba(5, 10, 26, 0.6);
-      backdrop-filter: blur(8px);
-      border-radius: 1.6rem;
-      padding: 1rem 0.8rem;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .kpi-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 600;
-      opacity: 0.6;
-    }
-    .kpi-value {
-      font-size: 2rem;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-    .progress-container {
-      margin-top: 0.5rem;
-      background: #1e293b;
-      border-radius: 40px;
-      height: 6px;
-      width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .progress-fill {
-      background: linear-gradient(90deg, #22c55e, #3b82f6);
-      width: 0%;
-      height: 6px;
-      border-radius: 40px;
-      transition: width 0.3s ease;
-    }
-    .card-group {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      margin: 1.8rem 0 2rem;
-    }
-    .engine-card {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(12px);
-      border-radius: 1.8rem;
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 1.3rem 1.5rem;
-      transition: all 0.2s;
-    }
-    .engine-card:hover {
-      border-color: rgba(59,130,246,0.4);
-      transform: translateY(-2px);
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .card-header i {
-      font-size: 1.7rem;
-      color: #3b82f6;
-    }
-    .engine-card h3 {
-      font-weight: 700;
-      font-size: 1.3rem;
-    }
-    .engine-card p {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin-bottom: 1rem;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: #1e293b;
-      padding: 0.7rem 1.2rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      text-decoration: none;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 0.85rem;
-    }
-    .btn-primary {
-      background: linear-gradient(105deg, #3b82f6, #2563eb);
-    }
-    .btn-success {
-      background: #22c55e;
-      color: #0a0f2a;
-    }
-    .log-section {
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 1.5rem;
-      padding: 1rem 1.2rem;
-      margin-top: 1.8rem;
-    }
-    .log-title {
-      font-weight: 600;
-      margin-bottom: 0.8rem;
-      font-size: 0.9rem;
-      display: flex;
-      justify-content: space-between;
-    }
-    .event-list {
-      max-height: 160px;
-      overflow-y: auto;
-      font-size: 0.75rem;
-      font-family: monospace;
-    }
-    .event-item {
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding: 6px 0;
-      display: flex;
-      gap: 12px;
-    }
-    .timestamp {
-      opacity: 0.5;
-      min-width: 70px;
-    }
-    .admin-panel {
-      margin-top: 1.2rem;
-      background: rgba(0,0,0,0.3);
-      border-radius: 1.2rem;
-      padding: 0.8rem 1rem;
-    }
-    .flex-btns {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-    .btn-sm {
-      padding: 0.4rem 1rem;
-      font-size: 0.75rem;
-      background: #334155;
-      border: none;
-      border-radius: 2rem;
-      cursor: pointer;
-      color: white;
-    }
-    /* modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal-card {
-      background: #0f172a;
-      border-radius: 2rem;
-      max-width: 450px;
-      width: 90%;
-      padding: 2rem;
-      text-align: center;
-      border: 1px solid #3b82f6;
-    }
-    @media (max-width: 640px) {
-      .hero h1 { font-size: 1.9rem; }
-      .kpi-value { font-size: 1.4rem; }
-    }
-  </style>
+.card {
+  flex:1;
+  background:#0f172a;
+  padding:20px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.btn {
+  background:#2563eb;
+  border:none;
+  padding:10px 16px;
+  border-radius:20px;
+  color:white;
+  cursor:pointer;
+}
+
+.locked {
+  filter:blur(6px);
+  pointer-events:none;
+}
+
+.overlay {
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.hidden { display:none; }
+</style>
 </head>
+
 <body>
+
 <div class="container">
+
   <div class="nav">
-    <div class="logo"><i class="fas fa-chart-line"></i> NorthSky OS 2026</div>
-    <div class="badge" id="licenseStatus">🔓 DEMO MODE</div>
+    <h2>NorthSky OS</h2>
+    <div id="status" class="badge">🔒 LOCKED</div>
   </div>
 
-  <!-- PRICING SECTION with modern mock checkout -->
-  <div class="pricing-section" id="pricingSection">
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <h3>Leads Starter</h3>
-        <div class="price">$99 <small>/month</small></div>
-        <p>5 inspections/mo · Basic AI reports</p>
-        <button class="btn-buy" data-plan="starter">Buy Now →</button>
-      </div>
-      <div class="pricing-card">
-        <h3>Pro</h3>
-        <div class="price">$299 <small>/month</small></div>
-        <p>20 inspections/mo · Territory lock · Priority scoring</p>
-        <button class="btn-buy" data-plan="pro">Buy Now →</button>
-      </div>
-      <div class="pricing-card">
-        <h3>Elite</h3>
-        <div class="price">$999 <small>/month</small></div>
-        <p>Unlimited · Dedicated manager · Regional monopoly</p>
-        <button class="btn-buy" data-plan="elite">Buy Now →</button>
-      </div>
+  <!-- PRICING -->
+  <div class="pricing">
+    <div class="card">
+      <h3>Starter</h3>
+      <p>$99/mo</p>
+      <button class="btn buy" data-plan="starter">Buy</button>
     </div>
-    <div class="license-input">
-      <input type="text" id="licenseKey" placeholder="Enter license key (e.g., NS-2026-FULL)" />
-      <button id="verifyLicenseBtn">Activate</button>
-      <button id="demoActivateBtn" style="background:#3b82f6;">Activate with demo key</button>
+    <div class="card">
+      <h3>Pro</h3>
+      <p>$299/mo</p>
+      <button class="btn buy" data-plan="pro">Buy</button>
+    </div>
+    <div class="card">
+      <h3>Elite</h3>
+      <p>$999/mo</p>
+      <button class="btn buy" data-plan="elite">Buy</button>
     </div>
   </div>
 
-  <!-- DASHBOARD (locked until paid) -->
-  <div class="dashboard-wrapper" id="dashboardWrapper">
-    <div id="dashboardContent" class="blurred">
-      <div class="hero">
-        <h1>Revenue System Control Hub 2026</h1>
-        <p>unified intelligence · cross-domain lead orchestration</p>
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">USER SCORE</div><div class="kpi-value" id="scoreDisplay">0</div><div class="progress-container"><div class="progress-fill" id="scoreProgress"></div></div></div>
-        <div class="kpi-card"><div class="kpi-label">STAGE</div><div class="kpi-value" id="stageDisplay">COLD</div></div>
-        <div class="kpi-card"><div class="kpi-label">EST. REVENUE</div><div class="kpi-value" id="revenueDisplay">$0</div></div>
-        <div class="kpi-card"><div class="kpi-label">CONVERSIONS</div><div class="kpi-value" id="convCount">0</div></div>
-      </div>
-      <div class="card-group">
-        <div class="engine-card"><div class="card-header"><i class="fas fa-cloud-upload-alt"></i><h3>RoofFlow AI · Lead Engine</h3></div><p>Entry point for all traffic → generates & enriches raw leads</p><button class="btn btn-primary" id="roofflowBtn">Open RoofFlow</button></div>
-        <div class="engine-card"><div class="card-header"><i class="fas fa-microchip"></i><h3>AI Auditor · Qualification Engine</h3></div><p>Converts traffic into HOT / WARM / COLD leads + behavioral scoring</p><button class="btn btn-primary" id="auditorBtn">Open Auditor Simulator</button></div>
-        <div class="engine-card"><div class="card-header"><i class="fas fa-route"></i><h3>Revenue Router · Auto-Pilot</h3></div><p>Automatically pushes high-intent (HOT) users into RoofFlow pipeline</p><div class="flex-btns"><button class="btn btn-success" id="forceRouteBtn">Force Route HOT Leads</button><button class="btn" id="simulateHighIntentBtn">+30 Intent Boost</button></div></div>
-      </div>
-      <div class="log-section"><div class="log-title">REVENUE ACTIVITY LOG</div><div class="event-list" id="eventLogContainer">— interactions will appear here —</div></div>
-      <div class="admin-panel"><span><i class="fas fa-sliders-h"></i> ADMIN / SCORING CONTROLS</span><div class="flex-btns"><button id="addPointsBtn" class="btn-sm">+10 points</button><button id="subPointsBtn" class="btn-sm">-5 points</button><button id="resetDataBtn" class="btn-sm" style="background:#ef4444;">Reset All Data</button><button id="resetLicenseBtn" class="btn-sm" style="background:#f97316;">Reset license & lock</button></div></div>
+  <!-- DASHBOARD -->
+  <div style="position:relative;">
+    
+    <div id="app" class="locked">
+
+      <h1>Revenue Dashboard</h1>
+
+      <p>Score: <span id="score">0</span></p>
+      <p>Revenue: $<span id="rev">0</span></p>
+
+      <button class="btn" id="add">+10 Score</button>
+      <button class="btn" id="route">Route Lead</button>
+
+      <hr>
+
+      <button class="btn" id="roof">RoofFlow</button>
+      <button class="btn" id="audit">Auditor</button>
+
     </div>
-    <div id="paywallOverlay" class="paywall-overlay">
-      <div class="unlock-message">
-        <i class="fas fa-lock" style="font-size: 3rem;"></i>
-        <h2>Full dashboard locked</h2>
-        <p>Purchase a license above to unlock lead scoring, routing, and cross-domain tracking.</p>
-        <button id="scrollToPricing" class="btn-buy" style="width: auto;">View Plans</button>
+
+    <div id="overlay" class="overlay">
+      <div>
+        <h2>🔒 Locked</h2>
+        <p>Purchase to unlock system</p>
       </div>
     </div>
+
   </div>
+
 </div>
 
 <script>
-  // ---------- MOCK CHECKOUT (FIXED BUY LINKS) ----------
-  function showMockPurchase(planName) {
-    const modalDiv = document.createElement('div');
-    modalDiv.className = 'modal';
-    modalDiv.innerHTML = `
-      <div class="modal-card">
-        <i class="fas fa-credit-card" style="font-size: 3rem; color:#3b82f6;"></i>
-        <h2 style="margin:1rem 0">Secure Checkout</h2>
-        <p>Plan: <strong>${planName}</strong><br>Price: ${planName === 'starter' ? '$99' : (planName === 'pro' ? '$299' : '$999')}/month</p>
-        <div style="background:#1e293b; padding:1rem; border-radius:1rem; margin:1rem 0;">
-          <i class="fas fa-lock"></i> Demo payment gateway (2026)
-        </div>
-        <button id="mockPayBtn" class="btn-buy" style="width:auto; margin:0.5rem">Complete Payment →</button>
-        <button id="closeModalBtn" class="btn-sm" style="background:#475569; margin-top:0.5rem;">Cancel</button>
-      </div>
-    `;
-    document.body.appendChild(modalDiv);
-    document.getElementById('mockPayBtn').addEventListener('click', () => {
-      // Generate a realistic license key
-      const licenseKey = `NS-${planName.toUpperCase()}-${Math.floor(Math.random()*10000)}`;
-      localStorage.setItem("ns_license_key", licenseKey);
-      setLicensed(true);
-      document.getElementById('licenseKey').value = licenseKey;
-      modalDiv.remove();
-      alert(`✅ Payment successful!\nYour license key: ${licenseKey}\nDashboard unlocked.`);
-      loadFullState();
+
+// ===============================
+// CONFIG
+// ===============================
+const API = "https://northsky-auth.vercel.app";
+
+// ===============================
+// TOKEN (cross-site)
+// ===============================
+(function () {
+  const p = new URLSearchParams(location.search);
+  const t = p.get("token");
+  if (t) {
+    localStorage.setItem("ns_token", t);
+    history.replaceState({}, "", location.pathname);
+  }
+})();
+
+// ===============================
+// AUTH
+// ===============================
+async function checkAuth() {
+  const token = localStorage.getItem("ns_token");
+  if (!token) return false;
+
+  try {
+    const res = await fetch(`${API}/api/verify`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
-    document.getElementById('closeModalBtn').addEventListener('click', () => modalDiv.remove());
+    const data = await res.json();
+    return data.valid;
+  } catch {
+    return false;
   }
+}
 
-  // ---------- LICENSE & PAYWALL ----------
-  const STORAGE_KEY_LICENSE = "ns_license_active";
+// ===============================
+// UI LOCK
+// ===============================
+function lock() {
+  document.getElementById("app").classList.add("locked");
+  document.getElementById("overlay").classList.remove("hidden");
+  document.getElementById("status").innerText = "🔒 LOCKED";
+}
 
-  function isLicensed() {
-    return localStorage.getItem(STORAGE_KEY_LICENSE) === "true";
+function unlock() {
+  document.getElementById("app").classList.remove("locked");
+  document.getElementById("overlay").classList.add("hidden");
+  document.getElementById("status").innerText = "✅ ACTIVE";
+}
+
+// ===============================
+// CHECKOUT
+// ===============================
+document.querySelectorAll(".buy").forEach(btn => {
+  btn.onclick = async () => {
+    const plan = btn.dataset.plan;
+
+    const res = await fetch(`${API}/api/create-checkout`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ plan })
+    });
+
+    const data = await res.json();
+    window.location.href = data.url;
+  };
+});
+
+// ===============================
+// STATE
+// ===============================
+let score = 0;
+let revenue = 0;
+
+function save() {
+  localStorage.setItem("s", score);
+  localStorage.setItem("r", revenue);
+}
+
+function load() {
+  score = parseInt(localStorage.getItem("s") || 0);
+  revenue = parseInt(localStorage.getItem("r") || 0);
+  render();
+}
+
+function render() {
+  document.getElementById("score").innerText = score;
+  document.getElementById("rev").innerText = revenue;
+}
+
+// ===============================
+// ACTIONS (SECURED)
+// ===============================
+async function secure(action) {
+  if (!(await checkAuth())) {
+    alert("Access denied");
+    return false;
   }
+  action();
+}
 
-  function setLicensed(status) {
-    localStorage.setItem(STORAGE_KEY_LICENSE, status);
-    updatePaywall();
-  }
+// buttons
+document.getElementById("add").onclick = () =>
+  secure(() => {
+    score += 10;
+    save();
+    render();
+  });
 
-  function resetLicense() {
-    localStorage.removeItem(STORAGE_KEY_LICENSE);
-    localStorage.removeItem("ns_license_key");
-    localStorage.removeItem("ns_score");
-    localStorage.removeItem("ns_revenue");
-    localStorage.removeItem("ns_conv");
-    localStorage.removeItem("ns_event_log");
-    setLicensed(false);
-    loadDemoState();
-    alert("License removed. Dashboard locked again.");
-  }
-
-  function updatePaywall() {
-    const licensed = isLicensed();
-    const content = document.getElementById("dashboardContent");
-    const overlay = document.getElementById("paywallOverlay");
-    const statusBadge = document.getElementById("licenseStatus");
-    if (licensed) {
-      content.classList.remove("blurred");
-      overlay.classList.add("hidden");
-      statusBadge.innerHTML = "✅ FULL LICENSE · ACTIVE 2026";
-      statusBadge.style.background = "rgba(34,197,94,0.2)";
-      loadFullState();
-    } else {
-      content.classList.add("blurred");
-      overlay.classList.remove("hidden");
-      statusBadge.innerHTML = "🔓 DEMO MODE (limited to 40 score)";
-      statusBadge.style.background = "rgba(245,158,11,0.2)";
-      loadDemoState();
-    }
-    updateUI();
-  }
-
-  // ---------- DASHBOARD STATE ----------
-  let score = 0, revenue = 0, conversions = 0;
-  let eventLog = [];
-
-  function saveFullState() {
-    if (isLicensed()) {
-      localStorage.setItem("ns_score", score);
-      localStorage.setItem("ns_revenue", revenue);
-      localStorage.setItem("ns_conv", conversions);
-      localStorage.setItem("ns_event_log", JSON.stringify(eventLog));
-    }
-  }
-
-  function loadFullState() {
-    if (isLicensed()) {
-      score = parseInt(localStorage.getItem("ns_score") || "0");
-      revenue = parseInt(localStorage.getItem("ns_revenue") || "0");
-      conversions = parseInt(localStorage.getItem("ns_conv") || "0");
-      let logs = localStorage.getItem("ns_event_log");
-      if (logs) eventLog = JSON.parse(logs);
-      else eventLog = [];
-    } else {
-      score = 0; revenue = 0; conversions = 0; eventLog = [];
-    }
-    updateUI();
-    renderEventLog();
-  }
-
-  function loadDemoState() {
-    score = Math.min(40, parseInt(localStorage.getItem("ns_demo_score") || "0"));
-    revenue = 0;
-    conversions = 0;
-    eventLog = [];
-    updateUI();
-    renderEventLog();
-  }
-
-  function saveDemoState() {
-    if (!isLicensed()) localStorage.setItem("ns_demo_score", score);
-  }
-
-  function addEventLog(action, deltaScore = 0, extra = "") {
-    let entry = {
-      ts: new Date().toLocaleTimeString(),
-      action: action,
-      delta: deltaScore,
-      extra: extra,
-      scoreAfter: score
-    };
-    eventLog.unshift(entry);
-    if (eventLog.length > 25) eventLog.pop();
-    if (isLicensed()) localStorage.setItem("ns_event_log", JSON.stringify(eventLog));
-    renderEventLog();
-  }
-
-  function renderEventLog() {
-    const container = document.getElementById("eventLogContainer");
-    if (!container) return;
-    if (eventLog.length === 0) {
-      container.innerHTML = `<div style="opacity:0.6; text-align:center;">✨ no events yet — click any engine</div>`;
-      return;
-    }
-    container.innerHTML = eventLog.map(log => `
-      <div class="event-item">
-        <span class="timestamp">${log.ts}</span>
-        <span style="flex:1;"><strong>${log.action}</strong> ${log.delta !== 0 ? `(${log.delta>0 ? '+' : ''}${log.delta})` : ''} ${log.extra ? `— ${log.extra}` : ''}</span>
-      </div>
-    `).join('');
-  }
-
-  function updateUI() {
-    document.getElementById("scoreDisplay").innerText = score;
-    let stage = score >= 80 ? "HOT" : (score >= 40 ? "WARM" : "COLD");
-    document.getElementById("stageDisplay").innerText = stage;
-    document.getElementById("revenueDisplay").innerHTML = `$${revenue}`;
-    document.getElementById("convCount").innerText = conversions;
-    let percent = Math.min(100, (score/100)*100);
-    document.getElementById("scoreProgress").style.width = `${percent}%`;
-  }
-
-  function addPoints(p) {
-    if (!isLicensed()) {
-      let newScore = score + p;
-      if (newScore > 40) {
-        alert("Demo limited to 40 score. Purchase a license to go HOT and route leads.");
-        newScore = 40;
-      }
-      score = Math.min(40, Math.max(0, newScore));
-      saveDemoState();
-      addEventLog(`Demo: +${p} points (limited to 40)`, p);
-    } else {
-      score = Math.min(100, Math.max(0, score + p));
-      saveFullState();
-      addEventLog(`Score ${p>=0 ? '+' : ''}${p} points`, p, `now ${score}`);
-    }
-    updateUI();
-    if (score >= 80 && isLicensed()) {
-      addEventLog("🔥 STAGE UPGRADE: HOT lead ready for routing", 0);
-    }
-  }
-
-  function routeLead() {
-    if (!isLicensed()) {
-      alert("Purchase a license to route HOT leads and earn revenue.");
-      return;
-    }
+document.getElementById("route").onclick = () =>
+  secure(() => {
     if (score >= 80) {
       revenue += 75;
-      conversions++;
-      saveFullState();
-      addEventLog("💰 HOT lead routed → +$75 revenue", 0, `total $${revenue}`);
-      updateUI();
-      alert(`HOT lead routed! +$75 revenue. Total: $${revenue}`);
+      save();
+      render();
     } else {
-      let need = 80 - score;
-      alert(`Score ${score} – need ${need} more points to reach HOT.`);
+      alert("Need 80 score");
     }
-  }
-
-  function resetAllData() {
-    if (isLicensed()) {
-      if (confirm("Reset all data? Score, revenue, conversions will be set to 0.")) {
-        score = 0; revenue = 0; conversions = 0;
-        eventLog = [];
-        saveFullState();
-        addEventLog("🔄 Full system reset", 0);
-        updateUI();
-      }
-    } else {
-      score = 0;
-      saveDemoState();
-      eventLog = [];
-      updateUI();
-      renderEventLog();
-    }
-  }
-
-  // ---------- ENGINE CLICKS (cross-domain simulation) ----------
-  function handleEngineClick(engineName, targetUrl) {
-    if (!isLicensed()) {
-      alert("Purchase a license to unlock cross-domain lead scoring.");
-      return;
-    }
-    addPoints(5);
-    addEventLog(`🔗 ${engineName} click`, 5, `opening simulation`);
-    const uid = localStorage.getItem("ns_user_id") || crypto.randomUUID();
-    localStorage.setItem("ns_user_id", uid);
-    // For demo, we just show an info instead of actual redirect to avoid leaving the page
-    alert(`[DEMO] ${engineName} would open:\n${targetUrl}\nwith user=${uid} & score=${score}`);
-    // Uncomment below for real redirect:
-    // const separator = targetUrl.includes('?') ? '&' : '?';
-    // window.location.href = `${targetUrl}${separator}ns_user=${encodeURIComponent(uid)}&ns_score=${score}&ref=NorthSkyOS`;
-  }
-
-  // ---------- LICENSE VERIFICATION ----------
-  function verifyLicense() {
-    const inputKey = document.getElementById("licenseKey").value.trim();
-    if (!inputKey) return alert("Please enter your license key.");
-    // Accept any key that starts with NS- or the special demo key
-    if (inputKey === "NS-2026-FULL" || inputKey.startsWith("NS-")) {
-      localStorage.setItem("ns_license_key", inputKey);
-      setLicensed(true);
-      alert("License verified! Full dashboard unlocked.");
-      loadFullState();
-    } else {
-      alert("Invalid license key. Use 'NS-2026-FULL' or purchase a plan.");
-    }
-  }
-
-  // ---------- EVENT BINDINGS ----------
-  document.querySelectorAll(".btn-buy").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const plan = btn.dataset.plan;
-      showMockPurchase(plan);
-    });
   });
-  document.getElementById("verifyLicenseBtn").addEventListener("click", verifyLicense);
-  document.getElementById("demoActivateBtn").addEventListener("click", () => {
-    document.getElementById("licenseKey").value = "NS-2026-FULL";
-    verifyLicense();
-  });
-  document.getElementById("scrollToPricing").addEventListener("click", () => document.getElementById("pricingSection").scrollIntoView({behavior: "smooth"}));
-  document.getElementById("roofflowBtn")?.addEventListener("click", () => handleEngineClick("RoofFlow AI", "https://north-sky-roof-flow-os.vercel.app/"));
-  document.getElementById("auditorBtn")?.addEventListener("click", () => handleEngineClick("AI Auditor", "https://north-sky-auditor-sim.vercel.app/"));
-  document.getElementById("forceRouteBtn")?.addEventListener("click", routeLead);
-  document.getElementById("simulateHighIntentBtn")?.addEventListener("click", () => addPoints(30));
-  document.getElementById("addPointsBtn")?.addEventListener("click", () => addPoints(10));
-  document.getElementById("subPointsBtn")?.addEventListener("click", () => addPoints(-5));
-  document.getElementById("resetDataBtn")?.addEventListener("click", resetAllData);
-  document.getElementById("resetLicenseBtn")?.addEventListener("click", resetLicense);
 
-  // Initialize
-  if (isLicensed()) loadFullState();
-  else loadDemoState();
-  updatePaywall();
+// ===============================
+// CROSS-SITE NAV
+// ===============================
+function go(url) {
+  const token = localStorage.getItem("ns_token");
+  location.href = `${url}?token=${encodeURIComponent(token)}`;
+}
+
+document.getElementById("roof").onclick = () =>
+  secure(() => go("https://north-sky-roof-flow-os.vercel.app"));
+
+document.getElementById("audit").onclick = () =>
+  secure(() => go("https://north-sky-auditor-sim.vercel.app"));
+
+// ===============================
+// INIT
+// ===============================
+(async function init() {
+  if (await checkAuth()) {
+    unlock();
+    load();
+  } else {
+    lock();
+  }
+})();
+
 </script>
+
 </body>
 </html>
