@@ -1,3 +1,9 @@
+"scripts": {
+  "start": "node src/index.js"
+}
+
+
+
 {
   "name": "northsky-backend",
   "version": "1.0.0",
