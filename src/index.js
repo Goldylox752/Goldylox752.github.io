@@ -1,5 +1,9 @@
 // src/index.js
-require('dotenv').config(); // optional: add dotenv if you want .env support (not in package.json but recommended)
+
+// Load .env only in non-production
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const express = require('express');
 const cors = require('cors');
@@ -8,37 +12,48 @@ const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
-const twilio = require('twilio');
-const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------- Security & Utility Middlewares ----------
-app.use(helmet()); // Sets various HTTP headers for security
-app.use(cors());   // Enable CORS for all routes
-app.use(express.json({ limit: '10kb' })); // Parse JSON bodies
-app.use(xssClean()); // Sanitize user input against XSS
-app.use(hpp());      // Prevent HTTP Parameter Pollution
+// ---------- REQUIRED ENV VALIDATION ----------
+const requiredEnv = [
+  'STRIPE_SECRET_KEY',
+  'SUPABASE_URL',
+  'SUPABASE_ANON_KEY'
+];
 
-// Global rate limiter (all endpoints)
+requiredEnv.forEach((key) => {
+  if (!process.env[key]) {
+    console.error(`❌ Missing env variable: ${key}`);
+    process.exit(1);
+  }
+});
+
+// ---------- Middleware ----------
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: '10kb' }));
+app.use(xssClean());
+app.use(hpp());
+
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,                 // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests, try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use(globalLimiter);
 
-// ---------- Health Check ----------
+// ---------- Health ----------
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ status: 'OK', time: new Date().toISOString() });
 });
 
-// ---------- Example Validation Route ----------
+// ---------- Validation ----------
 app.post(
   '/api/validate',
   [
@@ -50,92 +65,105 @@ app.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    res.json({ message: 'Validation passed', data: req.body });
+    res.json({ success: true, data: req.body });
   }
 );
 
-// ---------- Twilio Example (SMS) ----------
-// Needs TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER in env
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
+// ---------- Twilio (lazy init) ----------
 app.post('/api/send-sms', async (req, res) => {
   try {
     const { to, message } = req.body;
+
     if (!to || !message) {
-      return res.status(400).json({ error: 'Missing "to" or "message"' });
+      return res.status(400).json({ error: 'Missing to/message' });
     }
-    const result = await twilioClient.messages.create({
+
+    if (!process.env.TWILIO_ACCOUNT_SID) {
+      return res.status(500).json({ error: 'Twilio not configured' });
+    }
+
+    const twilio = require('twilio');
+    const client = twilio(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+
+    const result = await client.messages.create({
       body: message,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: to,
+      to,
     });
+
     res.json({ success: true, sid: result.sid });
-  } catch (error) {
-    console.error('Twilio error:', error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ---------- Stripe Example (Create Payment Intent) ----------
-// Needs STRIPE_SECRET_KEY in env
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
+// ---------- Stripe (lazy init) ----------
 app.post('/api/create-payment-intent', async (req, res) => {
   try {
     const { amount, currency = 'usd' } = req.body;
+
     if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Valid amount required' });
+      return res.status(400).json({ error: 'Invalid amount' });
     }
+
+    const Stripe = require('stripe');
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // cents
+      amount: Math.round(amount * 100),
       currency,
     });
+
     res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error) {
-    console.error('Stripe error:', error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ---------- Supabase Example ----------
-// Needs SUPABASE_URL and SUPABASE_ANON_KEY in env
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
-
+// ---------- Supabase ----------
 app.get('/api/supabase-test', async (req, res) => {
   try {
-    // Example: fetch from a 'users' table (adjust to your actual table)
-    const { data, error } = await supabase.from('users').select('*').limit(5);
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY
+    );
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .limit(5);
+
     if (error) throw error;
+
     res.json({ data });
-  } catch (error) {
-    console.error('Supabase error:', error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ---------- UUID Example ----------
+// ---------- UUID ----------
 app.get('/api/uuid', (req, res) => {
-  res.json({ uuid: uuidv4() });
+  res.json({ id: uuidv4() });
 });
 
-// ---------- 404 Handler ----------
+// ---------- 404 ----------
 app.use('*', (req, res) => {
-  res.status(404).json({ error: `Route ${req.originalUrl} not found` });
+  res.status(404).json({ error: 'Route not found' });
 });
 
-// ---------- Global Error Handler ----------
+// ---------- Error Handler ----------
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({ error: 'Server error' });
 });
 
-// ---------- Start Server ----------
+// ---------- Start ----------
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Running on port ${PORT}`);
 });
