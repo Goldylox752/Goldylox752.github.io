@@ -1,0 +1,407 @@
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const rateLimit = require("express-rate-limit");
+const twilio = require("twilio");
+const Stripe = require("stripe");
+const { createClient } = require("@supabase/supabase-js");
+const { v4: uuidv4 } = require("uuid");
+const path = require("path");
+
+dotenv.config();
+const app = express();
+
+/* =========================
+   MIDDLEWARE
+========================= */
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+/* =========================
+   ENV CHECK (STRICT)
+========================= */
+const required = ["SUPABASE_URL", "SUPABASE_KEY", "STRIPE_SECRET"];
+for (const k of required) {
+  if (!process.env[k]) {
+    console.error(`❌ Missing ${k} in environment variables`);
+    process.exit(1);
+  }
+}
+
+/* =========================
+   RATE LIMIT
+========================= */
+const leadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { success: false, error: "Too many requests, try later" }
+});
+
+/* =========================
+   SERVICES
+========================= */
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+const stripe = new Stripe(process.env.STRIPE_SECRET);
+
+let sms = null;
+if (process.env.TWILIO_SID && process.env.TWILIO_AUTH && process.env.TWILIO_NUMBER) {
+  sms = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
+}
+
+/* =========================
+   HELPERS
+========================= */
+function cleanContact(contact) {
+  return contact.trim().toLowerCase();
+}
+
+function scoreLead({ service, source, postalCode }) {
+  let score = 0;
+  const svc = (service || "").toLowerCase();
+  if (svc.includes("inspection")) score += 5;
+  if (svc.includes("repair")) score += 7;
+  if (svc.includes("replacement")) score += 10;
+  if (source === "ad") score += 5;
+  if (postalCode && postalCode.toUpperCase().startsWith("T")) score += 3;
+  return score;
+}
+
+function getCity(postal) {
+  if (!postal) return "unknown";
+  const p = postal.toUpperCase();
+  if (p.startsWith("T5")) return "Edmonton";
+  if (p.startsWith("T2")) return "Calgary";
+  return "Alberta";
+}
+
+async function getBestBuyer(city) {
+  const { data, error } = await supabase
+    .from("contractors")
+    .select("*")
+    .eq("city", city)
+    .eq("active", true)
+    .order("price_per_lead", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching buyer:", error.message);
+    return null;
+  }
+  return data;
+}
+
+async function chargeContractor(buyer, amount, leadId) {
+  if (!buyer.stripe_customer_id || !buyer.default_payment_method) {
+    throw new Error("Contractor missing payment method");
+  }
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: Math.round(amount * 100),
+    currency: "cad",
+    customer: buyer.stripe_customer_id,
+    payment_method: buyer.default_payment_method,
+    off_session: true,
+    confirm: true,
+    metadata: {
+      lead_id: leadId,
+      contractor_id: buyer.id,
+      environment: process.env.NODE_ENV || "production"
+    },
+    idempotency_key: `lead_${leadId}`
+  });
+
+  return paymentIntent;
+}
+
+/* =========================
+   POST /lead - Submit a lead
+========================= */
+app.post("/lead", leadLimiter, async (req, res) => {
+  try {
+    const {
+      name,
+      contact,
+      postalCode,
+      service = "unknown",
+      source = "direct",
+      siteId = "unknown",
+      pageUrl = null
+    } = req.body;
+
+    if (!contact || contact.length < 5) {
+      return res.status(400).json({ success: false, error: "Invalid contact" });
+    }
+
+    const clean = cleanContact(contact);
+
+    // Duplicate check (last 24h only)
+    const { data: existing, error: dupError } = await supabase
+      .from("leads")
+      .select("id")
+      .eq("contact", clean)
+      .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .maybeSingle();
+
+    if (dupError) console.error("Duplicate check error:", dupError);
+
+    if (existing) {
+      return res.json({ success: true, leadId: existing.id, alreadyExists: true });
+    }
+
+    const score = scoreLead({ service, source, postalCode });
+    const city = getCity(postalCode);
+    const leadId = uuidv4();
+
+    // Find buyer first
+    const buyer = await getBestBuyer(city);
+    let revenue = 0;
+    let charged = false;
+
+    if (buyer) {
+      revenue = buyer.price_per_lead;
+      try {
+        await chargeContractor(buyer, revenue, leadId);
+        charged = true;
+      } catch (chargeErr) {
+        console.error(`❌ Payment failed for contractor ${buyer.id}:`, chargeErr.message);
+        // Disable contractor after payment failure
+        await supabase
+          .from("contractors")
+          .update({ active: false, last_error: chargeErr.message })
+          .eq("id", buyer.id);
+      }
+    }
+
+    // Insert lead
+    const { error: leadError } = await supabase.from("leads").insert([{
+      id: leadId,
+      name: name || null,
+      contact: clean,
+      postal_code: postalCode || null,
+      service,
+      source,
+      site_id: siteId,
+      page_url: pageUrl,
+      score,
+      city,
+      status: charged ? "sold" : "new",
+      created_at: new Date().toISOString()
+    }]);
+
+    if (leadError) throw new Error(`Lead insert failed: ${leadError.message}`);
+
+    // If charged, create assignment and send SMS
+    if (buyer && charged) {
+      const { error: assignError } = await supabase.from("lead_assignments").insert([{
+        id: uuidv4(),
+        lead_id: leadId,
+        contractor_id: buyer.id,
+        price: revenue,
+        city,
+        status: "paid",
+        assigned_at: new Date().toISOString()
+      }]);
+
+      if (assignError) console.error("Assignment insert error:", assignError);
+
+      if (sms && buyer.phone) {
+        try {
+          await sms.messages.create({
+            body: `🔥 PAID LEAD\n${service} | ${city}\nContact: ${contact}\nAmount: $${revenue}\nLead ID: ${leadId}`,
+            from: process.env.TWILIO_NUMBER,
+            to: buyer.phone
+          });
+        } catch (smsErr) {
+          console.error("SMS notification failed:", smsErr.message);
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      leadId,
+      score,
+      city,
+      revenue,
+      charged
+    });
+
+  } catch (err) {
+    console.error("Lead endpoint error:", err);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+/* =========================
+   POST /api/event - Track user behavior & score
+========================= */
+const eventScoreMap = {
+  page_view: 1,
+  click: 2,
+  funnel_click: 5,
+  checkout_click: 10,
+  lead: 8
+};
+
+app.post("/api/event", async (req, res) => {
+  try {
+    const event = req.body;
+    const { user_id, event: eventType, session_id, metadata } = event;
+
+    if (!user_id || !eventType) {
+      return res.status(400).json({ success: false, error: "user_id and event are required" });
+    }
+
+    const scoreValue = eventScoreMap[eventType] || 0;
+
+    // Get or create user cumulative score
+    let currentScore = 0;
+    const { data: userScoreData, error: fetchError } = await supabase
+      .from("user_scores")
+      .select("total_score")
+      .eq("user_id", user_id)
+      .maybeSingle();
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      console.error("Error fetching user score:", fetchError);
+    }
+
+    if (userScoreData) {
+      currentScore = userScoreData.total_score;
+    }
+
+    const newTotalScore = currentScore + scoreValue;
+
+    // Determine stage based on NEW total score
+    let stage = "COLD";
+    if (newTotalScore >= 15) stage = "HOT";
+    else if (newTotalScore >= 6) stage = "WARM";
+
+    // Insert event
+    const enrichedEvent = {
+      id: uuidv4(),
+      user_id,
+      event: eventType,
+      session_id: session_id || null,
+      metadata: metadata || {},
+      score_delta: scoreValue,
+      cumulative_score: newTotalScore,
+      stage,
+      created_at: new Date().toISOString()
+    };
+
+    const { error: insertEventError } = await supabase
+      .from("events")
+      .insert([enrichedEvent]);
+
+    if (insertEventError) throw new Error(`Event insert failed: ${insertEventError.message}`);
+
+    // Upsert user total score
+    const { error: upsertError } = await supabase
+      .from("user_scores")
+      .upsert({
+        user_id,
+        total_score: newTotalScore,
+        last_event_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id" });
+
+    if (upsertError) console.error("User score upsert error:", upsertError);
+
+    // HOT LEAD ROUTING (insert into hot_leads table)
+    if (stage === "HOT") {
+      const { error: hotLeadError } = await supabase
+        .from("hot_leads")
+        .insert([{
+          id: uuidv4(),
+          user_id,
+          score: newTotalScore,
+          source_event_id: enrichedEvent.id,
+          created_at: new Date().toISOString(),
+          processed: false
+        }]);
+
+      if (hotLeadError) {
+        console.error("Hot lead insert error:", hotLeadError);
+      } else {
+        console.log(`🔥 HOT LEAD for user ${user_id} (score ${newTotalScore})`);
+      }
+    }
+
+    // Special handling for checkout clicks
+    if (eventType === "checkout_click") {
+      const { error: checkoutError } = await supabase
+        .from("checkout_events")
+        .insert([{ ...enrichedEvent, original_metadata: metadata }]);
+
+      if (checkoutError) console.error("Checkout event insert error:", checkoutError);
+    }
+
+    res.json({ success: true, stage, score: scoreValue, cumulativeScore: newTotalScore });
+
+  } catch (err) {
+    console.error("Event tracking error:", err);
+    res.status(500).json({ success: false, error: "Failed to process event" });
+  }
+});
+
+/* =========================
+   POST /contractor/signup - Register a contractor
+========================= */
+app.post("/contractor/signup", async (req, res) => {
+  try {
+    const { name, email, phone, city } = req.body;
+    if (!name || !email || !city) {
+      return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
+    const customer = await stripe.customers.create({
+      email,
+      name,
+      phone: phone || null
+    });
+
+    const { data, error } = await supabase
+      .from("contractors")
+      .insert([{
+        id: uuidv4(),
+        name,
+        email,
+        phone: phone || null,
+        city,
+        stripe_customer_id: customer.id,
+        active: true,
+        price_per_lead: 50,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ success: true, contractorId: data.id });
+
+  } catch (err) {
+    console.error("Contractor signup error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/* =========================
+   START SERVER
+========================= */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`💰 NorthSky Lead Engine running on http://localhost:${PORT}`);
+  console.log(`✅ Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`📦 SMS enabled: ${sms ? "yes" : "no"}`);
+});
