@@ -1,22 +1,12 @@
 {
-  "name": "northsky-backend",
+  "name": "north-sky-app",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.0",
     "express": "^4.18.2",
-    "express-rate-limit": "^6.7.0",
-    "express-validator": "^6.15.0",
-    "helmet": "^7.0.0",
-    "hpp": "^0.2.3",
-    "stripe": "^14.0.0",
-    "twilio": "^4.19.0",
-    "uuid": "^9.0.0",
-    "xss-clean": "^0.1.1"
+    "cors": "^2.8.5"
   }
 }
