@@ -1,11 +1,23 @@
-app.post('/api/webhook', rawBody, (req, res) => {
-  const event = stripe.webhooks.constructEvent(...);
+import Stripe from "stripe";
 
-  if (event.type === 'checkout.session.completed') {
-    // mark user as active in DB
-  }
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  if (event.type === 'customer.subscription.deleted') {
-    // revoke access
+export default async function handler(req, res) {
+  try {
+    const { session_id } = req.body;
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    if (!session) {
+      return res.json({ valid: false });
+    }
+
+    return res.json({
+      valid: true,
+      plan: session.metadata?.plan || "starter",
+      token: session.customer,
+    });
+  } catch (err) {
+    return res.json({ valid: false });
   }
-});
+}
