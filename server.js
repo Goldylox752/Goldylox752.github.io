@@ -1,23 +1,48 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
 
-// Stripe example endpoint
+// Serve frontend
+app.use(express.static(path.join(__dirname, "public")));
+
+// --------------------
+// STRIPE PLACEHOLDER ROUTE
+// --------------------
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    res.json({ url: "https://example-checkout-link" });
+    // replace with real Stripe logic
+    res.json({
+      url: "https://your-checkout-link-here"
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Health check
-app.get("/", (req, res) => {
-  res.send("Server running");
+// --------------------
+// BASIC VERIFY ROUTE (optional)
+// --------------------
+app.post("/api/verify-session", async (req, res) => {
+  const { session_id } = req.body;
+
+  if (!session_id) {
+    return res.json({ valid: false });
+  }
+
+  // replace with Stripe verification later
+  return res.json({ valid: true });
+});
+
+// --------------------
+// FRONTEND ENTRY
+// --------------------
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 module.exports = app;
