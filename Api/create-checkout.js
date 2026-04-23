@@ -2,6 +2,13 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// 🔥 REAL STRIPE PRICE IDS (create these in Stripe dashboard)
+const priceMap = {
+  starter: "price_xxx_starter",
+  pro: "price_xxx_pro",
+  elite: "price_xxx_elite",
+};
+
 export default async function handler(req, res) {
   try {
     const { plan, successUrl, cancelUrl, userId } = req.body;
@@ -10,12 +17,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const priceMap = {
-      starter: 9900,
-      pro: 29900,
-      elite: 99900,
-    };
-
     if (!priceMap[plan]) {
       return res.status(400).json({ error: "Invalid plan" });
     }
@@ -23,35 +24,30 @@ export default async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
 
-      mode: "payment", // keep this for now (one-time)
+      // 🔥 SaaS MODE (THIS IS IMPORTANT)
+      mode: "subscription",
 
       line_items: [
         {
-          price_data: {
-            currency: "cad",
-            product_data: {
-              name: `NorthSky ${plan.toUpperCase()} Plan`,
-            },
-            unit_amount: priceMap[plan],
-          },
+          price: priceMap[plan],
           quantity: 1,
         },
       ],
 
-      // 🔥 critical for verification
+      // 🔐 REQUIRED FOR WEBHOOK + DB SYNC
       metadata: {
         plan,
-        userId,
+        userId: userId || "anonymous",
       },
 
-      success_url: successUrl,
+      success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
     });
 
-    res.status(200).json({ url: session.url });
+    return res.status(200).json({ url: session.url });
 
   } catch (err) {
     console.error("Checkout error:", err);
-    res.status(500).json({ error: "Failed to create checkout session" });
+    return res.status(500).json({ error: "Failed to create checkout session" });
   }
 }
