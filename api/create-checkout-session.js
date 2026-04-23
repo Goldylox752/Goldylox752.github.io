@@ -14,10 +14,15 @@ export default async function handler(req, res) {
       enterprise: "price_xxx_enterprise",
     };
 
+    if (!prices[plan]) {
+      return res.status(400).json({ error: "Invalid plan" });
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
 
-      customer_email: email || undefined, // 🔥 THIS FIXES YOUR ISSUE
+      // 🔥 THIS FIXES YOUR EMAIL PROBLEM
+      customer_email: email || undefined,
 
       line_items: [
         {
@@ -26,6 +31,12 @@ export default async function handler(req, res) {
         },
       ],
 
+      // 🔥 IMPORTANT FOR WEBHOOK TRACKING
+      metadata: {
+        plan: plan,
+        email: email || "",
+      },
+
       success_url: `${process.env.APP_URL}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.APP_URL}/cancel`,
     });
@@ -33,7 +44,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ url: session.url });
 
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Checkout failed" });
+    console.error("Checkout error:", err);
+    return res.status(500).json({ error: err.message });
   }
 }
