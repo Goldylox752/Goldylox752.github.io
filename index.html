@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>NorthSky OS · Revenue Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ===== YOUR ORIGINAL STYLES (UNCHANGED FOR BREVITY) ===== */
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  font-family: 'Inter', sans-serif;
+  color: #f1f5f9;
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+.container { max-width: 1280px; margin: 0 auto; }
+
+.nav-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:16px;
+  margin-bottom:32px;
+  background:rgba(15,23,42,0.7);
+  padding:16px 24px;
+  border-radius:32px;
+  border:1px solid rgba(37,99,235,0.3);
+}
+
+.logo h2 {
+  font-weight:700;
+  background:linear-gradient(135deg,#fff,#60a5fa);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.badge-status { background:#1e293b; padding:6px 16px; border-radius:40px; }
+.badge-status.locked { background:#7f1a1a; color:#fecaca; }
+.badge-status.active { background:#14532d; color:#bbf7d0; }
+
+.pricing-grid { display:flex; flex-wrap:wrap; gap:24px; margin-bottom:48px; justify-content:center; }
+
+.price-card {
+  flex:1;
+  min-width:220px;
+  background:#0f172a;
+  border-radius:32px;
+  padding:28px 20px;
+  text-align:center;
+  border:1px solid #1e293b;
+}
+
+.price { font-size:2rem; font-weight:800; color:#38bdf8; margin:12px 0; }
+
+.btn-buy {
+  background:#2563eb;
+  border:none;
+  padding:12px 24px;
+  border-radius:40px;
+  font-weight:700;
+  color:white;
+  cursor:pointer;
+  width:100%;
+}
+
+.dashboard-wrapper {
+  position:relative;
+  background:#0a0f1e;
+  border-radius:36px;
+  border:1px solid #1e293b;
+  min-height:460px;
+}
+
+.dashboard-content { padding:32px 28px; }
+
+/* 🔒 HARD LOCK (important change) */
+.locked-dashboard {
+  filter:blur(12px);
+  pointer-events:none;
+  user-select:none;
+}
+
+.overlay-lock {
+  position:absolute;
+  inset:0;
+  background:rgba(2,6,23,0.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.overlay-lock.hidden { display:none; }
+
+.lock-card {
+  background:#0f172a;
+  padding:28px;
+  border-radius:32px;
+  border:1px solid #334155;
+  max-width:340px;
+}
+
+.stats-panel {
+  display:flex;
+  gap:28px;
+  background:#0f172a;
+  padding:20px;
+  border-radius:28px;
+  margin-bottom:28px;
+}
+
+.stat-value {
+  font-size:2.5rem;
+  font-weight:800;
+  color:#facc15;
+}
+
+.btn-action {
+  background:#1e293b;
+  border:none;
+  padding:12px 24px;
+  border-radius:40px;
+  font-weight:600;
+  color:white;
+  cursor:pointer;
+}
+
+.btn-action.primary { background:#3b82f6; }
+.btn-action.warning { background:#ea580c; }
+
+.offer-signup {
+  margin-top:24px;
+  background:#020617;
+  border-radius:28px;
+  padding:20px;
+}
+
+.offer-input-group {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.offer-input-group input {
+  flex:1;
+  padding:12px 18px;
+  border-radius:60px;
+  background:#0f172a;
+  border:1px solid #334155;
+  color:white;
+}
+
+.btn-offer {
+  background:#10b981;
+  border:none;
+  padding:12px 28px;
+  border-radius:60px;
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="nav-header">
+    <div class="logo"><h2>☁️ NorthSky OS · Revenue Hub</h2></div>
+    <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED</div>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card"><h3>Starter</h3><div class="price">$99/mo</div><button class="btn-buy" data-plan="starter">Subscribe</button></div>
+    <div class="price-card"><h3>Pro</h3><div class="price">$299/mo</div><button class="btn-buy" data-plan="pro">Subscribe</button></div>
+    <div class="price-card"><h3>Elite</h3><div class="price">$999/mo</div><button class="btn-buy" data-plan="elite">Subscribe</button></div>
+  </div>
+
+  <div class="dashboard-wrapper">
+
+    <div id="dashboardContent" class="dashboard-content locked-dashboard">
+
+      <h1>📊 Revenue Command Center</h1>
+      <p>Requires active subscription.</p>
+
+      <div class="stats-panel">
+        <div>
+          <div>🏆 SCORE</div>
+          <div class="stat-value" id="scoreDisplay">0</div>
+        </div>
+        <div>
+          <div>💰 REVENUE</div>
+          <div class="stat-value" id="revenueDisplay">0</div>
+        </div>
+      </div>
+
+      <button class="btn-action primary" id="addScoreBtn">+10 Score</button>
+      <button class="btn-action warning" id="routeLeadBtn">🚀 Route Lead</button>
+
+      <div class="offer-signup">
+        <h3>Offers</h3>
+        <div class="offer-input-group">
+          <input type="email" id="offerEmail" placeholder="Email">
+          <input type="text" id="offerName" placeholder="Name">
+          <button class="btn-offer" id="submitOfferBtn">Sign up</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="lockOverlay" class="overlay-lock">
+      <div class="lock-card">
+        <h2>🔐 Access Locked</h2>
+        <p>Subscription required to continue.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+
+/* 🔒 SERVER-ONLY AUTH (NO LOCAL BYPASS) */
+let isAuthenticated = false;
+
+function lockUI() {
+  document.getElementById("dashboardContent").classList.add("locked-dashboard");
+  document.getElementById("lockOverlay").classList.remove("hidden");
+  document.getElementById("globalStatusBadge").innerText = "🔒 LOCKED";
+  isAuthenticated = false;
+}
+
+function unlockUI() {
+  document.getElementById("dashboardContent").classList.remove("locked-dashboard");
+  document.getElementById("lockOverlay").classList.add("hidden");
+  document.getElementById("globalStatusBadge").innerText = "✅ ACTIVE";
+  isAuthenticated = true;
+}
+
+/* 🔐 HARD SERVER VERIFY */
+async function verifyAccess() {
+  const token = localStorage.getItem("ns_subscription_token");
+
+  if (!token) return lockUI();
+
+  try {
+    const res = await fetch(`${API_BASE}/api/verify`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await res.json();
+
+    if (data?.valid) unlockUI();
+    else lockUI();
+
+  } catch (err) {
+    lockUI();
+  }
+}
+
+/* 💳 CHECKOUT */
+document.querySelectorAll(".btn-buy").forEach(btn => {
+  btn.onclick = async () => {
+    const plan = btn.dataset.plan;
+
+    const res = await fetch(`${API_BASE}/api/create-checkout`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ plan })
+    });
+
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  };
+});
+
+/* 🚫 PROTECTED ACTIONS */
+let score = 0;
+let revenue = 0;
+
+function requireAuth() {
+  if (!isAuthenticated) {
+    alert("Locked");
+    return false;
+  }
+  return true;
+}
+
+document.getElementById("addScoreBtn").onclick = () => {
+  if (!requireAuth()) return;
+  score += 10;
+  document.getElementById("scoreDisplay").innerText = score;
+};
+
+document.getElementById("routeLeadBtn").onclick = () => {
+  if (!requireAuth()) return;
+  if (score >= 80) {
+    revenue += 75;
+    document.getElementById("revenueDisplay").innerText = revenue;
+  }
+};
+
+verifyAccess();
+setInterval(verifyAccess, 30000);
+</script>
+
+</body>
+</html>
