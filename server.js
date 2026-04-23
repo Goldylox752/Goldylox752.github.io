@@ -75,3 +75,16 @@ app.get("*", (req, res) => {
 
 // Export for Vercel
 module.exports = app;
+
+app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), (req, res) => {
+  const event = JSON.parse(req.body);
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    // SAVE USER AS ACTIVE
+    console.log("PAYMENT SUCCESS:", session.customer_email);
+  }
+
+  res.json({ received: true });
+});
