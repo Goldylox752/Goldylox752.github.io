@@ -46,3 +46,8 @@ app.get("*", (req, res) => {
 });
 
 module.exports = app;
+
+// MUST be last route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
