@@ -85,9 +85,7 @@ button {
   font-size:18px;
 }
 
-.hidden {
-  display:none;
-}
+.hidden { display:none; }
 
 input {
   padding:10px;
@@ -143,7 +141,7 @@ input {
   <div class="dashboard">
 
     <div id="overlay" class="overlay">
-      🔒 Unlock system by subscribing
+      🔒 Subscribe to unlock system
     </div>
 
     <div id="app" class="locked-ui">
@@ -172,14 +170,156 @@ input {
 
   </div>
 
-  <!-- FOOTER -->
   <div class="footer">
     © 2026 NorthSky OS · SaaS Engine
   </div>
 
 </div>
 
-<script src="script.js"></script>
+<script>
+/**
+ * =========================
+ * STATE
+ * =========================
+ */
+let state = {
+  score: 0,
+  revenue: 0,
+  auth: false,
+  plan: null
+};
+
+const el = (id) => document.getElementById(id);
+
+/**
+ * =========================
+ * VERIFY FUNCTION
+ * =========================
+ */
+async function verify(email) {
+  const r = await fetch("/api/verify-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+
+  return await r.json();
+}
+
+/**
+ * =========================
+ * SAVE EMAIL
+ * =========================
+ */
+function saveEmail(email) {
+  localStorage.setItem("email", email);
+}
+
+/**
+ * =========================
+ * CHECK UNLOCK
+ * =========================
+ */
+async function checkUnlock() {
+  const email = localStorage.getItem("email");
+  if (!email) return;
+
+  const data = await verify(email);
+
+  if (data.valid) {
+    state.auth = true;
+    state.plan = data.plan;
+
+    el("app").classList.remove("locked-ui");
+    el("overlay").classList.add("hidden");
+
+    el("status").innerText = "ACTIVE";
+    el("status").className = "badge active";
+
+    el("plan").innerText = data.plan;
+  }
+}
+
+/**
+ * =========================
+ * SUBSCRIBE FLOW
+ * =========================
+ */
+document.querySelectorAll(".buy").forEach(btn => {
+  btn.addEventListener("click", async () => {
+
+    const plan = btn.dataset.plan;
+
+    const email = prompt("Enter email for subscription:");
+    if (!email) return;
+
+    saveEmail(email);
+
+    const r = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan })
+    });
+
+    const data = await r.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  });
+});
+
+/**
+ * =========================
+ * DASHBOARD ACTIONS
+ * =========================
+ */
+el("addScore").onclick = () => {
+  if (!state.auth) return;
+  state.score += 10;
+  el("score").innerText = state.score;
+};
+
+el("routeLead").onclick = () => {
+  if (!state.auth) return;
+  state.revenue += 75;
+  el("rev").innerText = state.revenue;
+};
+
+/**
+ * =========================
+ * LEAD SUBMIT
+ * =========================
+ */
+el("offer").onclick = () => {
+  if (!state.auth) return;
+
+  const email = el("email").value;
+  const name = el("name").value;
+
+  alert("Lead submitted: " + name + " / " + email);
+
+  el("email").value = "";
+  el("name").value = "";
+};
+
+/**
+ * =========================
+ * LOGOUT
+ * =========================
+ */
+el("logout").onclick = () => {
+  localStorage.clear();
+  location.reload();
+};
+
+/**
+ * =========================
+ * INIT
+ * =========================
+ */
+checkUnlock();
+</script>
 
 </body>
 </html>
