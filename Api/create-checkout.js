@@ -1,31 +1,57 @@
-{ "url": "https://checkout.stripe.com/..." }
+import Stripe from "stripe";
 
-import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
-  const { plan } = req.body;
+  try {
+    const { plan, successUrl, cancelUrl, userId } = req.body;
 
-  const priceMap = {
-    starter: 9900,
-    pro: 29900,
-    elite: 99900
-  };
+    if (!plan || !successUrl || !cancelUrl) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{
-      price_data: {
-        currency: 'cad',
-        product_data: { name: `NorthSky ${plan}` },
-        unit_amount: priceMap[plan],
+    const priceMap = {
+      starter: 9900,
+      pro: 29900,
+      elite: 99900,
+    };
+
+    if (!priceMap[plan]) {
+      return res.status(400).json({ error: "Invalid plan" });
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+
+      mode: "payment", // keep this for now (one-time)
+
+      line_items: [
+        {
+          price_data: {
+            currency: "cad",
+            product_data: {
+              name: `NorthSky ${plan.toUpperCase()} Plan`,
+            },
+            unit_amount: priceMap[plan],
+          },
+          quantity: 1,
+        },
+      ],
+
+      // 🔥 critical for verification
+      metadata: {
+        plan,
+        userId,
       },
-      quantity: 1,
-    }],
-    mode: 'payment',
-    success_url: 'https://your-site.vercel.app/success?session_id={CHECKOUT_SESSION_ID}',
-    cancel_url: 'https://your-site.vercel.app',
-  });
 
-  res.status(200).json({ url: session.url });
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+
+    res.status(200).json({ url: session.url });
+
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res.status(500).json({ error: "Failed to create checkout session" });
+  }
 }
