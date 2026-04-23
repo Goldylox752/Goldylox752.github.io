@@ -1,15 +1,38 @@
-const stripeCheckoutURL = 'https://buy.stripe.com/fZufZa9KXdX65RJgLK2ZO06';
-const thankYouPage = 'thank-you.html';
+<script>
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session_id");
 
-// Attach event listener to all “Buy SIM Now” buttons
-document.querySelectorAll('#buy-sim-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    // Track the click in GA4
-    gtag('event', 'buy_click', {
-      'event_category': 'SIM Sales',
-      'event_label': 'Physical SIM $20'
+  if (!sessionId) {
+    console.log("No session_id found");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/verify-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId })
     });
-    // Redirect to Stripe checkout
-    window.location.href = stripeCheckoutURL;
-  });
-});
+
+    const data = await res.json();
+
+    if (data.valid) {
+      localStorage.setItem("access", "true");
+      localStorage.setItem("plan", data.plan);
+
+      document.body.innerHTML = `
+        <h1>🎉 Access Unlocked</h1>
+        <p>Your plan: ${data.plan}</p>
+        <a href="/app.html">Enter App</a>
+      `;
+    } else {
+      document.body.innerHTML = `<h1>❌ Payment not verified</h1>`;
+    }
+
+  } catch (err) {
+    console.error(err);
+    document.body.innerHTML = `<h1>Error verifying payment</h1>`;
+  }
+})();
+</script>
