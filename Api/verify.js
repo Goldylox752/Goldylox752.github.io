@@ -1,14 +1,8 @@
-export default async function handler(req, res) {
-  const { userId } = req.body;
+const { data } = await supabase
+  .from("verified_sessions")
+  .select("*")
+  .eq("session_id", token)
+  .gt("expires_at", new Date().toISOString())
+  .maybeSingle();
 
-  const user = await db.users.find(userId);
-
-  if (!user || user.status !== "active") {
-    return res.json({ valid: false });
-  }
-
-  return res.json({
-    valid: true,
-    plan: user.plan
-  });
-}
+return { valid: !!data, plan: data?.plan };
