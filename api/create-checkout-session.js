@@ -1,14 +1,20 @@
 const Stripe = require("stripe");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
-    const { plan } = req.body;
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    // SAFETY: ensure body exists
+    const body = req.body || {};
+    const plan = body.plan;
+
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("Missing STRIPE_SECRET_KEY");
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const prices = {
       starter: process.env.STRIPE_PRICE_STARTER,
@@ -19,7 +25,10 @@ module.exports = async (req, res) => {
     const priceId = prices[plan];
 
     if (!priceId) {
-      return res.status(400).json({ error: "Invalid plan" });
+      return res.status(400).json({
+        error: "Invalid plan or missing price ID",
+        plan
+      });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -41,7 +50,7 @@ module.exports = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Stripe error:", err);
+    console.error("Checkout crash:", err);
 
     return res.status(500).json({
       error: err.message
