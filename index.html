@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>NorthSky OS · Revenue Hub</title>
+<title>NorthSky OS · Revenue Hub (Live)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * {
@@ -25,7 +25,6 @@
     margin: 0 auto;
   }
 
-  /* navigation */
   .nav-header {
     display: flex;
     justify-content: space-between;
@@ -46,7 +45,6 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    letter-spacing: -0.3px;
   }
 
   .badge-status {
@@ -61,13 +59,11 @@
   .badge-status.locked {
     background: #7f1a1a;
     color: #fecaca;
-    box-shadow: 0 0 0 1px #ef444430;
   }
 
   .badge-status.active {
     background: #14532d;
     color: #bbf7d0;
-    box-shadow: 0 0 0 1px #22c55e30;
   }
 
   .sign-out-btn {
@@ -88,7 +84,6 @@
     color: #fca5a5;
   }
 
-  /* pricing grid */
   .pricing-grid {
     display: flex;
     flex-wrap: wrap;
@@ -129,14 +124,13 @@
     color: white;
     cursor: pointer;
     width: 100%;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s;
   }
 
   .btn-buy:hover {
     background: #1d4ed8;
   }
 
-  /* dashboard container */
   .dashboard-wrapper {
     position: relative;
     background: #0a0f1e;
@@ -160,14 +154,13 @@
   .overlay-lock {
     position: absolute;
     inset: 0;
-    background: rgba(2, 6, 23, 0.94);
+    background: rgba(2, 6, 23, 0.95);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     z-index: 10;
-    transition: opacity 0.2s;
   }
 
   .overlay-lock.hidden {
@@ -183,12 +176,14 @@
     box-shadow: 0 25px 40px -12px black;
   }
 
-  .lock-card h2 {
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #facc15, #f97316);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .live-warning {
+    margin-top: 20px;
+    font-size: 0.7rem;
+    background: #7f1a1a40;
+    padding: 8px 12px;
+    border-radius: 20px;
+    color: #f87171;
+    border: 1px solid #ef444430;
   }
 
   .stats-panel {
@@ -205,7 +200,6 @@
     font-size: 2.5rem;
     font-weight: 800;
     color: #facc15;
-    letter-spacing: 1px;
   }
 
   .btn-action {
@@ -227,11 +221,6 @@
 
   .btn-action.warning {
     background: #ea580c;
-  }
-
-  .btn-action:hover {
-    filter: brightness(1.05);
-    transform: scale(0.98);
   }
 
   .offer-signup {
@@ -259,11 +248,6 @@
     font-size: 0.9rem;
   }
 
-  .offer-input-group input:focus {
-    outline: none;
-    border-color: #3b82f6;
-  }
-
   .btn-offer {
     background: #10b981;
     border: none;
@@ -281,27 +265,6 @@
     border-radius: 30px;
     font-size: 0.7rem;
     font-weight: 600;
-    margin-top: 6px;
-  }
-
-  .loading-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #60a5fa;
-    margin-left: 8px;
-    animation: pulse 1s infinite;
-  }
-
-  @keyframes pulse {
-    0% { opacity: 0.3; transform: scale(0.8);}
-    100% { opacity: 1; transform: scale(1.2);}
-  }
-
-  hr {
-    border-color: #1e293b;
-    margin: 12px 0;
   }
 </style>
 </head>
@@ -313,7 +276,7 @@
     <div class="logo"><h2>☁️ NorthSky OS · Revenue Hub</h2></div>
     <div style="display: flex; gap: 12px; align-items: center;">
       <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED</div>
-      <button id="signOutBtn" class="sign-out-btn" title="Clear session & lock dashboard">🚪 Sign out</button>
+      <button id="signOutBtn" class="sign-out-btn">🚪 Sign out</button>
     </div>
   </div>
 
@@ -333,14 +296,12 @@
 
       <div class="stats-panel">
         <div>
-          <div>🏆 SCORE (engagement)</div>
+          <div>🏆 SCORE</div>
           <div class="stat-value" id="scoreDisplay">0</div>
-          <div style="font-size: 0.75rem; margin-top: 6px;">+10 per click</div>
         </div>
         <div>
-          <div>💰 REVENUE (simulated)</div>
+          <div>💰 REVENUE</div>
           <div class="stat-value" id="revenueDisplay">0</div>
-          <div style="font-size: 0.75rem;">Route lead needs 80+ score</div>
         </div>
       </div>
 
@@ -351,11 +312,11 @@
 
       <div class="offer-signup">
         <h3>📬 Exclusive Offers</h3>
-        <p style="font-size: 0.85rem; margin-top: 6px;">Get partner deals — only for active subscribers.</p>
+        <p style="font-size: 0.85rem; margin-top: 6px;">Only for active subscribers.</p>
         <div class="offer-input-group">
-          <input type="email" id="offerEmail" placeholder="Email address">
-          <input type="text" id="offerName" placeholder="Full name">
-          <button class="btn-offer" id="submitOfferBtn">Sign up for offers</button>
+          <input type="email" id="offerEmail" placeholder="Email">
+          <input type="text" id="offerName" placeholder="Name">
+          <button class="btn-offer" id="submitOfferBtn">Sign up</button>
         </div>
         <div id="offerFeedback" style="font-size: 0.75rem; margin-top: 12px; color: #94a3b8;"></div>
       </div>
@@ -365,7 +326,7 @@
       <div class="lock-card">
         <h2>🔐 Access Locked</h2>
         <p>Subscription required to continue.<br>Choose a plan above to unlock the Revenue Hub.</p>
-        <div style="margin-top: 20px; font-size: 0.8rem;">✨ Secure server verification</div>
+        <div class="live-warning">💳 REAL PAYMENTS • Your card will be charged immediately</div>
       </div>
     </div>
   </div>
@@ -373,8 +334,8 @@
 
 <script>
   (function() {
-    // ---------- CONFIG ----------
-    const API_BASE = window.location.origin;  // expects /api/* endpoints
+    // ---------- LIVE MODE CONFIGURATION ----------
+    const API_BASE = window.location.origin;   // Your live backend URL
 
     // DOM elements
     const dashboardDiv = document.getElementById('dashboardContent');
@@ -391,20 +352,17 @@
     const offerFeedback = document.getElementById('offerFeedback');
     const signOutBtn = document.getElementById('signOutBtn');
 
-    // UI state
     let isAuthenticated = false;
-    let currentPlan = null;       // 'starter', 'pro', 'elite'
+    let currentPlan = null;
     let localScore = 0;
     let localRevenue = 0;
 
-    // Helper: update UI numbers
     function updateStatsUI() {
       scoreEl.innerText = localScore;
       revenueEl.innerText = localRevenue;
     }
 
-    // ---------- LOCK / UNLOCK ----------
-    function lockUI(reason = 'unauthorized') {
+    function lockUI() {
       dashboardDiv.classList.add('locked-dashboard');
       lockOverlay.classList.remove('hidden');
       statusBadge.innerText = '🔒 LOCKED';
@@ -412,132 +370,108 @@
       activePlanSpan.innerText = '⚡ No active plan';
       isAuthenticated = false;
       currentPlan = null;
-      // clear any leftover token if invalid session (optional but safe)
-      if (reason === 'invalid_token') {
-        localStorage.removeItem('ns_subscription_token');
-      }
     }
 
     function unlockUI(plan = 'pro') {
       dashboardDiv.classList.remove('locked-dashboard');
       lockOverlay.classList.add('hidden');
-      statusBadge.innerText = '✅ ACTIVE SUBSCRIPTION';
+      statusBadge.innerText = '✅ ACTIVE';
       statusBadge.className = 'badge-status active';
-      let planLabel = '';
-      if (plan === 'starter') planLabel = 'Starter';
-      else if (plan === 'pro') planLabel = 'Pro';
-      else if (plan === 'elite') planLabel = 'Elite';
-      else planLabel = 'Premium';
+      let planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
       activePlanSpan.innerHTML = `✨ Active: ${planLabel} plan`;
       currentPlan = plan;
       isAuthenticated = true;
     }
 
-    // ---------- CORE VERIFICATION (server-only) ----------
-    // verify session_id via POST /api/verify
+    // ---------- VERIFICATION (server only) ----------
     async function verifySessionWithBackend(sessionId) {
-      if (!sessionId) return false;
+      if (!sessionId) return { valid: false };
       try {
         const response = await fetch(`${API_BASE}/api/verify`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionId}`
+          },
           body: JSON.stringify({ session_id: sessionId })
         });
         const data = await response.json();
-        if (data && data.valid === true) {
-          // server confirms valid subscription
-          return { valid: true, plan: data.plan || 'pro' };
-        }
-        return { valid: false };
+        return { valid: data.valid === true, plan: data.plan || null };
       } catch (err) {
-        console.warn('verify backend error:', err);
+        console.error('Verification error:', err);
         return { valid: false };
       }
     }
 
-    // Main access verification using stored token + optional query param
     async function verifyAccessAndUnlock() {
-      // 1) check URL param? (after stripe redirect)
+      // Check URL param after Stripe redirect
       const urlParams = new URLSearchParams(window.location.search);
       const sessionIdFromUrl = urlParams.get('session_id');
       
-      if (sessionIdFromUrl && sessionIdFromUrl.length > 10) {
-        // attempt verification with fresh session_id
+      if (sessionIdFromUrl) {
         const result = await verifySessionWithBackend(sessionIdFromUrl);
         if (result.valid) {
-          // store token & unlock
           localStorage.setItem('ns_subscription_token', sessionIdFromUrl);
-          unlockUI(result.plan || 'pro');
-          // clean URL to remove session_id (avoids re-processing)
+          unlockUI(result.plan);
+          // Clean URL
           const cleanUrl = window.location.pathname + window.location.hash;
           window.history.replaceState({}, document.title, cleanUrl);
           return true;
-        } else {
-          // invalid session from URL - ignore, fallback to stored token
-          console.log("Session from URL invalid");
         }
       }
       
-      // 2) Check localStorage token
+      // Check stored token
       const storedToken = localStorage.getItem('ns_subscription_token');
       if (!storedToken) {
-        lockUI('no_token');
+        lockUI();
         return false;
       }
       
       const result = await verifySessionWithBackend(storedToken);
       if (result.valid) {
-        unlockUI(result.plan || 'pro');
+        unlockUI(result.plan);
         return true;
       } else {
-        // token expired or invalid
         localStorage.removeItem('ns_subscription_token');
-        lockUI('invalid_token');
+        lockUI();
         return false;
       }
     }
 
-    // periodic re-validate (every 45 sec)
+    // Periodic re-verification (every 2 minutes)
     let revalidationInterval = null;
     function startPeriodicRevalidation() {
       if (revalidationInterval) clearInterval(revalidationInterval);
       revalidationInterval = setInterval(async () => {
         const token = localStorage.getItem('ns_subscription_token');
         if (!token) {
-          if (isAuthenticated) lockUI('missing_token');
+          if (isAuthenticated) lockUI();
           return;
         }
         const result = await verifySessionWithBackend(token);
         if (!result.valid && isAuthenticated) {
           localStorage.removeItem('ns_subscription_token');
-          lockUI('invalid_token');
+          lockUI();
         } else if (result.valid && !isAuthenticated) {
-          unlockUI(result.plan || 'pro');
-        } else if (result.valid && isAuthenticated && result.plan && result.plan !== currentPlan) {
-          // update plan display if changed on backend
-          let planLabel = result.plan;
-          if (planLabel === 'starter') activePlanSpan.innerHTML = `✨ Active: Starter plan`;
-          else if (planLabel === 'pro') activePlanSpan.innerHTML = `✨ Active: Pro plan`;
-          else if (planLabel === 'elite') activePlanSpan.innerHTML = `✨ Active: Elite plan`;
-          currentPlan = planLabel;
+          unlockUI(result.plan);
         }
-      }, 45000);
+      }, 120000);
     }
 
-    // ---------- PROTECTED ACTIONS (requireAuth) ----------
+    // ---------- PROTECTED ACTIONS ----------
     function requireAuthAndAlert() {
       if (!isAuthenticated) {
-        alert("🔒 Subscription required. Choose a plan above to unlock.");
+        alert("🔒 Access locked. Please subscribe to continue.");
         return false;
       }
       return true;
     }
 
-    // Score & revenue logic
     function handleAddScore() {
       if (!requireAuthAndAlert()) return;
       localScore += 10;
       updateStatsUI();
+      localStorage.setItem('northsky_score', localScore);
     }
 
     function handleRouteLead() {
@@ -545,92 +479,87 @@
       if (localScore >= 80) {
         localRevenue += 75;
         updateStatsUI();
-        // give subtle feedback
-        const leadBtn = document.getElementById('routeLeadBtn');
-        const originalText = leadBtn.innerText;
-        leadBtn.innerText = '✅ Lead routed! +$75';
-        setTimeout(() => { if(leadBtn) leadBtn.innerText = originalText; }, 1200);
+        localStorage.setItem('northsky_revenue', localRevenue);
+        const btn = document.getElementById('routeLeadBtn');
+        const original = btn.innerText;
+        btn.innerText = '✅ +$75 routed!';
+        setTimeout(() => { btn.innerText = original; }, 1200);
       } else {
-        alert(`Need 80+ score to route lead. Current score: ${localScore}`);
+        alert(`Need 80+ score to route lead. Current: ${localScore}`);
       }
     }
 
-    // offers signup (requires active subscription)
     async function handleOfferSignup() {
       if (!requireAuthAndAlert()) return;
       const email = offerEmail.value.trim();
       const name = offerName.value.trim();
       if (!email || !name) {
-        offerFeedback.innerText = '⚠️ Please fill email and name.';
-        offerFeedback.style.color = '#f97316';
-        setTimeout(() => { offerFeedback.innerText = ''; }, 2000);
+        offerFeedback.innerText = '❌ Email and name required.';
         return;
       }
       if (!email.includes('@')) {
-        offerFeedback.innerText = '❌ Invalid email address';
+        offerFeedback.innerText = '❌ Invalid email address.';
         return;
       }
-      offerFeedback.innerText = '⏳ Sending ...';
+      offerFeedback.innerText = '⏳ Submitting...';
       try {
         const token = localStorage.getItem('ns_subscription_token');
-        const response = await fetch(`${API_BASE}/api/offers-signup`, {
+        const response = await fetch(`${API_BASE}/api/offer-signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, name, plan: currentPlan, subscriptionToken: token })
+          body: JSON.stringify({ email, name, userId: token })
         });
         if (response.ok) {
-          offerFeedback.innerText = '🎉 Signed up! You’ll receive premium offers.';
-          offerFeedback.style.color = '#4ade80';
+          offerFeedback.innerText = '✅ Signed up for offers!';
           offerEmail.value = '';
           offerName.value = '';
         } else {
-          offerFeedback.innerText = '⚠️ Server issue, but interest recorded.';
+          offerFeedback.innerText = '⚠️ Server error, try again.';
         }
       } catch (err) {
-        offerFeedback.innerText = '⚠️ Demo mode: offer registered locally.';
-        console.warn('offer endpoint not implemented', err);
+        offerFeedback.innerText = '⚠️ Network error. Please try later.';
       }
-      setTimeout(() => {
-        if(offerFeedback.innerText.includes('Signed') || offerFeedback.innerText.includes('mode')) 
-          setTimeout(() => { offerFeedback.innerText = ''; }, 2000);
-      }, 1800);
+      setTimeout(() => { if(offerFeedback.innerText !== '') offerFeedback.innerText = ''; }, 3000);
     }
 
-    // ---------- CHECKOUT (Stripe-like) ----------
+    // ---------- CHECKOUT (LIVE) ----------
     async function handleSubscribe(plan) {
       try {
         const response = await fetch(`${API_BASE}/api/create-checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan })
+          body: JSON.stringify({
+            plan: plan,
+            successUrl: `${window.location.origin}?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: window.location.origin,
+            userId: localStorage.getItem('ns_user_id') || 'anonymous'
+          })
         });
         const data = await response.json();
         if (data.url) {
-          // redirect to payment page (Stripe / custom)
+          // Redirect to Stripe Checkout (live payment)
           window.location.href = data.url;
         } else {
-          alert('Checkout error: no redirect URL');
+          alert('Payment initiation failed. Please contact support.');
         }
       } catch (err) {
         console.error(err);
-        alert('Cannot connect to payment server. Ensure backend implements /api/create-checkout');
+        alert('Error connecting to payment server. Please try again.');
       }
     }
 
-    // ---------- SIGN OUT (clear local session) ----------
     function signOut() {
       localStorage.removeItem('ns_subscription_token');
-      lockUI('manual_signout');
+      lockUI();
       localScore = 0;
       localRevenue = 0;
       updateStatsUI();
-      // clear any UI plan display
-      activePlanSpan.innerText = '⚡ No active plan';
-      offerFeedback.innerText = '';
-      alert('Session cleared. Dashboard locked. Resubscribe to access.');
+      localStorage.removeItem('northsky_score');
+      localStorage.removeItem('northsky_revenue');
+      alert('Session cleared. Dashboard locked.');
     }
 
-    // ---------- RESTORE LOCAL SCORE/REVENUE (optional persistence) ----------
+    // ---------- PERSIST LOCAL PROGRESS ----------
     function loadLocalStats() {
       const savedScore = localStorage.getItem('northsky_score');
       const savedRevenue = localStorage.getItem('northsky_revenue');
@@ -638,70 +567,32 @@
       if (savedRevenue !== null) localRevenue = parseInt(savedRevenue) || 0;
       updateStatsUI();
     }
-    function persistLocalStats() {
-      localStorage.setItem('northsky_score', localScore);
-      localStorage.setItem('northsky_revenue', localRevenue);
-    }
-    
-    // Intercept score/revenue changes to persist
-    const originalUpdateStats = updateStatsUI;
-    window.updateStatsUI = function() {
-      originalUpdateStats();
-      persistLocalStats();
-    };
-    updateStatsUI = function() {
-      originalUpdateStats();
-      persistLocalStats();
-    }.bind(this);
-    
-    // re-bind to keep persistence
-    function patchStats() {
-      const orig = updateStatsUI;
-      window.updateStatsUI = function() {
-        orig();
-        persistLocalStats();
-      };
-      updateStatsUI();
-    }
-    
-    // ---------- EVENT LISTENERS ----------
+
+    // ---------- EVENT BINDING ----------
     function bindEvents() {
-      // pricing buttons
       document.querySelectorAll('.btn-buy').forEach(btn => {
-        btn.removeEventListener('click', (window as any).__buyHandler);
+        btn.removeEventListener('click', window.__buyHandler);
         const handler = () => {
           const plan = btn.getAttribute('data-plan');
           if (plan) handleSubscribe(plan);
         };
         btn.addEventListener('click', handler);
-        (window as any).__buyHandler = handler;
+        window.__buyHandler = handler;
       });
-      
-      if (addScoreBtn) addScoreBtn.onclick = () => { handleAddScore(); persistLocalStats(); };
-      if (routeLeadBtn) routeLeadBtn.onclick = () => { handleRouteLead(); persistLocalStats(); };
-      if (submitOfferBtn) submitOfferBtn.onclick = (e) => { e.preventDefault(); handleOfferSignup(); };
-      if (signOutBtn) signOutBtn.onclick = () => signOut();
+      addScoreBtn.onclick = handleAddScore;
+      routeLeadBtn.onclick = handleRouteLead;
+      submitOfferBtn.onclick = (e) => { e.preventDefault(); handleOfferSignup(); };
+      signOutBtn.onclick = signOut;
     }
-    
-    // ---------- INITIAL BOOTSTRAP ----------
+
+    // ---------- INIT ----------
     async function init() {
       bindEvents();
       loadLocalStats();
       await verifyAccessAndUnlock();
       startPeriodicRevalidation();
-      
-      // Edge: if unlocked but user signed out somewhere else? double-check after 2 sec
-      setTimeout(async () => {
-        const token = localStorage.getItem('ns_subscription_token');
-        if (!token && isAuthenticated) lockUI('stale');
-        else if (token && !isAuthenticated) await verifyAccessAndUnlock();
-      }, 800);
     }
-    
-    // offer feedback clear on input
-    if(offerEmail) offerEmail.addEventListener('focus', () => { if(offerFeedback) offerFeedback.innerText = ''; });
-    if(offerName) offerName.addEventListener('focus', () => { if(offerFeedback) offerFeedback.innerText = ''; });
-    
+
     init();
   })();
 </script>
