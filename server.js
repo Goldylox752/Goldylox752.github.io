@@ -3,7 +3,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
-const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 
 dotenv.config();
@@ -11,7 +10,7 @@ dotenv.config();
 const app = express();
 
 /* =========================
-   CORE CLIENTS
+   CLIENTS
 ========================= */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -28,15 +27,14 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 /* =========================
-   HEALTH CHECK
+   HEALTH
 ========================= */
 app.get("/", (req, res) => {
-  res.send("NorthSky API running");
+  res.send("NorthSky API Running");
 });
 
 /* =========================
-   STRIPE CHECKOUT SESSION
-   (ONLY PAYMENT FLOW)
+   CREATE STRIPE CHECKOUT
 ========================= */
 const PLAN_PRICE_IDS = {
   starter: process.env.STRIPE_STARTER_PRICE_ID,
@@ -61,7 +59,7 @@ app.post("/api/create-checkout", async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: successUrl,
+      success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
       metadata: {
         plan,
@@ -69,7 +67,7 @@ app.post("/api/create-checkout", async (req, res) => {
       },
     });
 
-    return res.json({ url: session.url });
+    res.json({ url: session.url });
   } catch (err) {
     console.error("Checkout error:", err);
     res.status(500).json({ error: err.message });
@@ -77,8 +75,7 @@ app.post("/api/create-checkout", async (req, res) => {
 });
 
 /* =========================
-   STRIPE WEBHOOK
-   (ONLY TRUSTED SOURCE)
+   STRIPE WEBHOOK (SOURCE OF TRUTH)
 ========================= */
 app.post(
   "/webhook/stripe",
@@ -101,16 +98,14 @@ app.post(
 
     try {
       switch (event.type) {
+
         case "checkout.session.completed": {
           const session = event.data.object;
 
-          const plan = session.metadata?.plan || "starter";
-          const userId = session.metadata?.userId || "anonymous";
-
           await supabase.from("verified_sessions").upsert({
             session_id: session.id,
-            user_id: userId,
-            plan,
+            user_id: session.metadata?.userId || "anonymous",
+            plan: session.metadata?.plan || "starter",
             expires_at: new Date(
               Date.now() + 30 * 24 * 60 * 60 * 1000
             ).toISOString(),
@@ -121,32 +116,20 @@ app.post(
           break;
         }
 
-        case "customer.subscription.deleted": {
-          const session = event.data.object;
-
-          await supabase
-            .from("verified_sessions")
-            .delete()
-            .eq("session_id", session.id);
-
-          console.log("❌ Subscription cancelled:", session.id);
-          break;
-        }
-
         default:
           console.log("Unhandled event:", event.type);
       }
 
       res.json({ received: true });
     } catch (err) {
-      console.error("Webhook handler error:", err);
-      res.status(500).send("Webhook processing failed");
+      console.error("Webhook error:", err);
+      res.status(500).send("Webhook failed");
     }
   }
 );
 
 /* =========================
-   VERIFY ACCESS (FRONTEND)
+   VERIFY ACCESS (FRONTEND ONLY CHECKS THIS)
 ========================= */
 app.post("/api/verify", async (req, res) => {
   try {
@@ -168,7 +151,7 @@ app.post("/api/verify", async (req, res) => {
       return res.json({ valid: false });
     }
 
-    return res.json({
+    res.json({
       valid: !!data,
       plan: data?.plan || null,
     });
@@ -179,7 +162,7 @@ app.post("/api/verify", async (req, res) => {
 });
 
 /* =========================
-   EVENT LOGGING (OPTIONAL)
+   EVENT LOGGER (OPTIONAL)
 ========================= */
 app.post("/api/event", (req, res) => {
   console.log("Event:", req.body);
@@ -192,5 +175,5 @@ app.post("/api/event", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 NorthSky API running on port ${PORT}`);
+  console.log(`🚀 NorthSky running on port ${PORT}`);
 });
