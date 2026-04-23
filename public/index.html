@@ -63,6 +63,11 @@ button {
   cursor:pointer;
 }
 
+button:disabled {
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
 .dashboard {
   background:#111827;
   padding:20px;
@@ -177,11 +182,6 @@ input {
 </div>
 
 <script>
-/**
- * =========================
- * STATE
- * =========================
- */
 let state = {
   score: 0,
   revenue: 0,
@@ -192,29 +192,29 @@ let state = {
 const el = (id) => document.getElementById(id);
 
 /**
- * =========================
- * VERIFY SESSION
- * =========================
+ * VERIFY USER (SAFE FAIL)
  */
 async function verify(email) {
-  const r = await fetch("/api/verify-session", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email })
-  });
+  try {
+    const r = await fetch("/api/verify-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
 
-  return await r.json();
+    return await r.json();
+  } catch (err) {
+    console.warn("verify-session missing or failed");
+    return { valid: false };
+  }
 }
 
-/**
- * SAVE EMAIL
- */
 function saveEmail(email) {
   localStorage.setItem("email", email);
 }
 
 /**
- * UNLOCK CHECK
+ * UNLOCK
  */
 async function checkUnlock() {
   const email = localStorage.getItem("email");
@@ -224,7 +224,7 @@ async function checkUnlock() {
 
   if (data.valid) {
     state.auth = true;
-    state.plan = data.plan;
+    state.plan = data.plan || "starter";
 
     el("app").classList.remove("locked-ui");
     el("overlay").classList.add("hidden");
@@ -232,23 +232,24 @@ async function checkUnlock() {
     el("status").innerText = "ACTIVE";
     el("status").className = "badge active";
 
-    el("plan").innerText = data.plan;
+    el("plan").innerText = state.plan;
   }
 }
 
 /**
- * =========================
- * STRIPE CHECKOUT
- * =========================
+ * STRIPE CHECKOUT (FIXED)
  */
-async function subscribe(plan) {
+async function subscribe(plan, btn) {
   try {
+    btn.disabled = true;
+    btn.innerText = "Loading...";
+
     const email = prompt("Enter email for subscription:");
     if (!email) return;
 
     saveEmail(email);
 
-    const r = await fetch("/api/create-checkout-session", {
+    const r = await fetch("/api/stripe/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plan })
@@ -256,27 +257,34 @@ async function subscribe(plan) {
 
     const data = await r.json();
 
+    if (!r.ok) {
+      console.error(data);
+      alert(data.error || "Checkout failed");
+      return;
+    }
+
     if (data.url) {
       window.location.href = data.url;
-    } else {
-      alert("Checkout failed");
     }
 
   } catch (err) {
     console.error(err);
     alert("Payment error");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Subscribe";
   }
 }
 
 /**
- * BUTTONS
+ * BUTTONS (FIXED)
  */
 document.querySelectorAll(".buy").forEach(btn => {
-  btn.addEventListener("click", () => subscribe(btn.dataset.plan));
+  btn.addEventListener("click", () => subscribe(btn.dataset.plan, btn));
 });
 
 /**
- * DASHBOARD ACTIONS
+ * DASHBOARD
  */
 el("addScore").onclick = () => {
   if (!state.auth) return;
@@ -290,25 +298,25 @@ el("routeLead").onclick = () => {
   el("rev").innerText = state.revenue;
 };
 
-/**
- * LEAD SUBMIT
- */
 el("offer").onclick = () => {
   if (!state.auth) return;
+
+  const email = el("email").value;
+  const name = el("name").value;
+
+  if (!email || !name) {
+    alert("Fill all fields");
+    return;
+  }
+
   alert("Lead submitted successfully");
 };
 
-/**
- * LOGOUT
- */
 el("logout").onclick = () => {
   localStorage.clear();
   location.reload();
 };
 
-/**
- * INIT
- */
 checkUnlock();
 </script>
 
