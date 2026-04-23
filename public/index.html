@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NorthSky OS · SaaS Hub</title>
+<title>NorthSky OS · SaaS Platform</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -171,7 +171,7 @@ input {
   </div>
 
   <div class="footer">
-    © 2026 NorthSky OS · SaaS Engine
+    © 2026 NorthSky OS · SaaS Platform
   </div>
 
 </div>
@@ -193,7 +193,7 @@ const el = (id) => document.getElementById(id);
 
 /**
  * =========================
- * VERIFY FUNCTION
+ * VERIFY SESSION
  * =========================
  */
 async function verify(email) {
@@ -207,18 +207,14 @@ async function verify(email) {
 }
 
 /**
- * =========================
  * SAVE EMAIL
- * =========================
  */
 function saveEmail(email) {
   localStorage.setItem("email", email);
 }
 
 /**
- * =========================
- * CHECK UNLOCK
- * =========================
+ * UNLOCK CHECK
  */
 async function checkUnlock() {
   const email = localStorage.getItem("email");
@@ -242,14 +238,11 @@ async function checkUnlock() {
 
 /**
  * =========================
- * SUBSCRIBE FLOW
+ * STRIPE CHECKOUT
  * =========================
  */
-document.querySelectorAll(".buy").forEach(btn => {
-  btn.addEventListener("click", async () => {
-
-    const plan = btn.dataset.plan;
-
+async function subscribe(plan) {
+  try {
     const email = prompt("Enter email for subscription:");
     if (!email) return;
 
@@ -265,14 +258,25 @@ document.querySelectorAll(".buy").forEach(btn => {
 
     if (data.url) {
       window.location.href = data.url;
+    } else {
+      alert("Checkout failed");
     }
-  });
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment error");
+  }
+}
+
+/**
+ * BUTTONS
+ */
+document.querySelectorAll(".buy").forEach(btn => {
+  btn.addEventListener("click", () => subscribe(btn.dataset.plan));
 });
 
 /**
- * =========================
  * DASHBOARD ACTIONS
- * =========================
  */
 el("addScore").onclick = () => {
   if (!state.auth) return;
@@ -287,26 +291,15 @@ el("routeLead").onclick = () => {
 };
 
 /**
- * =========================
  * LEAD SUBMIT
- * =========================
  */
 el("offer").onclick = () => {
   if (!state.auth) return;
-
-  const email = el("email").value;
-  const name = el("name").value;
-
-  alert("Lead submitted: " + name + " / " + email);
-
-  el("email").value = "";
-  el("name").value = "";
+  alert("Lead submitted successfully");
 };
 
 /**
- * =========================
  * LOGOUT
- * =========================
  */
 el("logout").onclick = () => {
   localStorage.clear();
@@ -314,9 +307,7 @@ el("logout").onclick = () => {
 };
 
 /**
- * =========================
  * INIT
- * =========================
  */
 checkUnlock();
 </script>
