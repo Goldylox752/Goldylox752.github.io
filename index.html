@@ -4,176 +4,317 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>NorthSky OS · Revenue Hub</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-/* ===== YOUR ORIGINAL STYLES (UNCHANGED FOR BREVITY) ===== */
-* { margin:0; padding:0; box-sizing:border-box; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-body {
-  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-  font-family: 'Inter', sans-serif;
-  color: #f1f5f9;
-  min-height: 100vh;
-  padding: 24px 16px 48px;
-}
+  body {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+    font-family: 'Inter', sans-serif;
+    color: #f1f5f9;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
 
-.container { max-width: 1280px; margin: 0 auto; }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
 
-.nav-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:16px;
-  margin-bottom:32px;
-  background:rgba(15,23,42,0.7);
-  padding:16px 24px;
-  border-radius:32px;
-  border:1px solid rgba(37,99,235,0.3);
-}
+  /* navigation */
+  .nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+    background: rgba(15, 23, 42, 0.7);
+    padding: 16px 24px;
+    border-radius: 32px;
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    backdrop-filter: blur(4px);
+  }
 
-.logo h2 {
-  font-weight:700;
-  background:linear-gradient(135deg,#fff,#60a5fa);
-  -webkit-background-clip:text;
-  color:transparent;
-}
+  .logo h2 {
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #60a5fa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+  }
 
-.badge-status { background:#1e293b; padding:6px 16px; border-radius:40px; }
-.badge-status.locked { background:#7f1a1a; color:#fecaca; }
-.badge-status.active { background:#14532d; color:#bbf7d0; }
+  .badge-status {
+    background: #1e293b;
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
 
-.pricing-grid { display:flex; flex-wrap:wrap; gap:24px; margin-bottom:48px; justify-content:center; }
+  .badge-status.locked {
+    background: #7f1a1a;
+    color: #fecaca;
+    box-shadow: 0 0 0 1px #ef444430;
+  }
 
-.price-card {
-  flex:1;
-  min-width:220px;
-  background:#0f172a;
-  border-radius:32px;
-  padding:28px 20px;
-  text-align:center;
-  border:1px solid #1e293b;
-}
+  .badge-status.active {
+    background: #14532d;
+    color: #bbf7d0;
+    box-shadow: 0 0 0 1px #22c55e30;
+  }
 
-.price { font-size:2rem; font-weight:800; color:#38bdf8; margin:12px 0; }
+  .sign-out-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #334155;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: 0.2s;
+  }
 
-.btn-buy {
-  background:#2563eb;
-  border:none;
-  padding:12px 24px;
-  border-radius:40px;
-  font-weight:700;
-  color:white;
-  cursor:pointer;
-  width:100%;
-}
+  .sign-out-btn:hover {
+    background: #ef444420;
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
 
-.dashboard-wrapper {
-  position:relative;
-  background:#0a0f1e;
-  border-radius:36px;
-  border:1px solid #1e293b;
-  min-height:460px;
-}
+  /* pricing grid */
+  .pricing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 48px;
+    justify-content: center;
+  }
 
-.dashboard-content { padding:32px 28px; }
+  .price-card {
+    flex: 1;
+    min-width: 220px;
+    background: #0f172a;
+    border-radius: 32px;
+    padding: 28px 20px;
+    text-align: center;
+    border: 1px solid #1e293b;
+    transition: transform 0.2s, border-color 0.2s;
+  }
 
-/* 🔒 HARD LOCK (important change) */
-.locked-dashboard {
-  filter:blur(12px);
-  pointer-events:none;
-  user-select:none;
-}
+  .price-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-3px);
+  }
 
-.overlay-lock {
-  position:absolute;
-  inset:0;
-  background:rgba(2,6,23,0.92);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
+  .price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin: 12px 0;
+  }
 
-.overlay-lock.hidden { display:none; }
+  .btn-buy {
+    background: #2563eb;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s, transform 0.1s;
+  }
 
-.lock-card {
-  background:#0f172a;
-  padding:28px;
-  border-radius:32px;
-  border:1px solid #334155;
-  max-width:340px;
-}
+  .btn-buy:hover {
+    background: #1d4ed8;
+  }
 
-.stats-panel {
-  display:flex;
-  gap:28px;
-  background:#0f172a;
-  padding:20px;
-  border-radius:28px;
-  margin-bottom:28px;
-}
+  /* dashboard container */
+  .dashboard-wrapper {
+    position: relative;
+    background: #0a0f1e;
+    border-radius: 36px;
+    border: 1px solid #1e293b;
+    min-height: 460px;
+    overflow: hidden;
+  }
 
-.stat-value {
-  font-size:2.5rem;
-  font-weight:800;
-  color:#facc15;
-}
+  .dashboard-content {
+    padding: 32px 28px;
+    transition: filter 0.2s;
+  }
 
-.btn-action {
-  background:#1e293b;
-  border:none;
-  padding:12px 24px;
-  border-radius:40px;
-  font-weight:600;
-  color:white;
-  cursor:pointer;
-}
+  .locked-dashboard {
+    filter: blur(12px);
+    pointer-events: none;
+    user-select: none;
+  }
 
-.btn-action.primary { background:#3b82f6; }
-.btn-action.warning { background:#ea580c; }
+  .overlay-lock {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.94);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 10;
+    transition: opacity 0.2s;
+  }
 
-.offer-signup {
-  margin-top:24px;
-  background:#020617;
-  border-radius:28px;
-  padding:20px;
-}
+  .overlay-lock.hidden {
+    display: none;
+  }
 
-.offer-input-group {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
+  .lock-card {
+    background: #0f172a;
+    padding: 32px;
+    border-radius: 32px;
+    border: 1px solid #334155;
+    max-width: 340px;
+    box-shadow: 0 25px 40px -12px black;
+  }
 
-.offer-input-group input {
-  flex:1;
-  padding:12px 18px;
-  border-radius:60px;
-  background:#0f172a;
-  border:1px solid #334155;
-  color:white;
-}
+  .lock-card h2 {
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #facc15, #f97316);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-.btn-offer {
-  background:#10b981;
-  border:none;
-  padding:12px 28px;
-  border-radius:60px;
-  font-weight:700;
-}
+  .stats-panel {
+    display: flex;
+    gap: 28px;
+    background: #0f172a;
+    padding: 24px 28px;
+    border-radius: 28px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #facc15;
+    letter-spacing: 1px;
+  }
+
+  .btn-action {
+    background: #1e293b;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-right: 12px;
+    margin-bottom: 12px;
+  }
+
+  .btn-action.primary {
+    background: #3b82f6;
+  }
+
+  .btn-action.warning {
+    background: #ea580c;
+  }
+
+  .btn-action:hover {
+    filter: brightness(1.05);
+    transform: scale(0.98);
+  }
+
+  .offer-signup {
+    margin-top: 32px;
+    background: #020617;
+    border-radius: 28px;
+    padding: 24px;
+    border: 1px solid #1e293b;
+  }
+
+  .offer-input-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .offer-input-group input {
+    flex: 1;
+    padding: 12px 18px;
+    border-radius: 60px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    font-size: 0.9rem;
+  }
+
+  .offer-input-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+
+  .btn-offer {
+    background: #10b981;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+  }
+
+  .plan-badge {
+    display: inline-block;
+    background: #1e293b;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  .loading-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #60a5fa;
+    margin-left: 8px;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.3; transform: scale(0.8);}
+    100% { opacity: 1; transform: scale(1.2);}
+  }
+
+  hr {
+    border-color: #1e293b;
+    margin: 12px 0;
+  }
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
   <div class="nav-header">
     <div class="logo"><h2>☁️ NorthSky OS · Revenue Hub</h2></div>
-    <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED</div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <div id="globalStatusBadge" class="badge-status locked">🔒 LOCKED</div>
+      <button id="signOutBtn" class="sign-out-btn" title="Clear session & lock dashboard">🚪 Sign out</button>
+    </div>
   </div>
 
   <div class="pricing-grid">
@@ -183,137 +324,386 @@ body {
   </div>
 
   <div class="dashboard-wrapper">
-
     <div id="dashboardContent" class="dashboard-content locked-dashboard">
-
-      <h1>📊 Revenue Command Center</h1>
-      <p>Requires active subscription.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+        <h1>📊 Revenue Command Center</h1>
+        <div id="activePlanDisplay" class="plan-badge">⚡ No active plan</div>
+      </div>
+      <p style="margin-bottom: 24px; opacity: 0.8;">Track performance, route leads & unlock premium insights.</p>
 
       <div class="stats-panel">
         <div>
-          <div>🏆 SCORE</div>
+          <div>🏆 SCORE (engagement)</div>
           <div class="stat-value" id="scoreDisplay">0</div>
+          <div style="font-size: 0.75rem; margin-top: 6px;">+10 per click</div>
         </div>
         <div>
-          <div>💰 REVENUE</div>
+          <div>💰 REVENUE (simulated)</div>
           <div class="stat-value" id="revenueDisplay">0</div>
+          <div style="font-size: 0.75rem;">Route lead needs 80+ score</div>
         </div>
       </div>
 
-      <button class="btn-action primary" id="addScoreBtn">+10 Score</button>
-      <button class="btn-action warning" id="routeLeadBtn">🚀 Route Lead</button>
+      <div>
+        <button class="btn-action primary" id="addScoreBtn">+10 Score</button>
+        <button class="btn-action warning" id="routeLeadBtn">🚀 Route Lead → +$75</button>
+      </div>
 
       <div class="offer-signup">
-        <h3>Offers</h3>
+        <h3>📬 Exclusive Offers</h3>
+        <p style="font-size: 0.85rem; margin-top: 6px;">Get partner deals — only for active subscribers.</p>
         <div class="offer-input-group">
-          <input type="email" id="offerEmail" placeholder="Email">
-          <input type="text" id="offerName" placeholder="Name">
-          <button class="btn-offer" id="submitOfferBtn">Sign up</button>
+          <input type="email" id="offerEmail" placeholder="Email address">
+          <input type="text" id="offerName" placeholder="Full name">
+          <button class="btn-offer" id="submitOfferBtn">Sign up for offers</button>
         </div>
+        <div id="offerFeedback" style="font-size: 0.75rem; margin-top: 12px; color: #94a3b8;"></div>
       </div>
-
     </div>
 
     <div id="lockOverlay" class="overlay-lock">
       <div class="lock-card">
         <h2>🔐 Access Locked</h2>
-        <p>Subscription required to continue.</p>
+        <p>Subscription required to continue.<br>Choose a plan above to unlock the Revenue Hub.</p>
+        <div style="margin-top: 20px; font-size: 0.8rem;">✨ Secure server verification</div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-const API_BASE = window.location.origin;
+  (function() {
+    // ---------- CONFIG ----------
+    const API_BASE = window.location.origin;  // expects /api/* endpoints
 
-/* 🔒 SERVER-ONLY AUTH (NO LOCAL BYPASS) */
-let isAuthenticated = false;
+    // DOM elements
+    const dashboardDiv = document.getElementById('dashboardContent');
+    const lockOverlay = document.getElementById('lockOverlay');
+    const statusBadge = document.getElementById('globalStatusBadge');
+    const activePlanSpan = document.getElementById('activePlanDisplay');
+    const scoreEl = document.getElementById('scoreDisplay');
+    const revenueEl = document.getElementById('revenueDisplay');
+    const addScoreBtn = document.getElementById('addScoreBtn');
+    const routeLeadBtn = document.getElementById('routeLeadBtn');
+    const submitOfferBtn = document.getElementById('submitOfferBtn');
+    const offerEmail = document.getElementById('offerEmail');
+    const offerName = document.getElementById('offerName');
+    const offerFeedback = document.getElementById('offerFeedback');
+    const signOutBtn = document.getElementById('signOutBtn');
 
-function lockUI() {
-  document.getElementById("dashboardContent").classList.add("locked-dashboard");
-  document.getElementById("lockOverlay").classList.remove("hidden");
-  document.getElementById("globalStatusBadge").innerText = "🔒 LOCKED";
-  isAuthenticated = false;
-}
+    // UI state
+    let isAuthenticated = false;
+    let currentPlan = null;       // 'starter', 'pro', 'elite'
+    let localScore = 0;
+    let localRevenue = 0;
 
-function unlockUI() {
-  document.getElementById("dashboardContent").classList.remove("locked-dashboard");
-  document.getElementById("lockOverlay").classList.add("hidden");
-  document.getElementById("globalStatusBadge").innerText = "✅ ACTIVE";
-  isAuthenticated = true;
-}
+    // Helper: update UI numbers
+    function updateStatsUI() {
+      scoreEl.innerText = localScore;
+      revenueEl.innerText = localRevenue;
+    }
 
-/* 🔐 HARD SERVER VERIFY */
-async function verifyAccess() {
-  const token = localStorage.getItem("ns_subscription_token");
-
-  if (!token) return lockUI();
-
-  try {
-    const res = await fetch(`${API_BASE}/api/verify`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
+    // ---------- LOCK / UNLOCK ----------
+    function lockUI(reason = 'unauthorized') {
+      dashboardDiv.classList.add('locked-dashboard');
+      lockOverlay.classList.remove('hidden');
+      statusBadge.innerText = '🔒 LOCKED';
+      statusBadge.className = 'badge-status locked';
+      activePlanSpan.innerText = '⚡ No active plan';
+      isAuthenticated = false;
+      currentPlan = null;
+      // clear any leftover token if invalid session (optional but safe)
+      if (reason === 'invalid_token') {
+        localStorage.removeItem('ns_subscription_token');
       }
-    });
+    }
 
-    const data = await res.json();
+    function unlockUI(plan = 'pro') {
+      dashboardDiv.classList.remove('locked-dashboard');
+      lockOverlay.classList.add('hidden');
+      statusBadge.innerText = '✅ ACTIVE SUBSCRIPTION';
+      statusBadge.className = 'badge-status active';
+      let planLabel = '';
+      if (plan === 'starter') planLabel = 'Starter';
+      else if (plan === 'pro') planLabel = 'Pro';
+      else if (plan === 'elite') planLabel = 'Elite';
+      else planLabel = 'Premium';
+      activePlanSpan.innerHTML = `✨ Active: ${planLabel} plan`;
+      currentPlan = plan;
+      isAuthenticated = true;
+    }
 
-    if (data?.valid) unlockUI();
-    else lockUI();
+    // ---------- CORE VERIFICATION (server-only) ----------
+    // verify session_id via POST /api/verify
+    async function verifySessionWithBackend(sessionId) {
+      if (!sessionId) return false;
+      try {
+        const response = await fetch(`${API_BASE}/api/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId })
+        });
+        const data = await response.json();
+        if (data && data.valid === true) {
+          // server confirms valid subscription
+          return { valid: true, plan: data.plan || 'pro' };
+        }
+        return { valid: false };
+      } catch (err) {
+        console.warn('verify backend error:', err);
+        return { valid: false };
+      }
+    }
 
-  } catch (err) {
-    lockUI();
-  }
-}
+    // Main access verification using stored token + optional query param
+    async function verifyAccessAndUnlock() {
+      // 1) check URL param? (after stripe redirect)
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionIdFromUrl = urlParams.get('session_id');
+      
+      if (sessionIdFromUrl && sessionIdFromUrl.length > 10) {
+        // attempt verification with fresh session_id
+        const result = await verifySessionWithBackend(sessionIdFromUrl);
+        if (result.valid) {
+          // store token & unlock
+          localStorage.setItem('ns_subscription_token', sessionIdFromUrl);
+          unlockUI(result.plan || 'pro');
+          // clean URL to remove session_id (avoids re-processing)
+          const cleanUrl = window.location.pathname + window.location.hash;
+          window.history.replaceState({}, document.title, cleanUrl);
+          return true;
+        } else {
+          // invalid session from URL - ignore, fallback to stored token
+          console.log("Session from URL invalid");
+        }
+      }
+      
+      // 2) Check localStorage token
+      const storedToken = localStorage.getItem('ns_subscription_token');
+      if (!storedToken) {
+        lockUI('no_token');
+        return false;
+      }
+      
+      const result = await verifySessionWithBackend(storedToken);
+      if (result.valid) {
+        unlockUI(result.plan || 'pro');
+        return true;
+      } else {
+        // token expired or invalid
+        localStorage.removeItem('ns_subscription_token');
+        lockUI('invalid_token');
+        return false;
+      }
+    }
 
-/* 💳 CHECKOUT */
-document.querySelectorAll(".btn-buy").forEach(btn => {
-  btn.onclick = async () => {
-    const plan = btn.dataset.plan;
+    // periodic re-validate (every 45 sec)
+    let revalidationInterval = null;
+    function startPeriodicRevalidation() {
+      if (revalidationInterval) clearInterval(revalidationInterval);
+      revalidationInterval = setInterval(async () => {
+        const token = localStorage.getItem('ns_subscription_token');
+        if (!token) {
+          if (isAuthenticated) lockUI('missing_token');
+          return;
+        }
+        const result = await verifySessionWithBackend(token);
+        if (!result.valid && isAuthenticated) {
+          localStorage.removeItem('ns_subscription_token');
+          lockUI('invalid_token');
+        } else if (result.valid && !isAuthenticated) {
+          unlockUI(result.plan || 'pro');
+        } else if (result.valid && isAuthenticated && result.plan && result.plan !== currentPlan) {
+          // update plan display if changed on backend
+          let planLabel = result.plan;
+          if (planLabel === 'starter') activePlanSpan.innerHTML = `✨ Active: Starter plan`;
+          else if (planLabel === 'pro') activePlanSpan.innerHTML = `✨ Active: Pro plan`;
+          else if (planLabel === 'elite') activePlanSpan.innerHTML = `✨ Active: Elite plan`;
+          currentPlan = planLabel;
+        }
+      }, 45000);
+    }
 
-    const res = await fetch(`${API_BASE}/api/create-checkout`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ plan })
-    });
+    // ---------- PROTECTED ACTIONS (requireAuth) ----------
+    function requireAuthAndAlert() {
+      if (!isAuthenticated) {
+        alert("🔒 Subscription required. Choose a plan above to unlock.");
+        return false;
+      }
+      return true;
+    }
 
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  };
-});
+    // Score & revenue logic
+    function handleAddScore() {
+      if (!requireAuthAndAlert()) return;
+      localScore += 10;
+      updateStatsUI();
+    }
 
-/* 🚫 PROTECTED ACTIONS */
-let score = 0;
-let revenue = 0;
+    function handleRouteLead() {
+      if (!requireAuthAndAlert()) return;
+      if (localScore >= 80) {
+        localRevenue += 75;
+        updateStatsUI();
+        // give subtle feedback
+        const leadBtn = document.getElementById('routeLeadBtn');
+        const originalText = leadBtn.innerText;
+        leadBtn.innerText = '✅ Lead routed! +$75';
+        setTimeout(() => { if(leadBtn) leadBtn.innerText = originalText; }, 1200);
+      } else {
+        alert(`Need 80+ score to route lead. Current score: ${localScore}`);
+      }
+    }
 
-function requireAuth() {
-  if (!isAuthenticated) {
-    alert("Locked");
-    return false;
-  }
-  return true;
-}
+    // offers signup (requires active subscription)
+    async function handleOfferSignup() {
+      if (!requireAuthAndAlert()) return;
+      const email = offerEmail.value.trim();
+      const name = offerName.value.trim();
+      if (!email || !name) {
+        offerFeedback.innerText = '⚠️ Please fill email and name.';
+        offerFeedback.style.color = '#f97316';
+        setTimeout(() => { offerFeedback.innerText = ''; }, 2000);
+        return;
+      }
+      if (!email.includes('@')) {
+        offerFeedback.innerText = '❌ Invalid email address';
+        return;
+      }
+      offerFeedback.innerText = '⏳ Sending ...';
+      try {
+        const token = localStorage.getItem('ns_subscription_token');
+        const response = await fetch(`${API_BASE}/api/offers-signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, plan: currentPlan, subscriptionToken: token })
+        });
+        if (response.ok) {
+          offerFeedback.innerText = '🎉 Signed up! You’ll receive premium offers.';
+          offerFeedback.style.color = '#4ade80';
+          offerEmail.value = '';
+          offerName.value = '';
+        } else {
+          offerFeedback.innerText = '⚠️ Server issue, but interest recorded.';
+        }
+      } catch (err) {
+        offerFeedback.innerText = '⚠️ Demo mode: offer registered locally.';
+        console.warn('offer endpoint not implemented', err);
+      }
+      setTimeout(() => {
+        if(offerFeedback.innerText.includes('Signed') || offerFeedback.innerText.includes('mode')) 
+          setTimeout(() => { offerFeedback.innerText = ''; }, 2000);
+      }, 1800);
+    }
 
-document.getElementById("addScoreBtn").onclick = () => {
-  if (!requireAuth()) return;
-  score += 10;
-  document.getElementById("scoreDisplay").innerText = score;
-};
+    // ---------- CHECKOUT (Stripe-like) ----------
+    async function handleSubscribe(plan) {
+      try {
+        const response = await fetch(`${API_BASE}/api/create-checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan })
+        });
+        const data = await response.json();
+        if (data.url) {
+          // redirect to payment page (Stripe / custom)
+          window.location.href = data.url;
+        } else {
+          alert('Checkout error: no redirect URL');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Cannot connect to payment server. Ensure backend implements /api/create-checkout');
+      }
+    }
 
-document.getElementById("routeLeadBtn").onclick = () => {
-  if (!requireAuth()) return;
-  if (score >= 80) {
-    revenue += 75;
-    document.getElementById("revenueDisplay").innerText = revenue;
-  }
-};
+    // ---------- SIGN OUT (clear local session) ----------
+    function signOut() {
+      localStorage.removeItem('ns_subscription_token');
+      lockUI('manual_signout');
+      localScore = 0;
+      localRevenue = 0;
+      updateStatsUI();
+      // clear any UI plan display
+      activePlanSpan.innerText = '⚡ No active plan';
+      offerFeedback.innerText = '';
+      alert('Session cleared. Dashboard locked. Resubscribe to access.');
+    }
 
-verifyAccess();
-setInterval(verifyAccess, 30000);
+    // ---------- RESTORE LOCAL SCORE/REVENUE (optional persistence) ----------
+    function loadLocalStats() {
+      const savedScore = localStorage.getItem('northsky_score');
+      const savedRevenue = localStorage.getItem('northsky_revenue');
+      if (savedScore !== null) localScore = parseInt(savedScore) || 0;
+      if (savedRevenue !== null) localRevenue = parseInt(savedRevenue) || 0;
+      updateStatsUI();
+    }
+    function persistLocalStats() {
+      localStorage.setItem('northsky_score', localScore);
+      localStorage.setItem('northsky_revenue', localRevenue);
+    }
+    
+    // Intercept score/revenue changes to persist
+    const originalUpdateStats = updateStatsUI;
+    window.updateStatsUI = function() {
+      originalUpdateStats();
+      persistLocalStats();
+    };
+    updateStatsUI = function() {
+      originalUpdateStats();
+      persistLocalStats();
+    }.bind(this);
+    
+    // re-bind to keep persistence
+    function patchStats() {
+      const orig = updateStatsUI;
+      window.updateStatsUI = function() {
+        orig();
+        persistLocalStats();
+      };
+      updateStatsUI();
+    }
+    
+    // ---------- EVENT LISTENERS ----------
+    function bindEvents() {
+      // pricing buttons
+      document.querySelectorAll('.btn-buy').forEach(btn => {
+        btn.removeEventListener('click', (window as any).__buyHandler);
+        const handler = () => {
+          const plan = btn.getAttribute('data-plan');
+          if (plan) handleSubscribe(plan);
+        };
+        btn.addEventListener('click', handler);
+        (window as any).__buyHandler = handler;
+      });
+      
+      if (addScoreBtn) addScoreBtn.onclick = () => { handleAddScore(); persistLocalStats(); };
+      if (routeLeadBtn) routeLeadBtn.onclick = () => { handleRouteLead(); persistLocalStats(); };
+      if (submitOfferBtn) submitOfferBtn.onclick = (e) => { e.preventDefault(); handleOfferSignup(); };
+      if (signOutBtn) signOutBtn.onclick = () => signOut();
+    }
+    
+    // ---------- INITIAL BOOTSTRAP ----------
+    async function init() {
+      bindEvents();
+      loadLocalStats();
+      await verifyAccessAndUnlock();
+      startPeriodicRevalidation();
+      
+      // Edge: if unlocked but user signed out somewhere else? double-check after 2 sec
+      setTimeout(async () => {
+        const token = localStorage.getItem('ns_subscription_token');
+        if (!token && isAuthenticated) lockUI('stale');
+        else if (token && !isAuthenticated) await verifyAccessAndUnlock();
+      }, 800);
+    }
+    
+    // offer feedback clear on input
+    if(offerEmail) offerEmail.addEventListener('focus', () => { if(offerFeedback) offerFeedback.innerText = ''; });
+    if(offerName) offerName.addEventListener('focus', () => { if(offerFeedback) offerFeedback.innerText = ''; });
+    
+    init();
+  })();
 </script>
-
 </body>
 </html>
