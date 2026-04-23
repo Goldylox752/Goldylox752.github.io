@@ -1,3 +1,6 @@
+"dependencies": {
+  "stripe": "^14.0.0"
+}
 {
   "name": "north-sky-clean",
   "version": "1.0.0",
