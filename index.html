@@ -19,6 +19,7 @@ body {
   max-width:1100px;
   margin:auto;
   padding:20px;
+  padding-bottom:60px;
 }
 
 .nav {
@@ -86,6 +87,23 @@ button {
 }
 
 .hidden { display:none; }
+
+.footer {
+  margin-top:50px;
+  text-align:center;
+  font-size:13px;
+  color:#9ca3af;
+}
+
+.footer a {
+  color:#60a5fa;
+  text-decoration:none;
+  margin:0 8px;
+}
+
+.footer a:hover {
+  text-decoration:underline;
+}
 </style>
 </head>
 
@@ -140,12 +158,18 @@ button {
     </div>
   </div>
 
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>© 2026 NorthSky OS</p>
+    <a href="/privacy.html">Privacy Policy</a>
+  </div>
+
 </div>
 
 <script>
 (() => {
 
-const API = "https://YOUR_BACKEND_URL"; // 🔥 CHANGE THIS
+const API = "https://YOUR_BACKEND_URL";
 
 let state = {
   auth:false,
@@ -188,11 +212,7 @@ function load() {
 
 async function api(path,data={}) {
   try {
-    const r = await fetch(API+path,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(data)
-    });
+    const r = await fetch(API+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
     return await r.json();
   } catch {
     return {valid:false};
@@ -282,10 +302,7 @@ function logout() {
 }
 
 function bind() {
-  document.querySelectorAll(".buy").forEach(b=>{
-    b.onclick=()=>subscribe(b.dataset.plan);
-  });
-
+  document.querySelectorAll(".buy").forEach(b=>b.onclick=()=>subscribe(b.dataset.plan));
   el("addScore").onclick=addScore;
   el("routeLead").onclick=routeLead;
   el("offer").onclick=offer;
