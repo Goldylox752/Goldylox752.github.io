@@ -1,8 +1,11 @@
-const { data } = await supabase
-  .from("verified_sessions")
-  .select("*")
-  .eq("session_id", token)
-  .gt("expires_at", new Date().toISOString())
-  .maybeSingle();
+app.post('/api/webhook', rawBody, (req, res) => {
+  const event = stripe.webhooks.constructEvent(...);
 
-return { valid: !!data, plan: data?.plan };
+  if (event.type === 'checkout.session.completed') {
+    // mark user as active in DB
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    // revoke access
+  }
+});
