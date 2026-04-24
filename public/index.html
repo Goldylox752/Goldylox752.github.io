@@ -1,110 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NorthSky OS · SaaS Platform</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
 body {
-  margin:0;
+  margin: 0;
   font-family: Inter, sans-serif;
-  background:#0b1220;
-  color:#fff;
+  background: #0b1220;
+  color: #fff;
 }
 
 .container {
-  max-width:1000px;
-  margin:auto;
-  padding:20px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
 }
 
 .nav {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .badge {
-  padding:6px 14px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .locked { background:#7f1d1d; color:#fecaca; }
 .active { background:#14532d; color:#bbf7d0; }
 
 .pricing {
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
-  margin-bottom:30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
 }
 
 .card {
-  flex:1;
-  min-width:220px;
-  background:#111827;
-  padding:20px;
-  border-radius:14px;
+  flex: 1;
+  min-width: 220px;
+  background: #111827;
+  padding: 20px;
+  border-radius: 14px;
 }
 
 button {
-  margin-top:10px;
-  padding:10px 14px;
-  border:none;
-  border-radius:10px;
-  background:#2563eb;
-  color:#fff;
-  cursor:pointer;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
 }
 
 button:disabled {
-  opacity:0.5;
-  cursor:not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .dashboard {
-  background:#111827;
-  padding:20px;
-  border-radius:14px;
-  position:relative;
+  background: #111827;
+  padding: 20px;
+  border-radius: 14px;
+  position: relative;
 }
 
 .locked-ui {
-  filter:blur(8px);
-  pointer-events:none;
+  filter: blur(8px);
+  pointer-events: none;
 }
 
 .overlay {
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.85);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
-.hidden { display:none; }
+.hidden { display: none; }
 
 input {
-  padding:10px;
-  border-radius:8px;
-  border:none;
-  margin:5px 0;
-  width:100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin: 5px 0;
+  width: 100%;
 }
 
 .footer {
-  margin-top:40px;
-  text-align:center;
-  font-size:13px;
-  color:#9ca3af;
+  margin-top: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.sticky {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 160px;
 }
 </style>
 </head>
@@ -113,72 +120,79 @@ input {
 
 <div class="container">
 
-  <!-- NAV -->
-  <div class="nav">
-    <h2>☁️ NorthSky OS</h2>
-    <div id="status" class="badge locked">LOCKED</div>
+<!-- NAV -->
+<div class="nav">
+  <h2>☁️ NorthSky OS</h2>
+  <div id="status" class="badge locked">LOCKED</div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing">
+
+  <div class="card">
+    <h3>Starter</h3>
+    <p>$99 / month</p>
+    <button class="buy" data-plan="starter">Subscribe</button>
   </div>
 
-  <!-- PRICING -->
-  <div class="pricing">
+  <div class="card">
+    <h3>Pro</h3>
+    <p>$299 / month</p>
+    <button class="buy" data-plan="pro">Subscribe</button>
+  </div>
 
-    <div class="card">
-      <h3>Starter</h3>
-      <p>$99 / month</p>
-      <button class="buy" data-plan="starter">Subscribe</button>
-    </div>
+  <div class="card">
+    <h3>Elite</h3>
+    <p>$999 / month</p>
+    <button class="buy" data-plan="elite">Subscribe</button>
+  </div>
 
-    <div class="card">
-      <h3>Pro</h3>
-      <p>$299 / month</p>
-      <button class="buy" data-plan="pro">Subscribe</button>
-    </div>
+</div>
 
-    <div class="card">
-      <h3>Elite</h3>
-      <p>$999 / month</p>
-      <button class="buy" data-plan="elite">Subscribe</button>
-    </div>
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+  <div id="overlay" class="overlay">
+    🔒 Subscribe to unlock system
+  </div>
+
+  <div id="app" class="locked-ui">
+
+    <h2>Dashboard</h2>
+
+    <p>Plan: <strong id="plan">None</strong></p>
+    <p>Score: <span id="score">0</span></p>
+    <p>Revenue: $<span id="rev">0</span></p>
+
+    <button id="addScore">+10 Score</button>
+    <button id="routeLead">Route Lead ($75)</button>
+
+    <hr>
+
+    <h3>Lead Capture</h3>
+
+    <input id="email" placeholder="Email">
+    <input id="name" placeholder="Name">
+    <button id="offer">Submit Lead</button>
+
+    <br><br>
+    <button id="logout">Logout</button>
 
   </div>
 
-  <!-- DASHBOARD -->
-  <div class="dashboard">
+</div>
 
-    <div id="overlay" class="overlay">
-      🔒 Subscribe to unlock system
-    </div>
+<div class="footer">
+  © 2026 NorthSky OS · SaaS Platform
+</div>
 
-    <div id="app" class="locked-ui">
+</div>
 
-      <h2>Dashboard</h2>
-
-      <p>Plan: <strong id="plan">None</strong></p>
-      <p>Score: <span id="score">0</span></p>
-      <p>Revenue: $<span id="rev">0</span></p>
-
-      <button id="addScore">+10 Score</button>
-      <button id="routeLead">Route Lead ($75)</button>
-
-      <hr>
-
-      <h3>Lead Capture</h3>
-
-      <input id="email" placeholder="Email">
-      <input id="name" placeholder="Name">
-      <button id="offer">Submit Lead</button>
-
-      <br><br>
-      <button id="logout">Logout</button>
-
-    </div>
-
-  </div>
-
-  <div class="footer">
-    © 2026 NorthSky OS · SaaS Platform
-  </div>
-
+<!-- Sticky CTA -->
+<div class="sticky">
+  <button onclick="track('sticky_click'); location.href='/apply/'">
+    Apply Now
+  </button>
 </div>
 
 <script>
@@ -191,36 +205,59 @@ let state = {
 
 const el = (id) => document.getElementById(id);
 
-/**
- * VERIFY USER (SAFE FAIL)
- */
-async function verify(email) {
+/* ---------------------------
+   EVENT TRACKING
+----------------------------*/
+function track(event) {
+  fetch("/api/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event,
+      page: window.location.pathname,
+      ts: Date.now()
+    })
+  });
+}
+
+/* ---------------------------
+   STRIPE RETURN HANDLING
+----------------------------*/
+const urlParams = new URLSearchParams(window.location.search);
+const session_id_from_url = urlParams.get("session_id");
+
+if (session_id_from_url) {
+  localStorage.setItem("session_id", session_id_from_url);
+  window.history.replaceState({}, document.title, "/");
+}
+
+/* ---------------------------
+   VERIFY SESSION
+----------------------------*/
+async function verify(session_id) {
   try {
     const r = await fetch("/api/verify-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ session_id })
     });
 
     return await r.json();
-  } catch (err) {
-    console.warn("verify-session missing or failed");
+  } catch (e) {
     return { valid: false };
   }
 }
 
-function saveEmail(email) {
-  localStorage.setItem("email", email);
-}
-
-/**
- * UNLOCK
- */
+/* ---------------------------
+   UNLOCK CHECK
+----------------------------*/
 async function checkUnlock() {
-  const email = localStorage.getItem("email");
-  if (!email) return;
+  const session_id = localStorage.getItem("session_id");
+  if (!session_id) return;
 
-  const data = await verify(email);
+  el("status").innerText = "VERIFYING...";
+
+  const data = await verify(session_id);
 
   if (data.valid) {
     state.auth = true;
@@ -233,90 +270,91 @@ async function checkUnlock() {
     el("status").className = "badge active";
 
     el("plan").innerText = state.plan;
+  } else {
+    localStorage.removeItem("session_id");
+    el("status").innerText = "LOCKED";
   }
 }
 
-/**
- * STRIPE CHECKOUT (FIXED)
- */
+/* ---------------------------
+   STRIPE CHECKOUT
+----------------------------*/
 async function subscribe(plan, btn) {
   try {
     btn.disabled = true;
     btn.innerText = "Loading...";
 
-    const email = prompt("Enter email for subscription:");
-    if (!email) return;
+    track("checkout_click_" + plan);
 
-    saveEmail(email);
+    const email = prompt("Enter email for receipt:");
+    if (!email) return;
 
     const r = await fetch("/api/stripe/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan })
+      body: JSON.stringify({ plan, email })
     });
 
     const data = await r.json();
-
-    if (!r.ok) {
-      console.error(data);
-      alert(data.error || "Checkout failed");
-      return;
-    }
 
     if (data.url) {
       window.location.href = data.url;
     }
 
-  } catch (err) {
-    console.error(err);
-    alert("Payment error");
   } finally {
     btn.disabled = false;
     btn.innerText = "Subscribe";
   }
 }
 
-/**
- * BUTTONS (FIXED)
- */
+/* ---------------------------
+   BUTTONS
+----------------------------*/
 document.querySelectorAll(".buy").forEach(btn => {
-  btn.addEventListener("click", () => subscribe(btn.dataset.plan, btn));
+  btn.onclick = () => subscribe(btn.dataset.plan, btn);
 });
 
-/**
- * DASHBOARD
- */
+/* ---------------------------
+   DASHBOARD ACTIONS
+----------------------------*/
 el("addScore").onclick = () => {
   if (!state.auth) return;
   state.score += 10;
   el("score").innerText = state.score;
+  track("score_added");
 };
 
 el("routeLead").onclick = () => {
   if (!state.auth) return;
   state.revenue += 75;
   el("rev").innerText = state.revenue;
+  track("lead_routed");
 };
 
 el("offer").onclick = () => {
   if (!state.auth) return;
-
-  const email = el("email").value;
-  const name = el("name").value;
-
-  if (!email || !name) {
-    alert("Fill all fields");
-    return;
-  }
-
-  alert("Lead submitted successfully");
+  track("lead_submitted");
+  alert("Lead submitted");
 };
 
 el("logout").onclick = () => {
-  localStorage.clear();
+  localStorage.removeItem("session_id");
   location.reload();
 };
 
+/* ---------------------------
+   SCROLL TRACKING
+----------------------------*/
+window.addEventListener("scroll", () => {
+  let scroll = window.scrollY / document.body.scrollHeight;
+
+  if (scroll > 0.5 && !window.halfTracked) {
+    window.halfTracked = true;
+    track("scroll_50");
+  }
+});
+
+/* INIT */
 checkUnlock();
 </script>
 
