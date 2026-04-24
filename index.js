@@ -5,16 +5,46 @@ import cors from "cors";
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-/* ================= MIDDLEWARE ================= */
 app.use(cors());
-app.use(express.json());
 
-/* ================= HEALTH CHECK ================= */
+/* ================= HEALTH ================= */
 app.get("/", (req, res) => {
   res.send("NorthSky Backend Running 🚀");
 });
 
-/* ================= STRIPE CHECKOUT ================= */
+/* ================= STRIPE WEBHOOK (MUST BE FIRST RAW ROUTE) ================= */
+app.post(
+  "/api/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("Webhook error:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    console.log("🔥 Event:", event.type);
+
+    if (event.type === "checkout.session.completed") {
+      console.log("💰 Payment success:", event.data.object);
+    }
+
+    res.json({ received: true });
+  }
+);
+
+/* ================= JSON ROUTES (AFTER WEBHOOK) ================= */
+app.use(express.json());
+
 app.post("/api/create-checkout", async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.create({
@@ -44,53 +74,17 @@ app.post("/api/create-checkout", async (req, res) => {
   }
 });
 
-/* ================= EVENTS TRACKING ================= */
 app.post("/api/events", (req, res) => {
   console.log("📊 Event:", req.body);
-
   res.json({ ok: true });
 });
 
-/* ================= LEAD STORAGE ================= */
-app.post("/api/leads", async (req, res) => {
-  const lead = req.body;
-
-  console.log("📥 Lead received:", lead);
-
-  // OPTIONAL: push to Supabase here later
-
+app.post("/api/leads", (req, res) => {
+  console.log("📥 Lead received:", req.body);
   res.json({ success: true });
 });
 
-/* ================= STRIPE WEBHOOK ================= */
-app.post(
-  "/api/webhook",
-  express.raw({ type: "application/json" }),
-  (req, res) => {
-    const sig = req.headers["stripe-signature"];
-
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.error("Webhook error:", err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    if (event.type === "checkout.session.completed") {
-      console.log("💰 Payment success:", event.data.object);
-    }
-
-    res.json({ received: true });
-  }
-);
-
-/* ================= START SERVER ================= */
+/* ================= START ================= */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
