@@ -1,3 +1,19 @@
+if (event.type === "checkout.session.completed") {
+  const session = event.data.object;
+
+  if (session.metadata.credits) {
+    const credits = parseInt(session.metadata.credits);
+
+    await supabase
+      .from("subscriptions")
+      .update({
+        sms_credits: supabase.raw(`sms_credits + ${credits}`)
+      })
+      .eq("user_id", session.metadata.user_id);
+  }
+}
+
+
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
