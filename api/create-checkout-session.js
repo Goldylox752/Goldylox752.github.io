@@ -1,50 +1,26 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20",
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
-  try {
-    const { plan, email } = req.body;
+  const { plan, userId } = req.body;
 
-    const prices = {
-      basic: "price_xxx_basic",
-      pro: "price_xxx_pro",
-      enterprise: "price_xxx_enterprise",
-    };
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price: process.env[`STRIPE_PRICE_${plan.toUpperCase()}`],
+        quantity: 1
+      }
+    ],
+    metadata: {
+      user_id: userId,
+      plan
+    },
+    success_url: `${process.env.DOMAIN}/dashboard?success=1`,
+    cancel_url: `${process.env.DOMAIN}/pricing`
+  });
 
-    if (!prices[plan]) {
-      return res.status(400).json({ error: "Invalid plan" });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-
-      // 🔥 THIS FIXES YOUR EMAIL PROBLEM
-      customer_email: email || undefined,
-
-      line_items: [
-        {
-          price: prices[plan],
-          quantity: 1,
-        },
-      ],
-
-      // 🔥 IMPORTANT FOR WEBHOOK TRACKING
-      metadata: {
-        plan: plan,
-        email: email || "",
-      },
-
-      success_url: `${process.env.APP_URL}/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.APP_URL}/cancel`,
-    });
-
-    return res.status(200).json({ url: session.url });
-
-  } catch (err) {
-    console.error("Checkout error:", err);
-    return res.status(500).json({ error: err.message });
-  }
+  res.json({ url: session.url });
 }
