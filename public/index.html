@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NorthSky Roof Auction · Win Roofing Jobs in Real Time</title>
+<title>NorthSky Roof Auction · Live Roofing Job Marketplace</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -17,45 +17,51 @@ body {
 
 .container { max-width:1100px; margin:auto; padding:30px; }
 
+/* HERO */
 .hero {
   text-align:center;
-  padding:80px 20px;
+  padding:90px 20px;
 }
 
 .hero h1 {
-  font-size:46px;
+  font-size:48px;
   font-weight:800;
-  line-height:1.1;
+  line-height:1.05;
 }
 
 .hero p {
   color:#9ca3af;
-  max-width:700px;
-  margin:12px auto;
+  max-width:720px;
+  margin:14px auto;
   font-size:16px;
 }
 
+/* LIVE BADGE */
 .badge {
   display:inline-block;
   padding:6px 12px;
   border-radius:20px;
   font-size:12px;
-  background:#14532d;
-  color:#bbf7d0;
+  background:#dc2626;
+  color:#fff;
   margin-bottom:15px;
+  font-weight:700;
 }
 
+/* CTA */
 .cta button {
-  margin-top:22px;
-  padding:14px 22px;
+  margin-top:25px;
+  padding:15px 24px;
   border:none;
   border-radius:10px;
   background:#22c55e;
   color:#000;
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
+  font-size:14px;
 }
 
+/* SECTIONS */
 .section { margin-top:80px; }
 
 .grid {
@@ -75,8 +81,7 @@ body {
   border:1px solid #22c55e;
 }
 
-.small { color:#9ca3af; font-size:13px; }
-
+/* STEPS */
 .steps {
   display:flex;
   gap:20px;
@@ -92,28 +97,47 @@ body {
   border:1px solid #1f2937;
 }
 
+/* PRICES */
 .price {
-  font-size:30px;
+  font-size:32px;
   font-weight:800;
   margin:10px 0;
 }
 
+/* LIVE AUCTION */
 .auction-box {
   background:#0f172a;
-  padding:25px;
+  padding:28px;
   border-radius:14px;
   border:1px solid #1f2937;
   text-align:center;
+  position:relative;
 }
 
+/* LIVE DOT */
+.live-dot {
+  position:absolute;
+  top:15px;
+  right:15px;
+  width:10px;
+  height:10px;
+  background:#22c55e;
+  border-radius:50%;
+  box-shadow:0 0 10px #22c55e;
+}
+
+/* LOCK */
 .locked {
   filter:blur(6px);
   pointer-events:none;
 }
 
+.small { color:#9ca3af; font-size:13px; }
+
+/* FOOTER */
 .footer {
   text-align:center;
-  margin-top:80px;
+  margin-top:90px;
   color:#6b7280;
   font-size:13px;
 }
@@ -126,51 +150,52 @@ body {
 
 <!-- HERO -->
 <div class="hero">
-  <div class="badge">⚡ Live Roofing Job Auctions</div>
 
-  <h1>Win Roofing Jobs in Real Time — Before Your Competition Does</h1>
+  <div class="badge">🔴 LIVE ROOFING AUCTIONS</div>
+
+  <h1>Win Roofing Jobs in Real Time Before Competitors Even Respond</h1>
 
   <p>
-    Homeowners post roofing jobs. Contractors compete in live auctions. 
-    Lowest qualified bid wins the job instantly.
+    Homeowners post jobs instantly. Contractors compete in live auctions.
+    The fastest and best-priced contractor wins the job automatically.
   </p>
 
   <div class="cta">
     <button onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">
-      Join Live Auctions →
+      Enter Live Auctions →
     </button>
   </div>
 </div>
 
 <!-- VALUE -->
 <div class="section">
-  <h2 style="text-align:center;">Why contractors use this</h2>
+  <h2 style="text-align:center;">Why top contractors join</h2>
 
   <div class="grid">
-    <div class="card">🏠 Live homeowner job auctions every day</div>
-    <div class="card">⚡ Real-time bidding against competitors</div>
-    <div class="card">💰 High-value jobs ($5K–$25K+ projects)</div>
+    <div class="card">🏠 Real homeowner jobs posted daily</div>
+    <div class="card">⚡ Compete in live bidding wars</div>
+    <div class="card">💰 $5K–$25K+ average job value</div>
   </div>
 </div>
 
 <!-- HOW IT WORKS -->
 <div class="section">
-  <h2 style="text-align:center;">How the Roof Auction works</h2>
+  <h2 style="text-align:center;">How the live auction works</h2>
 
   <div class="steps">
     <div class="step">
-      <h3>1. Live Jobs Appear</h3>
-      <p class="small">Homeowners submit roofing projects in your area</p>
+      <h3>1. Jobs Go Live</h3>
+      <p class="small">Homeowners submit roofing requests in your area</p>
     </div>
 
     <div class="step">
-      <h3>2. Compete in Bids</h3>
-      <p class="small">Contractors place real-time bids to win the job</p>
+      <h3>2. Real-Time Bidding</h3>
+      <p class="small">Contractors compete instantly for the lowest winning bid</p>
     </div>
 
     <div class="step">
-      <h3>3. Get Awarded Work</h3>
-      <p class="small">Best bid (price + speed) wins instantly</p>
+      <h3>3. Job Gets Awarded</h3>
+      <p class="small">Best contractor wins automatically — no waiting</p>
     </div>
   </div>
 </div>
@@ -184,21 +209,21 @@ body {
     <div class="card">
       <h3>Starter Access</h3>
       <div class="price">$99</div>
-      <p class="small">Limited access to live auctions</p>
+      <p class="small">Limited auction access</p>
       <button onclick="buy('starter')">Unlock Bidding</button>
     </div>
 
     <div class="card highlight">
       <h3>Pro Bidder</h3>
       <div class="price">$299</div>
-      <p class="small">Full access to all live job auctions</p>
+      <p class="small">Full access to all live auctions</p>
       <button onclick="buy('pro')">Unlock Bidding</button>
     </div>
 
     <div class="card">
       <h3>Elite Contractor</h3>
       <div class="price">$999</div>
-      <p class="small">Priority access + premium job visibility</p>
+      <p class="small">Priority job visibility + premium placement</p>
       <button onclick="buy('elite')">Unlock Bidding</button>
     </div>
 
@@ -210,15 +235,23 @@ body {
   <h2 style="text-align:center;">Live Auction Preview</h2>
 
   <div class="auction-box locked">
+
+    <div class="live-dot"></div>
+
     <h3>🏠 Roof Replacement · Leduc, AB</h3>
-    <p>Estimated Job Value: $12,000</p>
-    <p>Current Lowest Bid: $9,800</p>
-    <p>Time Remaining: 14h 32m</p>
-    <p>👷 8 contractors currently competing</p>
+
+    <p><b>Estimated Value:</b> $12,000</p>
+    <p><b>Current Lowest Bid:</b> $9,800</p>
+    <p><b>Time Remaining:</b> 14h 32m</p>
+    <p><b>👷 8 contractors actively competing</b></p>
+
+    <p style="color:#22c55e;font-weight:700;margin-top:10px;">
+      LIVE BIDDING IN PROGRESS
+    </p>
   </div>
 
   <p class="small" style="text-align:center;margin-top:10px;">
-    🔒 Unlock access to place bids in live auctions
+    🔒 Unlock access to join live bidding wars
   </p>
 </div>
 
