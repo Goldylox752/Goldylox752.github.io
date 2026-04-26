@@ -8,7 +8,7 @@ const supabase = createClient(
 export async function POST(req) {
   const { job_id } = await req.json();
 
-  // Get lowest bid (winner logic)
+  // 1. Get all bids
   const { data: bids } = await supabase
     .from("bids")
     .select("*")
@@ -19,17 +19,17 @@ export async function POST(req) {
     return Response.json({ error: "No bids" }, { status: 400 });
   }
 
-  const winner = bids[0];
+  const winner = bids[0]; // lowest bid wins (or adjust logic)
 
-  // Mark job as closed
+  // 2. Mark job as sold
   await supabase
     .from("jobs")
     .update({
-      status: "closed",
+      status: "sold",
+      winner_id: winner.contractor_id,
+      winning_bid: winner.amount,
     })
     .eq("id", job_id);
 
-  return Response.json({
-    winner,
-  });
+  return Response.json({ winner });
 }
