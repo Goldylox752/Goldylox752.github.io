@@ -6,42 +6,47 @@ const supabase = createClient(
 );
 
 export async function POST(req) {
-  try {
-    const body = await req.json();
+  const body = await req.json();
 
-    const { job_id, contractor_id, amount, user_paid } = body;
+  const { job_id, contractor_id, amount, user_paid } = body;
 
-    // 🔐 SECURITY CHECK (backend protection)
-    if (!user_paid) {
-      return Response.json(
-        { error: "Payment required to bid" },
-        { status: 403 }
-      );
-    }
+  // 🔐 NEVER trust frontend payment flag
+  const { data: user } = await supabase
+    .from("users")
+    .select("paid")
+    .eq("id", contractor_id)
+    .single();
 
-    // 🧠 Insert bid
-    const { data, error } = await supabase
-      .from("bids")
-      .insert([
-        {
-          job_id,
-          contractor_id,
-          amount,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      return Response.json({ error: error.message }, { status: 500 });
-    }
-
-    return Response.json({ bid: data });
-
-  } catch (err) {
+  if (!user?.paid) {
     return Response.json(
-      { error: "Server error" },
-      { status: 500 }
+      { error: "Payment required" },
+      { status: 403 }
     );
   }
+
+  // ❌ block bids if auction closed
+  const { data: job } = await supabase
+    .from("jobs")
+    .select("status")
+    .eq("id", job_id)
+    .single();
+
+  if (job?.status !== "live") {
+    return Response.json(
+      { error: "Auction closed" },
+      { status: 403 }
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("bids")
+    .insert([{ job_id, contractor_id, amount }])
+    .select()
+    .single();
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json({ bid: data });
 }
