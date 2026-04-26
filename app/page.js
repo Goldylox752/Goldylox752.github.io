@@ -10,17 +10,17 @@ const supabase = createClient(
 
 export default function Home() {
   const [jobs, setJobs] = useState([]);
-  const [bids, setBids] = useState({}); // grouped by job_id
+  const [bids, setBids] = useState({});
 
   // ----------------------------
-  // LOAD ACTIVE AUCTIONS
+  // LOAD JOBS
   // ----------------------------
   useEffect(() => {
     async function loadJobs() {
       const { data } = await supabase
         .from("jobs")
         .select("*")
-        .eq("status", "open")
+        .eq("status", "live")
         .order("created_at", { ascending: false });
 
       setJobs(data || []);
@@ -30,7 +30,7 @@ export default function Home() {
   }, []);
 
   // ----------------------------
-  // REAL-TIME BID STREAM
+  // REAL-TIME BIDS
   // ----------------------------
   useEffect(() => {
     const channel = supabase
@@ -60,32 +60,27 @@ export default function Home() {
   }, []);
 
   // ----------------------------
-  // PLACE BID
+  // PLACE BID (demo)
   // ----------------------------
   async function placeBid(jobId, amount) {
     await supabase.from("bids").insert({
       job_id: jobId,
       contractor_id: "demo-user",
       amount,
-      message: "Ready to start ASAP",
     });
   }
 
   return (
     <div style={styles.container}>
 
-      {/* HEADER */}
       <h1 style={styles.title}>🏠 Live Roof Auctions</h1>
-      <p style={styles.subtitle}>
-        Compete in real-time for high-value roofing jobs
-      </p>
 
-      {/* AUCTION LIST */}
       <div style={styles.grid}>
 
         {jobs.map((job) => {
           const jobBids = bids[job.id] || [];
-          const lowest = jobBids.length
+
+          const lowestBid = jobBids.length
             ? Math.min(...jobBids.map(b => b.amount))
             : null;
 
@@ -95,11 +90,13 @@ export default function Home() {
               <h3>{job.title}</h3>
               <p style={styles.text}>{job.location}</p>
 
+              {/* WINNING BID */}
               <div style={styles.box}>
-                <p>💰 Lowest Bid: {lowest ? `$${lowest}` : "No bids yet"}</p>
+                💰 Lowest Bid:{" "}
+                <b>{lowestBid ? `$${lowestBid}` : "No bids yet"}</b>
               </div>
 
-              {/* QUICK BID ACTIONS */}
+              {/* ACTIONS */}
               <div style={styles.actions}>
                 <button onClick={() => placeBid(job.id, 9500)} style={styles.button}>
                   Bid $9.5k
@@ -124,95 +121,6 @@ export default function Home() {
         })}
 
       </div>
-
     </div>
   );
 }
-
-// ----------------------------
-// STYLES
-// ----------------------------
-const styles = {
-  container: {
-    padding: 30,
-    background: "#0b1220",
-    minHeight: "100vh",
-    color: "#fff",
-    fontFamily: "Inter",
-  },
-
-  title: {
-    textAlign: "center",
-    fontSize: 36,
-    fontWeight: 800,
-  },
-
-  subtitle: {
-    textAlign: "center",
-    color: "#9ca3af",
-    marginBottom: 30,
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: 20,
-  },
-
-  card: {
-    background: "#111827",
-    padding: 20,
-    borderRadius: 14,
-    border: "1px solid #1f2937",
-  },
-
-  text: {
-    color: "#9ca3af",
-    fontSize: 13,
-  },
-
-  box: {
-    marginTop: 10,
-    padding: 10,
-    background: "#0f172a",
-    borderRadius: 10,
-  },
-
-  actions: {
-    display: "flex",
-    gap: 10,
-    marginTop: 15,
-  },
-
-  button: {
-    flex: 1,
-    padding: 10,
-    background: "#22c55e",
-    border: "none",
-    borderRadius: 8,
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  buttonAlt: {
-    flex: 1,
-    padding: 10,
-    background: "#3b82f6",
-    border: "none",
-    borderRadius: 8,
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  feed: {
-    marginTop: 15,
-    display: "flex",
-    flexDirection: "column",
-    gap: 5,
-  },
-
-  bid: {
-    fontSize: 13,
-    color: "#d1d5db",
-  },
-};
