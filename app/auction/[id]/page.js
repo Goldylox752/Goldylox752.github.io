@@ -18,7 +18,16 @@ export default function AuctionPage({ params }) {
   const [user, setUser] = useState(null);
 
   // ----------------------------
-  // LOAD USER (needed for Stripe gating)
+  // DERIVED STATE (MUST BE HERE)
+  // ----------------------------
+  const lowestBid = bids.length
+    ? Math.min(...bids.map((b) => b.amount))
+    : null;
+
+  const bidCount = bids.length;
+
+  // ----------------------------
+  // LOAD USER
   // ----------------------------
   useEffect(() => {
     async function getUser() {
@@ -112,12 +121,11 @@ export default function AuctionPage({ params }) {
   }, [auction]);
 
   // ----------------------------
-  // PLACE BID (UPDATED → BACKEND ROUTE)
+  // PLACE BID
   // ----------------------------
   async function placeBid() {
     if (!bidAmount) return;
 
-    // 🔐 STRIPE GATE
     if (!user?.paid) {
       alert("Unlock bidding access first");
       return;
@@ -146,13 +154,6 @@ export default function AuctionPage({ params }) {
     setBidAmount("");
   }
 
-  // ----------------------------
-  // LOWEST BID
-  // ----------------------------
-  const lowestBid = bids.length
-    ? Math.min(...bids.map((b) => b.amount))
-    : null;
-
   return (
     <div style={styles.container}>
 
@@ -161,6 +162,9 @@ export default function AuctionPage({ params }) {
         <h1>🏠 Live Roof Auction</h1>
         <p>{auction?.title}</p>
         <div style={styles.timer}>{timeLeft}</div>
+        <p style={{ color: "#9ca3af" }}>
+          {bidCount} contractors competing
+        </p>
       </div>
 
       {/* JOB INFO */}
@@ -226,70 +230,3 @@ export default function AuctionPage({ params }) {
     </div>
   );
 }
-
-// ----------------------------
-// STYLES (unchanged)
-// ----------------------------
-const styles = {
-  container: {
-    padding: 30,
-    maxWidth: 900,
-    margin: "0 auto",
-    color: "#fff",
-    fontFamily: "Inter",
-    background: "#0b1220",
-    minHeight: "100vh",
-  },
-
-  header: {
-    textAlign: "center",
-    marginBottom: 20,
-  },
-
-  timer: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#22c55e",
-    fontWeight: "bold",
-  },
-
-  card: {
-    background: "#111827",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
-    border: "1px solid #1f2937",
-  },
-
-  input: {
-    width: "100%",
-    padding: 12,
-    borderRadius: 8,
-    border: "1px solid #374151",
-    marginTop: 10,
-    background: "#0f172a",
-    color: "#fff",
-  },
-
-  button: {
-    marginTop: 10,
-    padding: 12,
-    width: "100%",
-    borderRadius: 8,
-    border: "none",
-    background: "#22c55e",
-    color: "#000",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  bid: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: 10,
-    border: "1px solid #1f2937",
-    borderRadius: 8,
-    marginTop: 10,
-    background: "#0f172a",
-  },
-};
