@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
+// ----------------------------
+// SUPABASE CLIENT
+// ----------------------------
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -11,6 +14,9 @@ const supabase = createClient(
 export default function AuctionPage({ params }) {
   const { id } = params;
 
+  // ----------------------------
+  // STATE
+  // ----------------------------
   const [auction, setAuction] = useState(null);
   const [bids, setBids] = useState([]);
   const [bidAmount, setBidAmount] = useState("");
@@ -18,7 +24,7 @@ export default function AuctionPage({ params }) {
   const [user, setUser] = useState(null);
 
   // ----------------------------
-  // DERIVED STATE (MUST BE HERE)
+  // DERIVED STATE
   // ----------------------------
   const lowestBid = bids.length
     ? Math.min(...bids.map((b) => b.amount))
@@ -30,7 +36,7 @@ export default function AuctionPage({ params }) {
   // LOAD USER
   // ----------------------------
   useEffect(() => {
-    async function getUser() {
+    async function loadUser() {
       const { data: auth } = await supabase.auth.getUser();
       const authUser = auth?.user;
 
@@ -45,14 +51,14 @@ export default function AuctionPage({ params }) {
       setUser(profile);
     }
 
-    getUser();
+    loadUser();
   }, []);
 
   // ----------------------------
   // LOAD AUCTION + BIDS
   // ----------------------------
   useEffect(() => {
-    async function loadData() {
+    async function loadAuction() {
       const { data: job } = await supabase
         .from("jobs")
         .select("*")
@@ -69,11 +75,11 @@ export default function AuctionPage({ params }) {
       setBids(bidData || []);
     }
 
-    loadData();
+    loadAuction();
   }, [id]);
 
   // ----------------------------
-  // REAL-TIME BIDS
+  // REAL-TIME BID STREAM
   // ----------------------------
   useEffect(() => {
     const channel = supabase
@@ -102,19 +108,21 @@ export default function AuctionPage({ params }) {
     if (!auction) return;
 
     const interval = setInterval(() => {
-      const now = new Date().getTime();
+      const now = Date.now();
       const end = new Date(auction.ends_at).getTime();
       const diff = end - now;
 
       if (diff <= 0) {
         setTimeLeft("AUCTION CLOSED");
         clearInterval(interval);
-      } else {
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const mins = Math.floor((diff % (1000 * 60 * 60)) / 60000);
-        const secs = Math.floor((diff % 60000) / 1000);
-        setTimeLeft(`${hours}h ${mins}m ${secs}s`);
+        return;
       }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+
+      setTimeLeft(`${hours}h ${mins}m ${secs}s`);
     }, 1000);
 
     return () => clearInterval(interval);
@@ -154,14 +162,19 @@ export default function AuctionPage({ params }) {
     setBidAmount("");
   }
 
+  // ----------------------------
+  // UI
+  // ----------------------------
   return (
     <div style={styles.container}>
 
       {/* HEADER */}
       <div style={styles.header}>
         <h1>🏠 Live Roof Auction</h1>
-        <p>{auction?.title}</p>
+        <p>{auction?.title || "Loading..."}</p>
+
         <div style={styles.timer}>{timeLeft}</div>
+
         <p style={{ color: "#9ca3af" }}>
           {bidCount} contractors competing
         </p>
@@ -194,11 +207,11 @@ export default function AuctionPage({ params }) {
 
         <button
           onClick={placeBid}
+          disabled={!user?.paid}
           style={{
             ...styles.button,
             opacity: user?.paid ? 1 : 0.5,
           }}
-          disabled={!user?.paid}
         >
           Submit Bid
         </button>
