@@ -15,6 +15,29 @@ export default function AuctionPage({ params }) {
   const [bids, setBids] = useState([]);
   const [bidAmount, setBidAmount] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
+  const [user, setUser] = useState(null);
+
+  // ----------------------------
+  // LOAD USER (needed for Stripe gating)
+  // ----------------------------
+  useEffect(() => {
+    async function getUser() {
+      const { data: auth } = await supabase.auth.getUser();
+      const authUser = auth?.user;
+
+      if (!authUser) return;
+
+      const { data: profile } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .single();
+
+      setUser(profile);
+    }
+
+    getUser();
+  }, []);
 
   // ----------------------------
   // LOAD AUCTION + BIDS
@@ -41,7 +64,7 @@ export default function AuctionPage({ params }) {
   }, [id]);
 
   // ----------------------------
-  // REAL-TIME BID LISTENER
+  // REAL-TIME BIDS
   // ----------------------------
   useEffect(() => {
     const channel = supabase
@@ -89,17 +112,36 @@ export default function AuctionPage({ params }) {
   }, [auction]);
 
   // ----------------------------
-  // PLACE BID
+  // PLACE BID (UPDATED → BACKEND ROUTE)
   // ----------------------------
   async function placeBid() {
     if (!bidAmount) return;
 
-    await supabase.from("bids").insert({
-      job_id: id,
-      contractor_id: "demo-contractor", // replace with auth user
-      amount: parseFloat(bidAmount),
-      message: "Ready to start ASAP",
+    // 🔐 STRIPE GATE
+    if (!user?.paid) {
+      alert("Unlock bidding access first");
+      return;
+    }
+
+    const res = await fetch("/api/bids", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        job_id: id,
+        contractor_id: user.id,
+        amount: parseFloat(bidAmount),
+        user_paid: user.paid,
+      }),
     });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Bid failed");
+      return;
+    }
 
     setBidAmount("");
   }
@@ -116,7 +158,7 @@ export default function AuctionPage({ params }) {
 
       {/* HEADER */}
       <div style={styles.header}>
-        <h1>🏠 Roof Auction</h1>
+        <h1>🏠 Live Roof Auction</h1>
         <p>{auction?.title}</p>
         <div style={styles.timer}>{timeLeft}</div>
       </div>
@@ -131,13 +173,29 @@ export default function AuctionPage({ params }) {
       {/* BID FORM */}
       <div style={styles.card}>
         <h3>Place Your Bid</h3>
+
+        {!user?.paid && (
+          <p style={{ color: "#f87171" }}>
+            🔒 Unlock bidding access required
+          </p>
+        )}
+
         <input
           value={bidAmount}
           onChange={(e) => setBidAmount(e.target.value)}
           placeholder="Enter bid amount"
           style={styles.input}
+          disabled={!user?.paid}
         />
-        <button onClick={placeBid} style={styles.button}>
+
+        <button
+          onClick={placeBid}
+          style={{
+            ...styles.button,
+            opacity: user?.paid ? 1 : 0.5,
+          }}
+          disabled={!user?.paid}
+        >
           Submit Bid
         </button>
       </div>
@@ -170,7 +228,7 @@ export default function AuctionPage({ params }) {
 }
 
 // ----------------------------
-// STYLES
+// STYLES (unchanged)
 // ----------------------------
 const styles = {
   container: {
