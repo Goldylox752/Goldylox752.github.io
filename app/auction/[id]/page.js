@@ -1,96 +1,95 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// ----------------------------
+// ============================
 // SUPABASE CLIENT
-// ----------------------------
+// ============================
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function AuctionPage({ params }) {
-  const { id } = params;
+// ============================
+// PAGE
+// ============================
+export default function AuctionPage({ params }: { params: { id: string } }) {
+  const auctionId = params.id;
 
   // ----------------------------
   // STATE
   // ----------------------------
-  const [auction, setAuction] = useState(null);
-  const [bids, setBids] = useState([]);
+  const [auction, setAuction] = useState<any>(null);
+  const [bids, setBids] = useState<any[]>([]);
   const [bidAmount, setBidAmount] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
 
   // ----------------------------
-  // DERIVED STATE
+  // DERIVED VALUES
   // ----------------------------
-  const lowestBid = bids.length
-    ? Math.min(...bids.map((b) => b.amount))
-    : null;
+  const lowestBid = useMemo(
+    () => (bids.length ? Math.min(...bids.map((b) => b.amount)) : null),
+    [bids]
+  );
 
   const bidCount = bids.length;
 
-  // ----------------------------
+  // ============================
   // LOAD USER
-  // ----------------------------
+  // ============================
   useEffect(() => {
-    async function loadUser() {
+    const loadUser = async () => {
       const { data: auth } = await supabase.auth.getUser();
-      const authUser = auth?.user;
+      if (!auth?.user) return;
 
-      if (!authUser) return;
-
-      const { data: profile } = await supabase
+      const { data } = await supabase
         .from("users")
         .select("*")
-        .eq("id", authUser.id)
+        .eq("id", auth.user.id)
         .single();
 
-      setUser(profile);
-    }
+      setUser(data || null);
+    };
 
     loadUser();
   }, []);
 
-  // ----------------------------
+  // ============================
   // LOAD AUCTION + BIDS
-  // ----------------------------
+  // ============================
   useEffect(() => {
-    async function loadAuction() {
-      const { data: job } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      const { data: bidData } = await supabase
-        .from("bids")
-        .select("*")
-        .eq("job_id", id)
-        .order("created_at", { ascending: false });
+    const load = async () => {
+      const [{ data: job }, { data: bidData }] = await Promise.all([
+        supabase.from("jobs").select("*").eq("id", auctionId).single(),
+        supabase
+          .from("bids")
+          .select("*")
+          .eq("job_id", auctionId)
+          .order("created_at", { ascending: false }),
+      ]);
 
       setAuction(job);
-      setBids(bidData || []);
-    }
+      setBids(bidData ?? []);
+    };
 
-    loadAuction();
-  }, [id]);
+    load();
+  }, [auctionId]);
 
-  // ----------------------------
-  // REAL-TIME BID STREAM
-  // ----------------------------
+  // ============================
+  // REAL-TIME BIDS
+  // ============================
   useEffect(() => {
     const channel = supabase
-      .channel("auction-live")
+      .channel(`auction-${auctionId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "bids",
-          filter: `job_id=eq.${id}`,
+          filter: `job_id=eq.${auctionId}`,
         },
         (payload) => {
           setBids((prev) => [payload.new, ...prev]);
@@ -98,19 +97,19 @@ export default function AuctionPage({ params }) {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
-  }, [id]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [auctionId]);
 
-  // ----------------------------
+  // ============================
   // COUNTDOWN TIMER
-  // ----------------------------
+  // ============================
   useEffect(() => {
-    if (!auction) return;
+    if (!auction?.ends_at) return;
 
     const interval = setInterval(() => {
-      const now = Date.now();
-      const end = new Date(auction.ends_at).getTime();
-      const diff = end - now;
+      const diff = new Date(auction.ends_at).getTime() - Date.now();
 
       if (diff <= 0) {
         setTimeLeft("AUCTION CLOSED");
@@ -118,60 +117,54 @@ export default function AuctionPage({ params }) {
         return;
       }
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / 60000);
-      const secs = Math.floor((diff % 60000) / 1000);
+      const h = Math.floor(diff / 3.6e6);
+      const m = Math.floor((diff % 3.6e6) / 6e4);
+      const s = Math.floor((diff % 6e4) / 1000);
 
-      setTimeLeft(`${hours}h ${mins}m ${secs}s`);
+      setTimeLeft(`${h}h ${m}m ${s}s`);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [auction]);
 
-  // ----------------------------
+  // ============================
   // PLACE BID
-  // ----------------------------
-  async function placeBid() {
-    if (!bidAmount) return;
+  // ============================
+  const placeBid = async () => {
+    const amount = parseFloat(bidAmount);
+
+    if (!amount || amount <= 0) return;
 
     if (!user?.paid) {
-      alert("Unlock bidding access first");
+      alert("You must unlock bidding access first.");
       return;
     }
 
-    const res = await fetch("/api/bids", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        job_id: id,
+    const { data, error } = await supabase
+      .from("bids")
+      .insert({
+        job_id: auctionId,
         contractor_id: user.id,
-        amount: parseFloat(bidAmount),
-        user_paid: user.paid,
-      }),
-    });
+        amount,
+      });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Bid failed");
+    if (error) {
+      alert(error.message);
       return;
     }
 
     setBidAmount("");
-  }
+  };
 
-  // ----------------------------
+  // ============================
   // UI
-  // ----------------------------
+  // ============================
   return (
     <div style={styles.container}>
-
       {/* HEADER */}
       <div style={styles.header}>
         <h1>🏠 Live Roof Auction</h1>
-        <p>{auction?.title || "Loading..."}</p>
+        <p>{auction?.title ?? "Loading..."}</p>
 
         <div style={styles.timer}>{timeLeft}</div>
 
@@ -180,20 +173,20 @@ export default function AuctionPage({ params }) {
         </p>
       </div>
 
-      {/* JOB INFO */}
+      {/* JOB */}
       <div style={styles.card}>
         <h3>Job Details</h3>
         <p>{auction?.description}</p>
         <p>📍 {auction?.location}</p>
       </div>
 
-      {/* BID FORM */}
+      {/* BID */}
       <div style={styles.card}>
         <h3>Place Your Bid</h3>
 
         {!user?.paid && (
           <p style={{ color: "#f87171" }}>
-            🔒 Unlock bidding access required
+            🔒 Bidding access required
           </p>
         )}
 
@@ -239,7 +232,6 @@ export default function AuctionPage({ params }) {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
