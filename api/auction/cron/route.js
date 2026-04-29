@@ -1,65 +1,70 @@
 import { createClient } from "@supabase/supabase-js";
 
+// ============================
+// SUPABASE CLIENT (SERVER ONLY)
+// ============================
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // ⚠️ server-only key
 );
 
-// ----------------------------
+// ============================
 // CONTRACTOR SCORING ENGINE
-// ----------------------------
-async function updateContractorScore(winnerId, bids) {
-  for (const bid of bids) {
-    const isWinner = bid.contractor_id === winnerId;
+// ============================
+async function updateContractorScores(winnerId: string, bids: any[]) {
+  const updates = bids.map(async (bid) => {
+    const contractorId = bid.contractor_id;
+    const isWinner = contractorId === winnerId;
 
     const { data: user } = await supabase
       .from("users")
       .select("score, wins, losses, total_bids")
-      .eq("id", bid.contractor_id)
+      .eq("id", contractorId)
       .single();
 
-    if (!user) continue;
+    if (!user) return;
 
-    // 🧠 base model
-    let newScore = Number(user.score || 50);
+    let score = Number(user.score ?? 50);
 
-    // 📊 activity reward (participation matters)
-    newScore += 0.5;
+    // baseline engagement reward
+    score += 0.5;
 
-    // 🏆 win/loss logic
-    if (isWinner) {
-      newScore += 5;
-    } else {
-      newScore -= 1;
-    }
+    // win/loss adjustment
+    score += isWinner ? 5 : -1;
 
-    // 🔒 clamp score
-    newScore = Math.max(0, Math.min(100, newScore));
+    // clamp score
+    score = Math.max(0, Math.min(100, score));
 
-    await supabase
+    return supabase
       .from("users")
       .update({
-        score: newScore,
-        wins: (user.wins || 0) + (isWinner ? 1 : 0),
-        losses: (user.losses || 0) + (isWinner ? 0 : 1),
-        total_bids: (user.total_bids || 0) + 1,
+        score,
+        wins: (user.wins ?? 0) + (isWinner ? 1 : 0),
+        losses: (user.losses ?? 0) + (isWinner ? 0 : 1),
+        total_bids: (user.total_bids ?? 0) + 1,
       })
-      .eq("id", bid.contractor_id);
-  }
+      .eq("id", contractorId);
+  });
+
+  await Promise.all(updates);
 }
 
-// ----------------------------
-// CRON: CLOSE AUCTIONS
-// ----------------------------
+// ============================
+// CLOSE AUCTIONS CRON HANDLER
+// ============================
 export async function GET() {
   const now = new Date().toISOString();
 
-  // 1. find expired auctions
-  const { data: expiredJobs } = await supabase
+  // 1. fetch expired jobs
+  const { data: expiredJobs, error } = await supabase
     .from("jobs")
     .select("*")
     .eq("status", "live")
     .lt("ends_at", now);
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 
   if (!expiredJobs?.length) {
     return Response.json({ message: "No auctions to close" });
@@ -67,7 +72,7 @@ export async function GET() {
 
   let closed = 0;
 
-  // 2. process each auction
+  // 2. process auctions
   for (const job of expiredJobs) {
     const { data: bids } = await supabase
       .from("bids")
@@ -75,8 +80,8 @@ export async function GET() {
       .eq("job_id", job.id)
       .order("amount", { ascending: true });
 
-    // ❌ no bids → expire
-    if (!bids || bids.length === 0) {
+    // no bids → expire job
+    if (!bids?.length) {
       await supabase
         .from("jobs")
         .update({ status: "expired" })
@@ -85,9 +90,9 @@ export async function GET() {
       continue;
     }
 
-    const winner = bids[0]; // lowest bid wins
+    const winner = bids[0];
 
-    // 🏁 update job result
+    // mark job as sold
     await supabase
       .from("jobs")
       .update({
@@ -97,14 +102,14 @@ export async function GET() {
       })
       .eq("id", job.id);
 
-    // 🧠 update contractor scores
-    await updateContractorScore(winner.contractor_id, bids);
+    // update contractor scores
+    await updateContractorScores(winner.contractor_id, bids);
 
     closed++;
   }
 
   return Response.json({
-    closed,
-    updated: true,
+    success: true,
+    closed_jobs: closed,
   });
 }
